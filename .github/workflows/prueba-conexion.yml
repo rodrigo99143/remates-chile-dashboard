@@ -1,0 +1,17 @@
+name: Prueba de conexion TGR y SII
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probar conexion a TGR, SII y Macal
+        run: |
+          echo "--- TGR (tesoreria.cl) ---"
+          curl -s -o /dev/null -w "Codigo: %{http_code}\n" --max-time 15 https://www.tesoreria.cl || echo "FALLÓ"
+          echo "--- SII ---"
+          curl -s -o /dev/null -w "Codigo: %{http_code}\n" --max-time 15 https://www.sii.cl || echo "FALLÓ"
+          echo "--- Macal ---"
+          curl -s -o /dev/null -w "Codigo: %{http_code}\n" --max-time 15 https://macal.cl || echo "FALLÓ"
