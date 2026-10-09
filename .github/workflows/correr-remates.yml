@@ -96,3 +96,15 @@ jobs:
           path: salidas/
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Guardar las capturas de pantalla del Poder Judicial (solo si algo falló, para revisarlo)
+        # Si una consulta al Poder Judicial falla, el programa guarda una captura de
+        # pantalla de en qué paso se atascó. Normalmente no hay nada que guardar aquí
+        # (si todo salió bien, esta carpeta queda vacía).
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: diagnostico-poder-judicial
+          path: debug_pjud/
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1318,6 +1318,15 @@ URL_PJUD_INICIO = "https://oficinajudicialvirtual.pjud.cl/indexN.php"
 
 LIMITE_PRUEBA_TOP = 5
 
+# ---- Holgura para que cargue la página de inicio del Poder Judicial ----
+# La nube (GitHub Actions) es más lenta/compartida que un Mac, así que el
+# sitio puede tardar más en mostrar el botón "Consulta causas". Ajustado el
+# 2026-10-09 porque en la nube las 5 consultas fallaron por timeout.
+PJUD_TIMEOUT_BOTON_MS = 45_000      # antes: 25.000 ms
+PJUD_TIMEOUT_CARGA_INICIAL_MS = 90_000   # antes: 60.000 ms
+PJUD_REINTENTOS_PAGINA_INICIO = 4   # antes: 3
+PJUD_PAUSA_ENTRE_REINTENTOS_MS = 6_000   # antes: 4.000 ms
+
 
 _PJUD_ORDINALES_EN_PALABRAS = {
     "PRIMER": "1", "PRIMERO": "1",
@@ -1428,26 +1437,26 @@ def _pjud_consultar_una_causa(pw, tribunal, rol, anio):
     pagina = contexto.new_page()
     pagina_trabajo = pagina
     try:
-        pagina.goto(URL_PJUD_INICIO, wait_until="domcontentloaded", timeout=60000)
+        pagina.goto(URL_PJUD_INICIO, wait_until="domcontentloaded", timeout=PJUD_TIMEOUT_CARGA_INICIAL_MS)
         pagina.wait_for_timeout(3000)
 
         boton_listo = False
         ultimo_error = None
-        for intento in range(1, 4):
+        for intento in range(1, PJUD_REINTENTOS_PAGINA_INICIO + 1):
             try:
-                pagina.wait_for_selector("text=Consulta causas", timeout=25000)
+                pagina.wait_for_selector("text=Consulta causas", timeout=PJUD_TIMEOUT_BOTON_MS)
                 boton_listo = True
                 break
             except Exception as e:
                 ultimo_error = e
                 pagina.screenshot(path=str(CARPETA_DEBUG_PJUD / f"0_inicio_lento_intento{intento}_{rol}.png"))
-                pagina.wait_for_timeout(4000)
-                pagina.goto(URL_PJUD_INICIO, wait_until="domcontentloaded", timeout=60000)
+                pagina.wait_for_timeout(PJUD_PAUSA_ENTRE_REINTENTOS_MS)
+                pagina.goto(URL_PJUD_INICIO, wait_until="domcontentloaded", timeout=PJUD_TIMEOUT_CARGA_INICIAL_MS)
                 pagina.wait_for_timeout(3000)
         if not boton_listo:
             resultado["error"] = (
-                f"La página de inicio no cargó el botón 'Consulta causas' tras 3 intentos. "
-                f"Último error: {ultimo_error}"
+                f"La página de inicio no cargó el botón 'Consulta causas' tras "
+                f"{PJUD_REINTENTOS_PAGINA_INICIO} intentos. Último error: {ultimo_error}"
             )
             return resultado
 
