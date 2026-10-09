@@ -45,6 +45,19 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
+      - name: Descargar la base de precios de mercado (desde un Release del repositorio)
+        # Igual que el catastro: "precio_mercado.db" se va llenando con meses de
+        # trabajo (el barrido diario chico + el barrido nacional cada 6 meses).
+        # Se sube como adjunto a un Release llamado "precio-mercado" para que la
+        # nube no tenga que empezar siempre de cero. Si no existe ese Release
+        # todavía, este paso no hace nada y el programa sigue igual que antes.
+        run: |
+          mkdir -p datos
+          gh release download precio-mercado --repo rodrigo99143/remates-chile-dashboard --pattern "precio_mercado.db" --dir datos --clobber || echo "  (Todavía no hay un Release 'precio-mercado'. Empiezo la base de datos de mercado desde cero.)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
       - name: Correr el programa
         # El programa está hecho para seguir funcionando igual aunque falte
         # el catastro o los avisos .docx (esos .docx solo existen en el Mac
@@ -60,6 +73,19 @@ jobs:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           CORREO_DESDE: rbastias1991@gmail.com
           CORREO_PARA: rbastias1991@gmail.com
+        continue-on-error: true
+
+      - name: Guardar los cambios de hoy en la base de precios de mercado (para la próxima corrida)
+        # Así la nube va quedando cada vez más completa sola, sin que Rodrigo
+        # tenga que volver a subir el archivo a mano cada vez.
+        if: always()
+        run: |
+          if [ -f datos/precio_mercado.db ]; then
+            gh release upload precio-mercado datos/precio_mercado.db --repo rodrigo99143/remates-chile-dashboard --clobber || \
+            gh release create precio-mercado datos/precio_mercado.db --repo rodrigo99143/remates-chile-dashboard --title "precio-mercado" --notes "Base de precios de mercado (se actualiza sola en cada corrida)."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
       - name: Guardar los resultados (Excel, CSV y el registro) para descargar
