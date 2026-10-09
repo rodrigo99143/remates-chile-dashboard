@@ -53,6 +53,15 @@ jobs:
         run: python remates_v2.py
         continue-on-error: true
 
+      - name: Enviar el correo con el resumen y el Excel adjunto
+        if: always()
+        run: python enviar_correo.py
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          CORREO_DESDE: rbastias1991@gmail.com
+          CORREO_PARA: rbastias1991@gmail.com
+        continue-on-error: true
+
       - name: Guardar los resultados (Excel, CSV y el registro) para descargar
         if: always()
         uses: actions/upload-artifact@v4
