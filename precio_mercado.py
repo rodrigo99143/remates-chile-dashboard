@@ -252,36 +252,74 @@ def nivel_confianza(n):
     return "SIN DATOS SUFICIENTES"
 
 
+# Auditoría 2026-10-09: el promedio de precio_m2 por comuna/tipo es un promedio
+# PONDERADO simple, sin ninguna defensa contra valores atípicos. Un solo aviso mal
+# etiquetado (ver el filtro de tarjetas patrocinadas más arriba) puede inflar el
+# promedio de una comuna completa, porque un promedio no tiene "memoria" de que un
+# dato es rarísimo. Se le agrega un filtro de atípicos (rango intercuartílico, el
+# método estadístico estándar para esto) ANTES de promediar: con al menos 5 avisos
+# se descartan los que caen muy lejos del grueso de los datos de esa comuna/tipo.
+# Con menos de 5 avisos no hay suficientes datos para calcular cuartiles con
+# sentido, así que ahí queda solo el límite absoluto de abajo (sanity_pesos_m2) como
+# respaldo.
+MINIMO_AVISOS_PARA_FILTRO_IQR = 5
+SANITY_PESOS_M2_MIN = 150_000      # ningún m2 habitable en Chile vale menos que esto
+SANITY_PESOS_M2_MAX = 12_000_000   # ni siquiera en el sector más caro de Santiago
+
+
+def _sin_atipicos(valores):
+    """Recibe [(precio_m2, peso, año), ...] de una misma comuna/tipo y devuelve la
+    misma lista sin los valores que sean un atípico claro (ver comentario arriba)."""
+    valores = [v for v in valores if SANITY_PESOS_M2_MIN <= v[0] <= SANITY_PESOS_M2_MAX]
+    if len(valores) < MINIMO_AVISOS_PARA_FILTRO_IQR:
+        return valores
+    precios = sorted(v[0] for v in valores)
+    n = len(precios)
+    q1 = precios[n // 4]
+    q3 = precios[(3 * n) // 4]
+    riq = q3 - q1
+    if riq <= 0:
+        # Caso borde: la mayoría de los avisos tienen prácticamente el mismo
+        # precio/m2 (RIQ = 0), así que el filtro de "rango intercuartílico" no
+        # tiene ancho para trabajar. Se usa como respaldo la mediana: cualquier
+        # valor que sea menos de un tercio o más del triple de la mediana igual
+        # se descarta, para no dejar pasar un atípico solo porque el resto de
+        # los datos resultó inusualmente parejo.
+        mediana = precios[n // 2]
+        return [v for v in valores if mediana / 3 <= v[0] <= mediana * 3]
+    piso, techo = q1 - 1.5 * riq, q3 + 1.5 * riq
+    return [v for v in valores if piso <= v[0] <= techo]
+
+
 def tabla_precio_por_comuna_tipo(cursor):
     """Devuelve una lista de dicts: comuna, tipo_propiedad, precio_m2_estimado,
     n_publicaciones, confianza. Usa TODO lo acumulado en la base (no solo
-    lo de hoy), aplicando la ponderación por antigüedad."""
+    lo de hoy), aplicando la ponderación por antigüedad y descartando atípicos
+    (ver _sin_atipicos)."""
     año_actual = dt.date.today().year
     cursor.execute("SELECT comuna, tipo_propiedad, precio_m2, año_publicacion FROM publicaciones_mercado")
     filas = cursor.fetchall()
 
-    acumulado = {}  # (comuna, tipo) -> [suma_ponderada, suma_pesos, cantidad]
+    crudo = {}  # (comuna, tipo) -> [(precio_m2, peso, año), ...]
     for comuna, tipo, precio_m2, año in filas:
         peso = calcular_peso(año, año_actual)
         if peso <= 0:
             continue
-        clave = (comuna, tipo)
-        if clave not in acumulado:
-            acumulado[clave] = [0.0, 0.0, 0]
-        acumulado[clave][0] += precio_m2 * peso
-        acumulado[clave][1] += peso
-        acumulado[clave][2] += 1
+        crudo.setdefault((comuna, tipo), []).append((precio_m2, peso, año))
 
     resultado = []
-    for (comuna, tipo), (suma_pond, suma_pesos, n) in acumulado.items():
+    for (comuna, tipo), valores in crudo.items():
+        valores = _sin_atipicos(valores)
+        suma_pond = sum(p * w for p, w, _ in valores)
+        suma_pesos = sum(w for _, w, _ in valores)
         if suma_pesos <= 0:
             continue
         resultado.append({
             "comuna": comuna,
             "tipo_propiedad": tipo,
             "precio_m2_estimado": suma_pond / suma_pesos,
-            "n_publicaciones": n,
-            "confianza_mercado": nivel_confianza(n),
+            "n_publicaciones": len(valores),
+            "confianza_mercado": nivel_confianza(len(valores)),
         })
     return resultado
 
@@ -530,6 +568,20 @@ def _tarjetas_genericas(html, base_url, comuna_fija=None):
         comuna = _quitar_tildes(comuna).upper()  # debe calzar con SII2NOMBRE de remates_v2.py
         enlace = bloque.find("a", href=True)
         url = enlace["href"] if enlace else base_url
+        # Auditoría 2026-10-09: en los resultados de búsqueda de Portal Inmobiliario
+        # (y de otros portales) aparecen tarjetas PATROCINADAS de proyectos de OTRAS
+        # comunas (ej. desarrollos premium de Santiago) intercaladas entre los
+        # resultados reales de la comuna buscada. Esas tarjetas igual traen precio+m2
+        # y heredan la comuna de la página (comuna_fija), contaminando el promedio con
+        # un precio/m2 que no es de esa comuna. Se detectó así: una casa en San
+        # Fernando terminó con "oportunidad" de 393% porque el precio de referencia
+        # de mercado quedó inflado por publicidad de "condominios-valle-la-dehesa"
+        # (un sector premium de Santiago) mezclada en el promedio de San Fernando.
+        # El enlace de esas tarjetas patrocinadas pasa por un dominio de tracking de
+        # clics (ej. "click1.portalinmobiliario.com/brand_ads/clicks/...") en vez de
+        # apuntar directo a la publicación - se usa como señal para descartarlas.
+        if re.search(r"(?i)\bclick\d*\.[^/]*\.(cl|com)\b|/brand_ads/|/clicks?/", url):
+            continue
         resultados.append({
             "comuna": comuna,
             "tipo_propiedad": tipo,

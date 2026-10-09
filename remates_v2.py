@@ -2911,6 +2911,16 @@ COLUMNAS_TOP = [
     "region", "provincia", "origen_direccion", "destino_desc",
     "dormitorios", "banos", "ocupacion",
     "tipo_minimo", "margen_pesos", "oportunidad_fiscal_pct", "oportunidad_mercado_pct",
+    # Auditoría 2026-10-09: antes estas 3 columnas se calculaban pero se ocultaban del
+    # Excel (estaban en COLUMNAS_OCULTAS). Un % de oportunidad alto, por sí solo, no dice
+    # si está bien respaldado - esto muestra CON QUÉ se calculó el valor de mercado:
+    # "nivel_mercado_m2" = COMUNA (más preciso) o REGION (se usó como respaldo porque la
+    # comuna no tenía suficientes publicaciones propias); "n_publicaciones_mercado_m2" =
+    # cuántos avisos hay detrás del precio/m2 (mientras menos, menos confiable);
+    # "confianza_mercado_m2" = ALTA/MEDIA (nunca se usa un valor en BAJA, pero igual puede
+    # ser MEDIA con pocas publicaciones). Así una oportunidad rara se puede chequear a
+    # ojo en vez de que parezca un error del programa.
+    "nivel_mercado_m2", "n_publicaciones_mercado_m2", "confianza_mercado_m2",
     "confianza", "alertas",
     "tipo_juicio", "n_remate", "fojas", "cbr",
     "garantia_pesos", "url", "motivo_no_elegible",
@@ -2930,8 +2940,7 @@ COLUMNAS_OCULTAS = {
     "avaluo_roles_total", "n_roles_encontrados", "direccion_sii", "exento_sii", "destino_sii",
     "tipo_sii", "fuente_sii", "cruce_estado", "alertas_fuente", "minimo_nota",
     "dif_avaluo_tgr_vs_sii_pct", "ratio_tasacion_avaluo_tgr", "n_demandas",
-    "valor_mercado_pesos", "valor_mercado_estimado_m2_pesos", "confianza_mercado_m2",
-    "n_publicaciones_mercado_m2", "nivel_mercado_m2",
+    "valor_mercado_pesos", "valor_mercado_estimado_m2_pesos",
     "motivo_no_elegible_fiscal", "motivo_no_elegible_mercado",
 }
 
