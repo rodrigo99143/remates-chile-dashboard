@@ -1597,16 +1597,24 @@ def _pjud_separar_rol_causa(rol_causa):
 
 
 def agregar_info_poder_judicial(df, decir=print, pausa_entre_causas_seg=20):
-    """Para las propiedades del TOP (columna EN_TOP) que tengan 'tribunal' y
-    'rol_causa', consulta su causa en el Poder Judicial (público, sin login) y
-    agrega columnas nuevas al df: estado_causa_pjud, etapa_causa_pjud,
-    link_demanda_pjud, error_causa_pjud.
+    """Para las propiedades del TOP que tengan 'tribunal' y 'rol_causa', agrega
+    un link directo al buscador del Poder Judicial (link_poder_judicial) y una
+    instrucción corta (instruccion_poder_judicial) con el tribunal/rol/año ya
+    listos para copiar y pegar.
 
-    Se consulta SOLO el TOP (máximo ~50 propiedades), no las miles analizadas,
-    porque cada consulta real toma cerca de 30-40 segundos. Si algo falla en
-    una causa puntual, esa fila simplemente queda vacía y se sigue con las
-    demás - nunca se cae el programa completo por esto."""
-    for col in ("estado_causa_pjud", "etapa_causa_pjud", "link_demanda_pjud", "error_causa_pjud"):
+    ANTES esta función entraba sola (con un robot/Playwright) al sitio del
+    Poder Judicial a buscar el estado de la causa. Se sacó esa parte el
+    2026-10-09: el sitio bloquea las consultas automáticas que vienen desde la
+    nube (GitHub Actions) con una pantalla de "Su número de soporte es..." -
+    un firewall de seguridad (no es un problema de lentitud ni de reintentos,
+    se confirmó mirando las capturas de pantalla de varios intentos fallidos).
+    Como el Poder Judicial SÍ funciona normal para una persona real navegando
+    desde Chile, la solución es que el reporte entregue el link + los datos
+    para que la propia persona (Rodrigo o Álvaro) haga la búsqueda a mano en
+    10-15 segundos por causa - son solo 5 a 10 causas por reporte, así que no
+    es mucho trabajo, y evita por completo el bloqueo (nadie necesita pelear
+    contra el firewall ni pagar un servicio de proxy)."""
+    for col in ("link_poder_judicial", "instruccion_poder_judicial"):
         if col not in df.columns:
             df[col] = None
 
@@ -1614,58 +1622,25 @@ def agregar_info_poder_judicial(df, decir=print, pausa_entre_causas_seg=20):
     if "tribunal" in df.columns and "rol_causa" in df.columns:
         candidatas = candidatas[candidatas["tribunal"].notna() & candidatas["rol_causa"].notna()]
     else:
-        decir("  [PODER_JUDICIAL] el df no tiene columnas 'tribunal'/'rol_causa' - no hay nada que consultar.")
+        decir("  [PODER_JUDICIAL] el df no tiene columnas 'tribunal'/'rol_causa' - no hay nada que marcar.")
         return df
 
-    if "oportunidad_pct" in candidatas.columns:
-        candidatas = candidatas.sort_values(["oportunidad_pct"], ascending=False)
+    total = 0
+    for i, fila in candidatas.iterrows():
+        rol, anio = _pjud_separar_rol_causa(fila["rol_causa"])
+        if not rol:
+            continue
+        total += 1
+        df.at[i, "link_poder_judicial"] = URL_PJUD_INICIO
+        df.at[i, "instruccion_poder_judicial"] = (
+            f"Entra al link, aprieta 'Consulta causas', elige Competencia=Civil, "
+            f"Corte=Todos, Tribunal='{fila['tribunal']}', Libro/Tipo=C, "
+            f"Rol={rol}, Año={anio}, y Buscar."
+        )
 
-    if LIMITE_PRUEBA_TOP is not None:
-        candidatas = candidatas.head(LIMITE_PRUEBA_TOP)
-        decir(f"  [PODER_JUDICIAL] LIMITE_PRUEBA_TOP={LIMITE_PRUEBA_TOP}: consultando solo las primeras "
-              f"{len(candidatas)} del ranking (sube este número, al inicio del archivo, cuando quieras "
-              f"probar con más, o con las 50).")
-
-    total = len(candidatas)
-    if total == 0:
-        decir("  [PODER_JUDICIAL] ninguna propiedad del TOP tiene tribunal + rol de causa para consultar.")
-        return df
-
-    decir("  [PODER_JUDICIAL] instalando/abriendo Playwright si falta (solo la primera vez)...")
-    try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        instalar("playwright")
-        importlib.invalidate_caches()
-        from playwright.sync_api import sync_playwright
-    subprocess.call([sys.executable, "-m", "playwright", "install", "chromium"],
-                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-    decir(f"  [PODER_JUDICIAL] consultando {total} causas en oficinajudicialvirtual.pjud.cl "
-          f"(con pausas entre cada una - esto puede tardar bastante)...")
-
-    with sync_playwright() as pw:
-        hechas = 0
-        for i, fila in candidatas.iterrows():
-            rol, anio = _pjud_separar_rol_causa(fila["rol_causa"])
-            if not rol:
-                continue
-            hechas += 1
-            decir(f"    [PODER_JUDICIAL] ({hechas}/{total}) {fila['tribunal']} - {fila['rol_causa']}...")
-            r = _pjud_consultar_una_causa(pw, fila["tribunal"], rol, anio)
-            if r["encontrada"]:
-                df.at[i, "estado_causa_pjud"] = r["estado_proc"]
-                df.at[i, "etapa_causa_pjud"] = r["etapa"]
-                df.at[i, "link_demanda_pjud"] = r["link_demanda_pdf"]
-                decir(f"      -> OK: estado='{r['estado_proc']}', etapa='{r['etapa']}'")
-            else:
-                df.at[i, "error_causa_pjud"] = r["error"] or "no encontrada"
-                decir(f"      -> NO: {r['error'] or 'no encontrada'}")
-            if hechas < total:
-                time.sleep(pausa_entre_causas_seg)
-
-    encontradas = df["estado_causa_pjud"].notna().sum()
-    decir(f"  [PODER_JUDICIAL] OK: {encontradas} de {total} causas consultadas con éxito.")
+    decir(f"  [PODER_JUDICIAL] {total} causas del TOP con link + instrucción para buscar a mano "
+          f"(ya no se intenta entrar de forma automática - el sitio bloquea las consultas "
+          f"que vienen desde la nube).")
     return df
 
 
@@ -2862,13 +2837,13 @@ COLUMNAS_TOP = [
     "fuente", "fecha_remate", "modalidad",
     "minimo_pesos", "avaluo_sii", "valor_ref_pesos", "oportunidad_pct",
     "superficie_util_m2",
-    "tribunal", "rol_causa", "estado_causa_pjud", "link_demanda_pjud",
+    "tribunal", "rol_causa", "link_poder_judicial", "instruccion_poder_judicial",
     # ---- nivel técnico-medio ----
     "region", "provincia", "rol_completo", "origen_direccion", "destino_desc",
     "superficie_total_m2", "dormitorios", "banos", "ocupacion",
     "tipo_minimo", "margen_pesos", "oportunidad_fiscal_pct", "oportunidad_mercado_pct",
     "confianza", "alertas",
-    "tipo_juicio", "n_remate", "fojas", "cbr", "etapa_causa_pjud", "error_causa_pjud",
+    "tipo_juicio", "n_remate", "fojas", "cbr",
     "garantia_pesos", "url", "motivo_no_elegible",
 ]
 COLUMNAS_OCULTAS = {
