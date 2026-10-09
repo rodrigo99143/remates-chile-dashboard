@@ -1842,7 +1842,13 @@ def tabla_macal(fichas):
             "rol_formato": f"{man}-{pre}" if man is not None else None,
             "direccion_tgr": titulo, "direccion_texto_busqueda": busq + " ",
             "minimo_valor": f["minimo_valor"], "minimo_unidad": f["minimo_unidad"],
-            "modalidad": "NO INDICADA", "tribunal": f.get("vendedor"),
+            # Álvaro marcó esto (09-10-2026): en Macal esto NUNCA es un tribunal, es el
+            # mandante/acreedor (banco, inmobiliaria o persona natural) que vende el
+            # remate privado - no hay juicio ni tribunal involucrado. Antes se guardaba
+            # bajo la misma columna "tribunal" que usan TGR/Avisos para el juzgado real,
+            # mezclando dos cosas distintas bajo un mismo encabezado. Ahora va en su
+            # propia columna "mandante_acreedor" y "tribunal" queda vacío para Macal.
+            "modalidad": "NO INDICADA", "mandante_acreedor": f.get("vendedor"),
             "tipo_juicio": "REMATE PRIVADO (Macal)", "tipo_propiedad": f.get("tipo_propiedad"),
             "superficie_util_m2": f.get("superficie_util_m2"), "superficie_total_m2": f.get("superficie_total_m2"),
             "dormitorios": f.get("dormitorios"), "banos": f.get("banos"), "ocupacion": f.get("ocupacion"),
@@ -2896,7 +2902,11 @@ COLUMNAS_TOP = [
     # superficie construida (útil) y superficie de terreno (total), lado a lado y
     # tituladas sin ambigüedad - pedido de Álvaro (09-10-2026)
     "superficie_util_m2", "superficie_total_m2",
-    "tribunal", "rol_causa", "link_poder_judicial", "instruccion_poder_judicial",
+    # "tribunal" = juzgado real (solo TGR/Avisos, remates judiciales).
+    # "mandante_acreedor" = banco/inmobiliaria/persona que vende (solo Macal, remates
+    # privados sin juicio) - antes venía mezclado adentro de "tribunal" y Álvaro lo marcó
+    # (09-10-2026): "Estos son mandantes o acreedores, no Tribunal".
+    "tribunal", "mandante_acreedor", "rol_causa", "link_poder_judicial", "instruccion_poder_judicial",
     # ---- nivel técnico-medio ----
     "region", "provincia", "origen_direccion", "destino_desc",
     "dormitorios", "banos", "ocupacion",
@@ -3032,8 +3042,8 @@ def dar_formato(ws):
     dinero = {"tasacion", "avaluo_tgr", "avaluo_sii", "exento_sii", "valor_ref_pesos", "minimo_pesos",
               "margen_pesos", "garantia_pesos", "avaluo_roles_total", "valor_mercado_pesos",
               "margen_fiscal_pesos", "margen_mercado_pesos", "valor_mercado_estimado_m2_pesos"}
-    anchos45 = {"direccion_final", "direccion_tgr", "direccion_sii", "tribunal", "valor", "concepto",
-                "alertas", "razon_seleccion", "motivo_no_elegible", "url", "rol_candidatos"}
+    anchos45 = {"direccion_final", "direccion_tgr", "direccion_sii", "tribunal", "mandante_acreedor", "valor",
+                "concepto", "alertas", "razon_seleccion", "motivo_no_elegible", "url", "rol_candidatos"}
     for i, celda in enumerate(ws[1], start=1):
         nombre = str(celda.value or "")
         ws.column_dimensions[get_column_letter(i)].width = 45 if nombre in anchos45 else max(12, min(30, len(nombre) + 4))
@@ -3317,6 +3327,9 @@ def prueba():
               ["/venta/casa/x/y/P1-1", "/venta/depto/z/w/P22-3"])
     tm = tabla_macal([f])
     comprobar("Macal: comuna SII 16110 (La Cisterna)", tm.loc[0, "comuna_sii"] == "16110")
+    comprobar("Macal: el vendedor va en 'mandante_acreedor', NO en 'tribunal' "
+              "(Álvaro: \"Estos son mandantes o acreedores, no Tribunal\")",
+              tm.loc[0, "mandante_acreedor"] == f.get("vendedor") and "tribunal" not in tm.columns)
 
     # --- Oportunidad y selección (datos sintéticos, UF simulada) ---
     global valor_uf
