@@ -132,6 +132,18 @@ N_TOP_FISCAL = 20
 N_TOP_MERCADO = 20
 N_TOP_COMODIN = 10
 N_TOP_MAXIMO = N_TOP_FISCAL + N_TOP_MERCADO + N_TOP_COMODIN   # 50
+
+# ---- Cuota mínima de la TGR (pedido explícito de Rodrigo, 2026-10-09) ----
+# Si el ranking de arriba no junta por sí solo al menos este número de
+# propiedades de la TGR, se "fuerzan" las mejores candidatas de la TGR que
+# falten, reemplazando a las propiedades NO-TGR (o TGR sin causa) con peor
+# oportunidad. El TOP nunca cambia de tamaño (sigue en 50 como máximo):
+# solo se intercambian cupos.
+MINIMO_TGR_EN_TOP = 10
+# De esas (al menos) 10 de la TGR, al menos este número deben tener
+# tribunal Y rol de causa (= "carpeta judicial" disponible para consultar
+# en el Poder Judicial).
+MINIMO_TGR_CON_CAUSA_EN_TOP = 5
 NOMBRE_ZONA = {"PROV:082": "Provincia de Concepción", "REG:RM": "Región Metropolitana",
                "REG:05": "Región de Valparaíso"}
 VALOR_MINIMO_REF = 20_000_000       # se descartan propiedades cuyo avalúo (referencia) sea menor, en pesos
@@ -2600,6 +2612,79 @@ def _llenar_con_cupos_por_zona(candidatas, cupos, objetivo, ya_elegidos, etiquet
     return elegidos, razones, faltantes
 
 
+def _forzar_cuota_tgr(df, elegidos, razones, universo_elegible, minimo_tgr, minimo_tgr_con_causa):
+    """Garantiza que el TOP tenga al menos 'minimo_tgr' propiedades de la TGR, y que al
+       menos 'minimo_tgr_con_causa' de esas tengan tribunal + rol de causa (= carpeta
+       judicial disponible para el Poder Judicial). Si el ranking normal no las trae
+       solas, se cambian las propiedades NO-TGR (o TGR sin causa) con peor oportunidad
+       por las mejores candidatas de la TGR que falten. El TOP nunca cambia de tamaño:
+       solo se intercambian cupos, uno por uno."""
+    elegidos = list(elegidos)
+    razones = dict(razones)
+    faltantes = []
+
+    def tiene_causa(i):
+        return pd.notna(df.at[i, "tribunal"]) and pd.notna(df.at[i, "rol_causa"])
+
+    def oportunidad(i):
+        v = df.at[i, "oportunidad_pct"]
+        return v if pd.notna(v) else -1
+
+    def candidatos_tgr(con_causa=None):
+        pool = [i for i in universo_elegible if i not in elegidos and df.at[i, "fuente"] == "TGR"]
+        if con_causa is True:
+            pool = [i for i in pool if tiene_causa(i)]
+        elif con_causa is False:
+            pool = [i for i in pool if not tiene_causa(i)]
+        return sorted(pool, key=oportunidad, reverse=True)
+
+    def peor_no_tgr():
+        no_tgr = [i for i in elegidos if df.at[i, "fuente"] != "TGR"]
+        return min(no_tgr, key=oportunidad) if no_tgr else None
+
+    # ---- Paso 1: al menos 'minimo_tgr' propiedades de la TGR en el TOP ----
+    faltan = minimo_tgr - sum(1 for i in elegidos if df.at[i, "fuente"] == "TGR")
+    for nuevo in candidatos_tgr():
+        if faltan <= 0:
+            break
+        peor = peor_no_tgr()
+        if peor is None:
+            faltantes.append("Cuota mínima de la TGR: no quedan propiedades no-TGR que reemplazar en el TOP.")
+            break
+        elegidos.remove(peor)
+        razones.pop(peor, None)
+        elegidos.append(nuevo)
+        razones[nuevo] = f"FORZADO: cuota mínima de la TGR (al menos {minimo_tgr} en el TOP)"
+        faltan -= 1
+    if faltan > 0:
+        faltantes.append(f"Cuota mínima de la TGR: solo se alcanzaron {minimo_tgr - faltan} de {minimo_tgr} "
+                          f"(no hay más propiedades elegibles de la TGR esta semana).")
+
+    # ---- Paso 2: de esas, al menos 'minimo_tgr_con_causa' con tribunal + rol de causa ----
+    con_causa = sum(1 for i in elegidos if df.at[i, "fuente"] == "TGR" and tiene_causa(i))
+    faltan_causa = minimo_tgr_con_causa - con_causa
+    for nuevo in candidatos_tgr(con_causa=True):
+        if faltan_causa <= 0:
+            break
+        tgr_sin_causa = [i for i in elegidos if df.at[i, "fuente"] == "TGR" and not tiene_causa(i)]
+        peor = min(tgr_sin_causa, key=oportunidad) if tgr_sin_causa else peor_no_tgr()
+        if peor is None:
+            faltantes.append("Cuota de carpetas judiciales de la TGR: no hay más propiedades que reemplazar.")
+            break
+        elegidos.remove(peor)
+        razones.pop(peor, None)
+        elegidos.append(nuevo)
+        razones[nuevo] = (f"FORZADO: cuota mínima de la TGR con carpeta judicial "
+                           f"(al menos {minimo_tgr_con_causa} con tribunal + rol de causa)")
+        faltan_causa -= 1
+    if faltan_causa > 0:
+        faltantes.append(f"Cuota de carpetas judiciales de la TGR: solo se alcanzaron "
+                          f"{minimo_tgr_con_causa - faltan_causa} de {minimo_tgr_con_causa} "
+                          f"(no hay más propiedades de la TGR con tribunal + rol de causa esta semana).")
+
+    return elegidos, razones, faltantes
+
+
 def seleccionar_top_dual(df, n_fiscal=None, n_mercado=None, n_comodin=None, cupos=None):
     """Doble ranking acordado con Rodrigo:
        - hasta 20 mejores por oportunidad vs. AVALÚO FISCAL (Ranking A)
@@ -2658,14 +2743,24 @@ def seleccionar_top_dual(df, n_fiscal=None, n_mercado=None, n_comodin=None, cupo
     if len(elegidos_comodin) < n_comodin:
         faltantes.append(f"Comodín: solo {len(elegidos_comodin)} de {n_comodin} cupos (no quedan más elegibles)")
 
+    razones = {}
     for i in elegidos_b:
-        df.at[i, "razon_seleccion"] = razones_b[i]
+        razones[i] = razones_b[i]
     for i in elegidos_a:
-        df.at[i, "razon_seleccion"] = razones_a[i]
+        razones[i] = razones_a[i]
     for k, i in enumerate(elegidos_comodin, 1):
-        df.at[i, "razon_seleccion"] = f"COMODIN (mejor oportunidad disponible, #{k})"
+        razones[i] = f"COMODIN (mejor oportunidad disponible, #{k})"
 
     todos_elegidos = elegidos_b + elegidos_a + elegidos_comodin
+    universo_elegible = set(cand_fiscal.index) | set(cand_mercado.index)
+    todos_elegidos, razones, faltantes_tgr = _forzar_cuota_tgr(
+        df, todos_elegidos, razones, universo_elegible,
+        MINIMO_TGR_EN_TOP, MINIMO_TGR_CON_CAUSA_EN_TOP)
+    faltantes += faltantes_tgr
+
+    for i, razon in razones.items():
+        df.at[i, "razon_seleccion"] = razon
+
     df.loc[todos_elegidos, "EN_TOP"] = True
     df["ranking_fiscal"] = pd.to_numeric(df["ranking_fiscal"], errors="coerce").astype("Int64")
     df["ranking_mercado"] = pd.to_numeric(df["ranking_mercado"], errors="coerce").astype("Int64")
