@@ -620,8 +620,21 @@ def parsear_rol_11(rol):
 
 
 def parsear_rol_formato(rf):
-    """'LEBU-00454-009' -> ('LEBU', 454, 9). Admite nombres con guion (LLAY-LLAY)."""
-    m = re.fullmatch(r"(.+)-(\d+)-(\d+)", str(rf if rf is not None else "").strip())
+    """'LEBU-00454-009' -> ('LEBU', 454, 9). Admite nombres con guion (LLAY-LLAY).
+
+    Algunos roles (típicamente de deptos/edificios) traen un TERCER numeral al
+    final para el número de unidad, ej. 'LEBU-00454-009-003' (manzana 454,
+    predio 9, unidad 3). El Catastro del SII se cruza solo por comuna+manzana+
+    predio (no tiene un campo de "unidad" propio), así que ese tercer numeral
+    se ignora para el cruce - ANTES (hasta el 2026-10-09) el '.+' del nombre
+    era "goloso" y se comía el numeral de más, dejando los dos ÚLTIMOS como
+    manzana/predio: para 'LEBU-00454-009-003' eso daba manzana=9, predio=3 (en
+    vez de manzana=454, predio=9), cruzando la propiedad equivocada contra el
+    SII - fue justo lo que reportó Álvaro ("los roles compuestos por tres
+    numerales se cruzan mal"). Ahora el nombre es "no goloso" (toma el mínimo
+    posible) y siempre se usan los DOS PRIMEROS numerales como manzana/predio,
+    descartando cualquier numeral extra al final."""
+    m = re.fullmatch(r"(.+?)-(\d+)-(\d+)(?:-\d+)*", str(rf if rf is not None else "").strip())
     if not m:
         return None, None, None
     return m.group(1).strip(), int(m.group(2)), int(m.group(3))
@@ -3198,6 +3211,10 @@ def prueba():
     decir("PRUEBAS DE LÓGICA (no usan internet)")
     comprobar("ROL con formato", parsear_rol_formato("LEBU-00454-009") == ("LEBU", 454, 9))
     comprobar("ROL con guion en la comuna", parsear_rol_formato("LLAY-LLAY-00010-002") == ("LLAY-LLAY", 10, 2))
+    comprobar("ROL compuesto (depto/unidad) usa manzana/predio reales, no los últimos 2 números",
+              parsear_rol_formato("LEBU-00454-009-003") == ("LEBU", 454, 9))
+    comprobar("ROL compuesto con comuna con guion + unidad",
+              parsear_rol_formato("LLAY-LLAY-00010-002-015") == ("LLAY-LLAY", 10, 2))
     comprobar("ROL de 11 dígitos", parsear_rol_11("19900454009") == ("199", 454, 9))
     comprobar("Tesorería 188 es Concepción (SII 08201)", TES2SII.get("188") == "08201")
     comprobar("347 comunas cargadas", len(COMUNAS) == 347)
