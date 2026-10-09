@@ -144,6 +144,13 @@ MINIMO_TGR_EN_TOP = 10
 # tribunal Y rol de causa (= "carpeta judicial" disponible para consultar
 # en el Poder Judicial).
 MINIMO_TGR_CON_CAUSA_EN_TOP = 5
+
+# ---- Cuota mínima de avisos NUEVOS (pedido de Rodrigo, 2026-10-09) ----
+# Si esta semana llegó algún archivo .docx de avisos que nunca se había
+# usado en una corrida anterior, se fuerzan sus mejores oportunidades al
+# TOP (con su carpeta judicial si la trae). Si NO hay ningún archivo
+# nuevo, esta regla no hace nada.
+MINIMO_AVISOS_NUEVOS_EN_TOP = 3
 NOMBRE_ZONA = {"PROV:082": "Provincia de Concepción", "REG:RM": "Región Metropolitana",
                "REG:05": "Región de Valparaíso"}
 VALOR_MINIMO_REF = 20_000_000       # se descartan propiedades cuyo avalúo (referencia) sea menor, en pesos
@@ -2087,7 +2094,7 @@ def tabla_avisos(rutas):
     for r in rutas:
         for a in leer_avisos_docx(r):
             filas.append({
-                "fuente": "AVISO", "id_fuente": f"{a['archivo']}#{a['n_aviso']}", "url": None,
+                "fuente": "AVISO", "id_fuente": f"{a['archivo']}#{a['n_aviso']}", "archivo_aviso": a["archivo"], "url": None,
                 "fecha_remate": a["fecha_remate"], "modalidad": a["modalidad"], "tribunal": a["tribunal"],
                 "rol_causa": a["rol_causa"], "tipo_juicio": a["tipo_juicio"], "n_remate": a["n_remate"],
                 "fojas": a["fojas"], "fojas_numero": a["fojas_numero"], "fojas_anio": a["fojas_anio"], "cbr": a["cbr"],
@@ -2694,7 +2701,63 @@ def _forzar_cuota_tgr(df, elegidos, razones, universo_elegible, minimo_tgr, mini
     return elegidos, razones, faltantes
 
 
-def seleccionar_top_dual(df, n_fiscal=None, n_mercado=None, n_comodin=None, cupos=None):
+def _forzar_top_avisos_nuevos(df, elegidos, razones, universo_elegible, archivos_nuevos, minimo_avisos):
+    """Si esta semana llegó(ron) archivo(s) NUEVO(s) de avisos (.docx de resúmenes
+    semanales, nunca vistos en una corrida anterior - ver 'archivos_avisos_nuevos'),
+    garantiza que al menos las 'minimo_avisos' mejores oportunidades de esos avisos
+    NUEVOS entren al TOP, con su carpeta judicial (tribunal + rol de causa) si el
+    aviso la trae. Si NO hay ningún archivo nuevo esta semana, esta regla simplemente
+    no hace nada (no fuerza ni avisa nada - pedido explícito de Rodrigo). Nunca
+    deshace la cuota de la TGR: no reemplaza propiedades de la TGR ni las ya
+    forzadas por otra cuota."""
+    if not archivos_nuevos:
+        return elegidos, razones, []
+
+    elegidos = list(elegidos)
+    razones = dict(razones)
+    faltantes = []
+
+    def oportunidad(i):
+        v = df.at[i, "oportunidad_pct"]
+        return v if pd.notna(v) else -1
+
+    def candidatos_avisos_nuevos():
+        pool = [i for i in universo_elegible
+                if i not in elegidos and df.at[i, "fuente"] == "AVISO"
+                and df.at[i, "archivo_aviso"] in archivos_nuevos]
+        return sorted(pool, key=oportunidad, reverse=True)
+
+    def peor_reemplazable():
+        # nunca se le quita el cupo a la TGR ni a algo que otra cuota ya forzó
+        candidatos = [i for i in elegidos if df.at[i, "fuente"] != "TGR"
+                      and not str(razones.get(i, "")).startswith("FORZADO")]
+        return min(candidatos, key=oportunidad) if candidatos else None
+
+    ya_en_top = sum(1 for i in elegidos if df.at[i, "fuente"] == "AVISO"
+                     and df.at[i, "archivo_aviso"] in archivos_nuevos)
+    faltan = minimo_avisos - ya_en_top
+    for nuevo in candidatos_avisos_nuevos():
+        if faltan <= 0:
+            break
+        peor = peor_reemplazable()
+        if peor is None:
+            faltantes.append("Top 3 de avisos nuevos: no quedan propiedades que reemplazar en el TOP.")
+            break
+        elegidos.remove(peor)
+        razones.pop(peor, None)
+        elegidos.append(nuevo)
+        razones[nuevo] = (f"FORZADO: top {minimo_avisos} del aviso semanal nuevo "
+                           f"({df.at[nuevo, 'archivo_aviso']})")
+        faltan -= 1
+    if faltan > 0:
+        faltantes.append(f"Top {minimo_avisos} de avisos nuevos: el/los archivo(s) nuevo(s) solo tenían "
+                          f"{minimo_avisos - faltan} de {minimo_avisos} oportunidades elegibles.")
+
+    return elegidos, razones, faltantes
+
+
+def seleccionar_top_dual(df, n_fiscal=None, n_mercado=None, n_comodin=None, cupos=None,
+                          archivos_avisos_nuevos=None):
     """Doble ranking acordado con Rodrigo:
        - hasta 20 mejores por oportunidad vs. AVALÚO FISCAL (Ranking A)
        - hasta 20 mejores por oportunidad vs. PRECIO DE MERCADO (Ranking B)
@@ -2767,6 +2830,11 @@ def seleccionar_top_dual(df, n_fiscal=None, n_mercado=None, n_comodin=None, cupo
         MINIMO_TGR_EN_TOP, MINIMO_TGR_CON_CAUSA_EN_TOP)
     faltantes += faltantes_tgr
 
+    todos_elegidos, razones, faltantes_avisos = _forzar_top_avisos_nuevos(
+        df, todos_elegidos, razones, universo_elegible,
+        archivos_avisos_nuevos, MINIMO_AVISOS_NUEVOS_EN_TOP)
+    faltantes += faltantes_avisos
+
     for i, razon in razones.items():
         df.at[i, "razon_seleccion"] = razon
 
@@ -2779,21 +2847,48 @@ def seleccionar_top_dual(df, n_fiscal=None, n_mercado=None, n_comodin=None, cupo
 # ------------------------------------------------------------------------------
 # 11. EXPORTACIÓN
 # ------------------------------------------------------------------------------
-COLUMNAS_TOP = ["razon_seleccion", "ranking_fiscal", "ranking_mercado", "ranking_nacional",
-                "fuente", "tambien_en", "fecha_remate", "modalidad",
-                "region", "provincia", "comuna_propiedad", "rol_formato", "rol_completo", "rol_origen",
-                "direccion_final", "origen_direccion", "destino_desc", "tipo_propiedad",
-                "superficie_util_m2", "superficie_total_m2", "dormitorios", "banos", "ocupacion",
-                "avaluo_sii", "valor_ref_pesos", "base_valor_ref", "minimo_pesos", "tipo_minimo",
-                "oportunidad_pct", "margen_pesos",
-                "oportunidad_fiscal_pct", "margen_fiscal_pesos",
-                "oportunidad_mercado_pct", "margen_mercado_pesos",
-                "confianza", "alertas",
-                "tribunal", "rol_causa", "tipo_juicio", "n_remate", "fojas", "fojas_numero", "fojas_anio", "cbr",
-                "estado_causa_pjud", "etapa_causa_pjud", "link_demanda_pjud",
-                "garantia_pesos", "plazo_pago", "url", "id_fuente", "motivo_no_elegible"]
-COLUMNAS_OCULTAS = {"zonas", "texto_aviso", "direccion_texto_busqueda", "roles_lista", "candidatos_comuna",
-                    "datos_subasta"}
+# Recortado de 96 a ~41 columnas, a pedido de Rodrigo (2026-10-09): demasiadas
+# columnas, nadie las lee todas. Las primeras 17 son "de vitrina" (lo que se ve
+# de un vistazo); el resto hasta ~41 es nivel técnico-medio, por si alguien
+# quiere profundizar. Todo lo que no está aquí (columnas de auditoría interna:
+# verificación de direcciones, cruces con el SII, notas de depuración, etc.)
+# se saca por completo del Excel - sigue existiendo internamente mientras
+# corre el programa, solo que ya no se exporta.
+COLUMNAS_TOP = [
+    # ---- vitrina (lo primero que se ve) ----
+    "razon_seleccion",            # por qué quedó seleccionada (dice "FORZADO: ..." cuando se forzó una cuota)
+    "rol_formato", "direccion_final", "comuna_propiedad", "tipo_propiedad",
+    "fuente", "fecha_remate", "modalidad",
+    "minimo_pesos", "avaluo_sii", "valor_ref_pesos", "oportunidad_pct",
+    "superficie_util_m2",
+    "tribunal", "rol_causa", "estado_causa_pjud", "link_demanda_pjud",
+    # ---- nivel técnico-medio ----
+    "region", "provincia", "rol_completo", "origen_direccion", "destino_desc",
+    "superficie_total_m2", "dormitorios", "banos", "ocupacion",
+    "tipo_minimo", "margen_pesos", "oportunidad_fiscal_pct", "oportunidad_mercado_pct",
+    "confianza", "alertas",
+    "tipo_juicio", "n_remate", "fojas", "cbr", "etapa_causa_pjud", "error_causa_pjud",
+    "garantia_pesos", "url", "motivo_no_elegible",
+]
+COLUMNAS_OCULTAS = {
+    "zonas", "texto_aviso", "direccion_texto_busqueda", "roles_lista", "candidatos_comuna",
+    "datos_subasta", "archivo_aviso",
+    # banderas internas (ya se usaron para armar las hojas antes de llegar aquí)
+    "EN_TOP", "ELEGIBLE", "ELEGIBLE_FISCAL", "ELEGIBLE_MERCADO",
+    # columnas de auditoría interna: cruces de datos, cálculos intermedios, etc.
+    "ranking_fiscal", "ranking_mercado", "tambien_en", "rol_origen", "base_valor_ref",
+    "margen_fiscal_pesos", "margen_mercado_pesos", "fojas_numero", "fojas_anio", "plazo_pago",
+    "id_fuente", "fecha_primera_publicacion", "comuna_sii", "comuna_estado", "manzana", "predio",
+    "rol_consistente", "direccion_tgr", "tasacion", "avaluo_tgr", "tipo_deuda", "comuna_tribunal",
+    "direccion_tribunal", "expediente", "cod_demanda", "minimo_valor", "minimo_unidad",
+    "roles_texto", "n_roles", "rol_candidatos", "estado_busqueda_direccion", "verif_direccion_catastro",
+    "avaluo_roles_total", "n_roles_encontrados", "direccion_sii", "exento_sii", "destino_sii",
+    "tipo_sii", "fuente_sii", "cruce_estado", "alertas_fuente", "minimo_nota",
+    "dif_avaluo_tgr_vs_sii_pct", "ratio_tasacion_avaluo_tgr", "n_demandas",
+    "valor_mercado_pesos", "valor_mercado_estimado_m2_pesos", "confianza_mercado_m2",
+    "n_publicaciones_mercado_m2", "nivel_mercado_m2",
+    "motivo_no_elegible_fiscal", "motivo_no_elegible_mercado",
+}
 
 
 def ordenar_columnas(df):
@@ -2846,17 +2941,22 @@ def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
 
 def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     SALIDAS.mkdir(exist_ok=True)
-    df = ordenar_columnas(df)
+    # Importante: las filas se filtran ANTES de recortar columnas (ordenar_columnas
+    # saca columnas internas como EN_TOP/ELEGIBLE_FISCAL/ELEGIBLE_MERCADO que se
+    # necesitan aquí mismo para separar las hojas).
     top = df[df["EN_TOP"]].sort_values(["oportunidad_pct"], ascending=False)
     cand = df[df["ELEGIBLE_FISCAL"] | df["ELEGIBLE_MERCADO"]].sort_values(["oportunidad_pct"], ascending=False)
     rev = df[~df["ELEGIBLE"] & df["motivo_no_elegible"].ne("")].copy()
     rev = rev[~rev["motivo_no_elegible"].str.contains("vencido", na=False)]
     resumen = resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes)
+    # El CSV "todas_las_propiedades.csv" se deja con TODAS las columnas (incluida
+    # la auditoría interna) - es el respaldo técnico completo, no lo ve Álvaro.
     df.drop(columns=["EN_TOP"]).to_csv(SALIDAS / "todas_las_propiedades.csv", index=False, encoding="utf-8-sig")
-    top.to_csv(SALIDAS / "TOP_OPORTUNIDADES.csv", index=False, encoding="utf-8-sig")
+    ordenar_columnas(top).to_csv(SALIDAS / "TOP_OPORTUNIDADES.csv", index=False, encoding="utf-8-sig")
     ruta = SALIDAS / "OPORTUNIDADES.xlsx"
     with pd.ExcelWriter(ruta, engine="openpyxl") as w:
-        hojas = [("TOP_CONSOLIDADO", top), ("CANDIDATAS", cand), ("REVISAR", rev), ("TODAS", df), ("RESUMEN", resumen)]
+        hojas = [("TOP_CONSOLIDADO", ordenar_columnas(top)), ("CANDIDATAS", ordenar_columnas(cand)),
+                 ("REVISAR", ordenar_columnas(rev)), ("TODAS", ordenar_columnas(df)), ("RESUMEN", resumen)]
         for nombre, d in hojas:
             d.to_excel(w, sheet_name=nombre, index=False)
             dar_formato(w.sheets[nombre])
@@ -2907,10 +3007,12 @@ def guardar_log():
 
 
 def reunir_fuentes():
-    """Barre las fuentes activadas. Devuelve (lista_de_tablas, estado_por_fuente)."""
+    """Barre las fuentes activadas. Devuelve (lista_de_tablas, estado_por_fuente,
+    tabla_precio_mercado, archivos_avisos_nuevos)."""
     tablas, estado = [], {}
     SALIDAS.mkdir(exist_ok=True)
     sello = dt.datetime.now().strftime("%Y%m%d_%H%M")
+    archivos_avisos_nuevos = set()
 
     if FUENTES.get("TGR"):
         decir("\n  [TGR] descargando remates EN VIVO...")
@@ -2977,6 +3079,17 @@ def reunir_fuentes():
                 tablas.append(t)
                 estado["AVISOS"] = f"OK ({len(t)} avisos de {len(rutas)} archivo(s): " + ", ".join(p.name for p in rutas) + ")"
                 decir(f"  [AVISOS] OK: {len(t)} avisos")
+                if PRECIO_MERCADO_DISPONIBLE:
+                    try:
+                        archivos_avisos_nuevos = precio_mercado.registrar_avisos_procesados(DATOS, rutas)
+                        if archivos_avisos_nuevos:
+                            decir(f"  [AVISOS] archivo(s) NUEVO(s) esta semana (no en una corrida anterior): "
+                                  + ", ".join(sorted(archivos_avisos_nuevos)))
+                        else:
+                            decir("  [AVISOS] ningún archivo nuevo esta semana (ya se usaron todos en una corrida "
+                                  "anterior) - no se fuerza el top 3 de avisos.")
+                    except Exception as e:
+                        decir(f"  [AVISOS] no pude revisar si hay archivos nuevos ({e}); no se fuerza el top 3.")
         except Exception as e:
             estado["AVISOS"] = f"FALLÓ: {e}"
             decir(f"  [AVISOS] FALLÓ: {e}")
@@ -2998,7 +3111,7 @@ def reunir_fuentes():
             except Exception as e:
                 estado["PRECIO_MERCADO"] = f"FALLÓ: {e}"
                 decir(f"  [PRECIO_MERCADO] FALLÓ por completo (el programa sigue sin precio de mercado): {e}")
-    return tablas, estado, tabla_precio_mercado
+    return tablas, estado, tabla_precio_mercado, archivos_avisos_nuevos
 
 
 def procesar(tablas, db_path, tabla_precio_mercado=None):
@@ -3023,12 +3136,12 @@ def principal():
         decir(f"  Déjalo (o su .zip) en: {DATOS}")
         decir("  Sigo SIN catastro: no habrá avalúo SII ni ROL por dirección (las oportunidades quedarán 'no evaluables').")
     decir("\nPaso 2 de 4: barrido en vivo de las fuentes")
-    tablas, estado, tabla_precio_mercado = reunir_fuentes()
+    tablas, estado, tabla_precio_mercado, archivos_avisos_nuevos = reunir_fuentes()
     if not tablas:
         raise RuntimeError("Ninguna fuente entregó datos.")
     decir("\nPaso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección")
     df, hay_catastro = procesar(tablas, db_path, tabla_precio_mercado)
-    df, faltantes = seleccionar_top_dual(df)
+    df, faltantes = seleccionar_top_dual(df, archivos_avisos_nuevos=archivos_avisos_nuevos)
     for estado_c, n in df["cruce_estado"].value_counts().items():
         decir(f"    Cruce SII - {estado_c}: {n:,}")
 

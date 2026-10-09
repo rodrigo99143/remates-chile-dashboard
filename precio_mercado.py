@@ -108,6 +108,55 @@ def generar_id(*partes):
     return hashlib.sha256(texto.encode("utf-8")).hexdigest()[:20]
 
 
+# ------------------------------------------------------------------------------
+# AVISOS SEMANALES YA PROCESADOS (para la regla "forzar el top 3 de avisos
+# NUEVOS", pedida por Rodrigo el 2026-10-09)
+# ------------------------------------------------------------------------------
+
+def registrar_avisos_procesados(carpeta_datos, rutas):
+    """Para cada archivo .docx de avisos de esta corrida, revisa si YA se
+    procesó antes (mismo nombre + mismo contenido, usando un hash). Devuelve
+    el conjunto de nombres de archivo que son NUEVOS esta corrida (nunca
+    vistos, o con contenido distinto a la última vez), y deja registrados
+    TODOS los archivos de esta corrida como "ya procesados" para la próxima
+    vez. Vive en la misma base de datos que precio_mercado.db, que ya se
+    sincroniza sola con la nube en cada corrida."""
+    import hashlib
+    conexion, cursor = conectar_bd_mercado(carpeta_datos)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS avisos_procesados (
+            archivo TEXT PRIMARY KEY,
+            hash TEXT,
+            primera_vez_procesado TEXT,
+            ultima_vez_visto TEXT
+        )
+    """)
+    conexion.commit()
+    hoy = dt.date.today().isoformat()
+    nuevos = set()
+    for ruta in rutas:
+        try:
+            contenido = ruta.read_bytes()
+        except OSError:
+            continue
+        hash_archivo = hashlib.sha256(contenido).hexdigest()
+        nombre = ruta.name
+        cursor.execute("SELECT hash FROM avisos_procesados WHERE archivo = ?", (nombre,))
+        fila = cursor.fetchone()
+        if fila is None or fila[0] != hash_archivo:
+            nuevos.add(nombre)
+            cursor.execute("""
+                INSERT INTO avisos_procesados (archivo, hash, primera_vez_procesado, ultima_vez_visto)
+                VALUES (?, ?, ?, ?)
+                ON CONFLICT(archivo) DO UPDATE SET hash=excluded.hash, ultima_vez_visto=excluded.ultima_vez_visto
+            """, (nombre, hash_archivo, hoy, hoy))
+        else:
+            cursor.execute("UPDATE avisos_procesados SET ultima_vez_visto = ? WHERE archivo = ?", (hoy, nombre))
+    conexion.commit()
+    conexion.close()
+    return nuevos
+
+
 def guardar_publicacion(cursor, fuente, comuna, tipo_propiedad, precio_m2, año_publicacion, url, hoy):
     if not comuna or not tipo_propiedad or not precio_m2 or precio_m2 <= 0:
         return "descartada_datos_incompletos"
