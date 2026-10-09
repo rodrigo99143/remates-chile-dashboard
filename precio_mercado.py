@@ -880,7 +880,13 @@ PROVEEDORES = {
     "Dosam": {"funcion": proveedor_dosam, "critica": False},
     "EngelVolkers": {"funcion": proveedor_engel_volkers, "critica": False},
     "PropertyPartners": {"funcion": proveedor_property_partners, "critica": False},
-    "PortalInmobiliario": {"funcion": proveedor_portalinmobiliario, "critica": False},
+    # "PortalInmobiliario" se sacó del barrido DIARIO (08-10-2026): esa fuente ya
+    # se alimenta del barrido NACIONAL semestral (actualizar_portal_inmobiliario_nacional.py),
+    # que es mucho más completo. El chequeo diario de 24 comunas aportaba poco
+    # (los precios no cambian mucho en 6 meses) y además está bloqueado en la nube
+    # (Portal Inmobiliario detecta el servidor y no entrega datos). La función
+    # proveedor_portalinmobiliario() se deja escrita más abajo por si se quiere
+    # reactivar en el futuro.
 }
 
 
