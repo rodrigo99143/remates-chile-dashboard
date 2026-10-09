@@ -71,6 +71,7 @@ import re
 import json
 import time
 import sqlite3
+import tempfile
 import zipfile
 import unicodedata
 import traceback
@@ -1251,6 +1252,71 @@ def buscar_rol_por_direccion(con, comuna_sii, dir_tx):
     return f"AMBIGUO ({len(cands)} candidatos)", [c[:5] for c in cands[:6]]
 
 
+def resolver_roles_macal(df, db_path):
+    """Auditoría 2026-10-09 (pedido explícito de Álvaro: "se trabajaba en una instancia con
+    un rol y en otra con otro rol, para la misma propiedad - eso no puede pasar"): cuando una
+    ficha de Macal trae MÁS DE UN rol de avalúo (ej. terreno + construcción por separado, o
+    varias unidades en la misma publicación), tabla_macal() usa el PRIMERO de la lista para
+    cruzar contra el catastro del SII - sin comprobar que sea el que de verdad corresponde a
+    la dirección publicada. Si el rol "equivocado" de los varios listados queda elegido, la
+    propiedad se muestra con la dirección/avalúo de OTRO predio - exactamente el tipo de
+    cruce incorrecto que preocupa. Acá se verifica: para cada rol candidato se consulta su
+    dirección real en el catastro y se compara contra la dirección que Macal publicó; si
+    exactamente uno calza, se usa ese (aunque no sea el primero de la lista); si no hay uno
+    solo que calce con certeza, NO se adivina - queda una alerta para revisar a mano."""
+    if df.empty or db_path is None:
+        return df
+    for c in ("avaluo_roles_total", "n_roles_encontrados"):
+        if c not in df.columns:
+            df[c] = None
+    if "roles_lista" not in df.columns:
+        return df
+    objetivo = df.index[(df["fuente"] == "MACAL") &
+                        df["roles_lista"].map(lambda r: isinstance(r, list) and len(r) > 1)]
+    if len(objetivo) == 0:
+        return df
+    con = sqlite3.connect(db_path)
+    n_verificados = n_sin_confirmar = 0
+    for i in objetivo:
+        roles = df.at[i, "roles_lista"]
+        comuna_sii = df.at[i, "comuna_sii"]
+        dtx = extraer_direccion_texto(str(df.at[i, "direccion_texto_busqueda"] or ""))
+        if not comuna_sii or not dtx:
+            df.at[i, "rol_origen"] = "MACAL CON VARIOS ROLES, SIN DIRECCION PARA VERIFICAR (revisar a mano)"
+            n_sin_confirmar += 1
+            continue
+        calzan, tot, enc = [], 0, 0
+        for man, pre in roles:
+            r = con.execute("SELECT direccion, avaluo FROM predios WHERE comuna=? AND manzana=? AND predio=?",
+                            (comuna_sii, man, pre)).fetchone()
+            if not r:
+                continue
+            enc += 1
+            tot += r[1]
+            p = parsear_dir_catastro(r[0])
+            if p and nombres_compatibles(p[0], dtx["nombre"]) and p[1] <= dtx["numero"] <= max(p[1], p[2]):
+                calzan.append((man, pre))
+        df.at[i, "avaluo_roles_total"] = tot if enc else None
+        df.at[i, "n_roles_encontrados"] = enc
+        if len(calzan) == 1:
+            man, pre = calzan[0]
+            df.at[i, "manzana"], df.at[i, "predio"] = man, pre
+            df.at[i, "rol_formato"] = f"{man}-{pre}"
+            df.at[i, "rol_origen"] = "INFORMADO POR LA FUENTE (macal, verificado por dirección)"
+            n_verificados += 1
+        else:
+            df.at[i, "rol_origen"] = ("MACAL CON VARIOS ROLES SIN UNO CLARO (revisar a mano)" if not calzan
+                                      else "MACAL CON VARIOS ROLES, MÁS DE UNO COINCIDE (revisar a mano)")
+            n_sin_confirmar += 1
+    con.close()
+    if n_verificados or n_sin_confirmar:
+        decir(f"  [MACAL] fichas con más de un rol de avalúo: {n_verificados} verificadas por dirección, "
+              f"{n_sin_confirmar} sin poder confirmar cuál corresponde (quedan marcadas para revisar a mano).")
+    df["manzana"] = pd.to_numeric(df["manzana"], errors="coerce").astype("Int64")
+    df["predio"] = pd.to_numeric(df["predio"], errors="coerce").astype("Int64")
+    return df
+
+
 def resolver_roles_faltantes(df, db_path):
     """Para filas sin ROL pero con comuna y dirección, busca el ROL en el catastro.
     Solo se asigna cuando la coincidencia es ÚNICA; si hay dudas, se listan candidatos y NO se asigna."""
@@ -1839,6 +1905,11 @@ def tabla_macal(fichas):
             "comuna_sii": sii, "comuna_propiedad": SII2NOMBRE.get(sii) if sii else f.get("comuna_texto"),
             "comuna_estado": "OK" if sii else "NO RECONOCIDA",
             "manzana": man, "predio": pre,
+            # Lista COMPLETA de roles (no solo el primero) - la usa resolver_roles_macal()
+            # para verificar, cuando una publicación trae más de un rol (ej. terreno +
+            # construcción, o varias unidades), CUÁL de ellos corresponde de verdad a la
+            # dirección publicada, en vez de asumir a ciegas que es el primero de la lista.
+            "roles_lista": f.get("roles", []),
             "rol_formato": f"{man}-{pre}" if man is not None else None,
             "direccion_tgr": titulo, "direccion_texto_busqueda": busq + " ",
             "minimo_valor": f["minimo_valor"], "minimo_unidad": f["minimo_unidad"],
@@ -2503,6 +2574,8 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
                 a.append("RATIO_TASACION_AVALUO_ANORMAL")
         if f.get("rol_origen") == "DEDUCIDO POR DIRECCION (verificar)":
             a.append("ROL_DEDUCIDO_POR_DIRECCION")
+        if str(f.get("rol_origen") or "").startswith("MACAL CON VARIOS ROLES"):
+            a.append("MACAL_ROLES_SIN_CONFIRMAR")
         if f.get("minimo_nota") in ("UF_APROXIMADA", "UF_SIN_CONVERTIR"):
             a.append(f["minimo_nota"])
         if pd.isna(f.get("avaluo_sii")):
@@ -2548,7 +2621,8 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
                 and not (al & {"ROL_DEDUCIDO_POR_DIRECCION", "UF_APROXIMADA"}):
             return "MEDIA"
         if f["tipo_minimo"].startswith("ESTIMADO") or al & {"ROL_DEDUCIDO_POR_DIRECCION", "RURAL_O_AGRICOLA",
-                                                              "UF_APROXIMADA", "COMUNA_ASUMIDA_DEL_TRIBUNAL"}:
+                                                              "UF_APROXIMADA", "COMUNA_ASUMIDA_DEL_TRIBUNAL",
+                                                              "MACAL_ROLES_SIN_CONFIRMAR"}:
             return "BAJA"
         return "MEDIA"
 
@@ -3192,6 +3266,7 @@ def procesar(tablas, db_path, tabla_precio_mercado=None):
     hay_catastro = db_path is not None
     df = pd.concat([t for t in tablas if t is not None and not t.empty], ignore_index=True, sort=False)
     df = resolver_avisos(df, db_path)
+    df = resolver_roles_macal(df, db_path)
     df = resolver_roles_faltantes(df, db_path)
     if hay_catastro:
         df = cruzar_con_catastro(df, db_path)
@@ -3340,6 +3415,43 @@ def prueba():
               "(Álvaro: \"Estos son mandantes o acreedores, no Tribunal\")",
               tm.loc[0, "mandante_acreedor"] == f.get("vendedor") and "tribunal" not in tm.columns)
 
+    # Auditoría 2026-10-09 (pedido de Álvaro: nunca debe usarse un rol distinto al que
+    # corresponde a la propiedad): ficha de Macal con DOS roles - uno es el de la calle
+    # publicada, el otro es de otra propiedad cualquiera. Antes se usaba a ciegas el
+    # PRIMERO de la lista (en este caso, el rol EQUIVOCADO); ahora debe verificar cuál
+    # calza con la dirección y usar ESE, no el primero.
+    ficha_doble_rol = dict(f)
+    ficha_doble_rol["roles"] = [(9999, 1), (3046, 690)]  # el correcto (3046,690) va SEGUNDO
+    tm_doble = tabla_macal([ficha_doble_rol])
+    comprobar("Macal con 2 roles: ANTES de verificar, toma el primero (puede ser el malo)",
+              tm_doble.loc[0, "manzana"] == 9999 and tm_doble.loc[0, "predio"] == 1)
+    _tmp_db = Path(tempfile.mkdtemp()) / "catastro_prueba.db"
+    _con = sqlite3.connect(_tmp_db)
+    _con.execute("CREATE TABLE predios(comuna TEXT, manzana INTEGER, predio INTEGER, direccion TEXT, "
+                 "avaluo INTEGER, exento INTEGER, destino TEXT, tipo TEXT, fuente TEXT)")
+    _con.execute("INSERT INTO predios VALUES ('16110', 9999, 1, 'OTRA CALLE CUALQUIERA 500', 50000000, 0, 'H', 'U', 'N')")
+    _con.execute("INSERT INTO predios VALUES ('16110', 3046, 690, 'TRINIDAD RAMIREZ 1010', 30000000, 0, 'H', 'U', 'N')")
+    _con.commit()
+    _con.close()
+    tm_verificado = resolver_roles_macal(tabla_macal([ficha_doble_rol]), _tmp_db)
+    comprobar("Macal con 2 roles: DESPUÉS de verificar, usa el que calza con la dirección "
+              "(3046-690, no el primero de la lista)",
+              tm_verificado.loc[0, "manzana"] == 3046 and tm_verificado.loc[0, "predio"] == 690)
+    comprobar("Macal con 2 roles verificado: rol_origen lo deja registrado",
+              tm_verificado.loc[0, "rol_origen"] == "INFORMADO POR LA FUENTE (macal, verificado por dirección)")
+
+    # Caso sin forma de verificar (ninguno de los 2 roles calza con la dirección publicada):
+    # NO debe adivinar - debe quedar marcado para revisar a mano, nunca usar el primero sin más.
+    ficha_sin_calce = dict(f)
+    ficha_sin_calce["roles"] = [(9999, 1), (8888, 2)]
+    _con = sqlite3.connect(_tmp_db)
+    _con.execute("INSERT INTO predios VALUES ('16110', 8888, 2, 'OTRA CALLE MAS 700', 40000000, 0, 'H', 'U', 'N')")
+    _con.commit()
+    _con.close()
+    tm_sin_calce = resolver_roles_macal(tabla_macal([ficha_sin_calce]), _tmp_db)
+    comprobar("Macal con 2 roles, NINGUNO calza con la dirección: no adivina, queda para revisar a mano",
+              tm_sin_calce.loc[0, "rol_origen"] == "MACAL CON VARIOS ROLES SIN UNO CLARO (revisar a mano)")
+
     # --- Oportunidad y selección (datos sintéticos, UF simulada) ---
     global valor_uf
     original_uf = valor_uf
@@ -3415,7 +3527,6 @@ def prueba():
         comprobar("Doble ranking: queda registrado el préstamo de cupos en los avisos",
                   any("prestaron" in t for t in falt4))
 
-        import tempfile
         global SALIDAS
         salidas_original = SALIDAS
         SALIDAS = Path(tempfile.mkdtemp())
