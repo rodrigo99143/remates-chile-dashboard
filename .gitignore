@@ -1,0 +1,6 @@
+datos/
+salidas/
+debug_pjud/
+__pycache__/
+*.pyc
+.DS_Store

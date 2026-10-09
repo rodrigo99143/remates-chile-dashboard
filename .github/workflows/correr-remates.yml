@@ -1,0 +1,45 @@
+name: Correr barrido de remates
+
+# "workflow_dispatch" es lo que hace aparecer el botón "Run workflow" en la
+# pestaña "Actions" de GitHub. Cualquiera con acceso al repositorio lo puede
+# apretar desde el navegador, sin VS Code y sin tener el computador prendido.
+on:
+  workflow_dispatch: {}
+
+jobs:
+  barrido:
+    runs-on: ubuntu-latest
+    # Tope de seguridad: si algo se cuelga, que no corra para siempre.
+    timeout-minutes: 180
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar las bibliotecas necesarias
+        run: pip install -r requirements.txt
+
+      - name: Instalar el navegador (Chromium) para Macal y Poder Judicial
+        run: python -m playwright install --with-deps chromium
+
+      - name: Correr el programa
+        # NOTA: por ahora corre SIN el catastro del SII ni los avisos .docx
+        # (esos archivos solo existen en el Mac de Rodrigo todavía). El
+        # programa está hecho para seguir funcionando igual aunque falten -
+        # entrega lo que puede con TGR, Macal, precio de mercado y Poder
+        # Judicial, que buscan todo solos desde internet.
+        run: python remates_v2.py
+        continue-on-error: true
+
+      - name: Guardar los resultados (Excel, CSV y el registro) para descargar
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-remates
+          path: salidas/
+          if-no-files-found: warn
+          retention-days: 30
