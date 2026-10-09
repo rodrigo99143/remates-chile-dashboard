@@ -35,6 +35,12 @@ jobs:
         run: |
           mkdir -p datos
           gh release download catastro-sii --repo rodrigo99143/remates-chile-dashboard --pattern "BRORGA*" --dir datos --clobber || echo "  (Todavía no hay un Release 'catastro-sii' con el catastro. Sigo sin él.)"
+          for z in datos/*.zip; do
+            [ -f "$z" ] || continue
+            echo "  Descomprimiendo $z ..."
+            unzip -o "$z" -d datos/
+            rm -f "$z"
+          done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
