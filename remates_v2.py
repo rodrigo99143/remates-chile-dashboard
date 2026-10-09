@@ -2920,7 +2920,11 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     # Importante: las filas se filtran ANTES de recortar columnas (ordenar_columnas
     # saca columnas internas como EN_TOP/ELEGIBLE_FISCAL/ELEGIBLE_MERCADO que se
     # necesitan aquí mismo para separar las hojas).
-    top = df[df["EN_TOP"]].sort_values(["oportunidad_pct"], ascending=False).copy()
+    # Orden pedido por Álvaro (2026-10-09): la hoja del TOP se ordena por fecha
+    # de remate (la más próxima primero), no por % de oportunidad - así se ve
+    # de un vistazo qué hay que decidir primero. Dentro de una misma fecha, se
+    # desempata por mejor oportunidad.
+    top = df[df["EN_TOP"]].sort_values(["fecha_remate", "oportunidad_pct"], ascending=[True, False]).copy()
     cand = df[df["ELEGIBLE_FISCAL"] | df["ELEGIBLE_MERCADO"]].sort_values(["oportunidad_pct"], ascending=False)
     rev = df[~df["ELEGIBLE"] & df["motivo_no_elegible"].ne("")].copy()
     rev = rev[~rev["motivo_no_elegible"].str.contains("vencido", na=False)]
