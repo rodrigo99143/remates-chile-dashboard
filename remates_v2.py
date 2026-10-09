@@ -2410,6 +2410,13 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
     df["dif_avaluo_tgr_vs_sii_pct"] = (df["avaluo_tgr"] / df["avaluo_sii"] - 1) * 100
     df["ratio_tasacion_avaluo_tgr"] = df["tasacion"] / df["avaluo_tgr"]
     df["fecha_remate"] = pd.to_datetime(df["fecha_remate"], errors="coerce")
+    # Pedido de Álvaro (09-10-2026): fecha y hora en columnas separadas, en vez de una
+    # sola celda "2026-10-28 00:00" (que además confundía porque el 00:00 no siempre es
+    # una hora real: Macal no entrega hora de la subasta, así que queda en 00:00 por
+    # defecto y eso NO significa "a medianoche").
+    df["hora_remate"] = df["fecha_remate"].apply(
+        lambda f: f.strftime("%H:%M") if pd.notna(f) and not (f.hour == 0 and f.minute == 0)
+        else ("(no indicada)" if pd.notna(f) else None))
 
     # ---- Deduplicación: la misma propiedad y fecha en varias fuentes/demandas -> una fila ----
     antes = len(df)
@@ -2881,14 +2888,18 @@ COLUMNAS_TOP = [
     # ---- vitrina (lo primero que se ve) ----
     "razon_seleccion",            # por qué quedó seleccionada (dice "FORZADO: ..." cuando se forzó una cuota)
     "nuevo_hoy",                  # True si no estaba en un reporte anterior (o le cambió la fecha/% de oportunidad)
-    "rol_formato", "direccion_final", "comuna_propiedad", "tipo_propiedad",
-    "fuente", "fecha_remate", "modalidad",
+    # rol_completo = comuna-manzana-predio, el rol ENTERO (antes salía solo "rol_formato",
+    # manzana-predio sin la comuna, lo que Álvaro marcó como "rol incompleto")
+    "rol_completo", "rol_formato", "direccion_final", "comuna_propiedad", "tipo_propiedad",
+    "fuente", "fecha_remate", "hora_remate", "modalidad",
     "minimo_pesos", "avaluo_sii", "valor_ref_pesos", "oportunidad_pct",
-    "superficie_util_m2",
+    # superficie construida (útil) y superficie de terreno (total), lado a lado y
+    # tituladas sin ambigüedad - pedido de Álvaro (09-10-2026)
+    "superficie_util_m2", "superficie_total_m2",
     "tribunal", "rol_causa", "link_poder_judicial", "instruccion_poder_judicial",
     # ---- nivel técnico-medio ----
-    "region", "provincia", "rol_completo", "origen_direccion", "destino_desc",
-    "superficie_total_m2", "dormitorios", "banos", "ocupacion",
+    "region", "provincia", "origen_direccion", "destino_desc",
+    "dormitorios", "banos", "ocupacion",
     "tipo_minimo", "margen_pesos", "oportunidad_fiscal_pct", "oportunidad_mercado_pct",
     "confianza", "alertas",
     "tipo_juicio", "n_remate", "fojas", "cbr",
@@ -3030,7 +3041,7 @@ def dar_formato(ws):
         if nombre in dinero:
             fmt = "#,##0"
         elif nombre == "fecha_remate":
-            fmt = "yyyy-mm-dd hh:mm"
+            fmt = "yyyy-mm-dd"   # la hora ahora va en su propia columna "hora_remate"
         elif nombre in ("oportunidad_pct", "oportunidad_fiscal_pct", "oportunidad_mercado_pct",
                         "dif_avaluo_tgr_vs_sii_pct", "ratio_tasacion_avaluo_tgr"):
             fmt = "0.0"
