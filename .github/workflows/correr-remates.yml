@@ -26,12 +26,24 @@ jobs:
       - name: Instalar el navegador (Chromium) para Macal y Poder Judicial
         run: python -m playwright install --with-deps chromium
 
+      - name: Descargar el catastro del SII (desde un Release del repositorio)
+        # El catastro pesa demasiado para guardarlo directo en el repositorio,
+        # así que se sube como adjunto a un "Release" llamado "catastro-sii"
+        # (github.com/.../releases) y aquí se descarga antes de correr el
+        # programa. Si todavía no existe ese Release, este paso simplemente
+        # no encuentra nada y el programa sigue sin catastro, como antes.
+        run: |
+          mkdir -p datos
+          gh release download catastro-sii --repo rodrigo99143/remates-chile-dashboard --pattern "BRORGA*" --dir datos --clobber || echo "  (Todavía no hay un Release 'catastro-sii' con el catastro. Sigo sin él.)"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
       - name: Correr el programa
-        # NOTA: por ahora corre SIN el catastro del SII ni los avisos .docx
-        # (esos archivos solo existen en el Mac de Rodrigo todavía). El
-        # programa está hecho para seguir funcionando igual aunque falten -
-        # entrega lo que puede con TGR, Macal, precio de mercado y Poder
-        # Judicial, que buscan todo solos desde internet.
+        # El programa está hecho para seguir funcionando igual aunque falte
+        # el catastro o los avisos .docx (esos .docx solo existen en el Mac
+        # de Rodrigo todavía) - entrega lo que puede con TGR, Macal, precio
+        # de mercado y Poder Judicial, que buscan todo solos desde internet.
         run: python remates_v2.py
         continue-on-error: true
 
