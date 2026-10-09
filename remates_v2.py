@@ -951,10 +951,45 @@ REGIONES = {
     "13": "Región Metropolitana", "14": "Región Metropolitana", "15": "Región Metropolitana",
     "16": "Región Metropolitana",
 }
-PROVINCIAS_CONOCIDAS = {"082": "Provincia de Concepción", "083": "Provincia de Arauco",
-                        "084": "Provincia del Biobío", "053": "Provincia de Valparaíso",
-                        "055": "Provincia de Quillota", "054": "Provincia de San Antonio",
-                        "131": "Provincia de Santiago"}
+PROVINCIAS_CONOCIDAS = {
+    # Arica y Parinacota / Tarapacá (se mantiene el prefijo histórico "01" del SII)
+    "011": "Provincia de Arica", "012": "Provincia de Iquique", "013": "Provincia de Parinacota",
+    # Antofagasta
+    "021": "Provincia de Tocopilla", "022": "Provincia de Antofagasta", "023": "Provincia de El Loa",
+    # Atacama
+    "031": "Provincia de Chañaral", "032": "Provincia de Copiapó", "033": "Provincia de Huasco",
+    # Coquimbo
+    "041": "Provincia de Elqui", "042": "Provincia de Limarí", "043": "Provincia de Choapa",
+    # Valparaíso
+    "051": "Provincia de Isla de Pascua", "052": "Provincia de Petorca", "053": "Provincia de Valparaíso",
+    "054": "Provincia de San Antonio", "055": "Provincia de Quillota",
+    "056": "Provincia de San Felipe de Aconcagua", "057": "Provincia de Los Andes",
+    # O'Higgins
+    "061": "Provincia de Cachapoal", "062": "Provincia de Colchagua", "063": "Provincia de Cardenal Caro",
+    # Maule
+    "071": "Provincia de Curicó", "072": "Provincia de Talca", "073": "Provincia de Linares",
+    "074": "Provincia de Cauquenes",
+    # Ñuble / Biobío (se mantiene el prefijo histórico "08" del SII, de antes de que Ñuble
+    # se separara como región propia en 2018)
+    "081": "Provincia de Ñuble", "082": "Provincia de Concepción", "083": "Provincia de Arauco",
+    "084": "Provincia del Biobío",
+    # La Araucanía
+    "091": "Provincia de Malleco", "092": "Provincia de Cautín",
+    # Los Ríos / Los Lagos (se mantiene el prefijo histórico "10" del SII)
+    "101": "Provincia de Valdivia", "102": "Provincia de Osorno", "103": "Provincia de Llanquihue",
+    "104": "Provincia de Chiloé", "105": "Provincia de Palena",
+    # Aysén
+    "111": "Provincia de Aysén", "112": "Provincia de General Carrera", "113": "Provincia de Capitán Prat",
+    "114": "Provincia de Coyhaique",
+    # Magallanes
+    "121": "Provincia de Última Esperanza", "122": "Provincia de Magallanes",
+    "123": "Provincia de Tierra del Fuego", "124": "Provincia Antártica Chilena",
+    # Región Metropolitana (el SII reparte sus comunas en 4 prefijos históricos "13"-"16";
+    # la provincia de Santiago queda repartida entre los prefijos 131/141/151/161)
+    "131": "Provincia de Santiago", "141": "Provincia de Santiago", "142": "Provincia de Chacabuco",
+    "145": "Provincia de Talagante", "146": "Provincia de Melipilla", "151": "Provincia de Santiago",
+    "161": "Provincia de Santiago", "163": "Provincia de Cordillera", "164": "Provincia de Maipo",
+}
 
 
 def zona_de(cod_sii):
@@ -3221,6 +3256,11 @@ def prueba():
     comprobar("Número chileno 83.952.908.-", a_numero_chileno("83.952.908.-") == 83952908)
     comprobar("Número chileno 7.785,48", a_numero_chileno("7.785,48") == 7785.48)
     comprobar("Zona: Concepción 08201 -> PROV:082", "PROV:082" in zona_de("08201")[2])
+    comprobar("Zona: San Fernando 06201 -> Provincia de Colchagua (no el texto feo 'Provincia (código...)')",
+              zona_de("06201")[1] == "Provincia de Colchagua")
+    _sin_provincia = sorted({c[:3] for c, _, _ in COMUNAS if zona_de(c)[1].startswith("Provincia (código")})
+    comprobar(f"TODAS las comunas tienen su provincia real (ninguna cae en el texto feo "
+              f"'Provincia (código...)'); faltan: {_sin_provincia}", not _sin_provincia)
     comprobar("Zona: Providencia (15xxx) es Región Metropolitana", "REG:RM" in zona_de("15108")[2])
     comprobar("Zona: Viña del Mar es REG:05", "REG:05" in zona_de("05109")[2])
     comprobar("Modalidad REMOTO", modalidad_desde_texto("Subasta por plataforma Zoom ID 99") == "REMOTO")
