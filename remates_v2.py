@@ -2857,6 +2857,7 @@ def seleccionar_top_dual(df, n_fiscal=None, n_mercado=None, n_comodin=None, cupo
 COLUMNAS_TOP = [
     # ---- vitrina (lo primero que se ve) ----
     "razon_seleccion",            # por qué quedó seleccionada (dice "FORZADO: ..." cuando se forzó una cuota)
+    "nuevo_hoy",                  # True si no estaba en un reporte anterior (o le cambió la fecha/% de oportunidad)
     "rol_formato", "direccion_final", "comuna_propiedad", "tipo_propiedad",
     "fuente", "fecha_remate", "modalidad",
     "minimo_pesos", "avaluo_sii", "valor_ref_pesos", "oportunidad_pct",
@@ -2944,18 +2945,34 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     # Importante: las filas se filtran ANTES de recortar columnas (ordenar_columnas
     # saca columnas internas como EN_TOP/ELEGIBLE_FISCAL/ELEGIBLE_MERCADO que se
     # necesitan aquí mismo para separar las hojas).
-    top = df[df["EN_TOP"]].sort_values(["oportunidad_pct"], ascending=False)
+    top = df[df["EN_TOP"]].sort_values(["oportunidad_pct"], ascending=False).copy()
     cand = df[df["ELEGIBLE_FISCAL"] | df["ELEGIBLE_MERCADO"]].sort_values(["oportunidad_pct"], ascending=False)
     rev = df[~df["ELEGIBLE"] & df["motivo_no_elegible"].ne("")].copy()
     rev = rev[~rev["motivo_no_elegible"].str.contains("vencido", na=False)]
     resumen = resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes)
+
+    # ---- Marcar qué del TOP es NUEVO respecto a reportes anteriores (pedido de
+    # Rodrigo, 2026-10-09): nueva si nunca estuvo en el TOP, o si cambió la fecha
+    # de remate, o si cambió el % de oportunidad. Si algo falla al revisar el
+    # histórico, se asume que todo es nuevo (nunca se esconde nada por error). ----
+    top["nuevo_hoy"] = True
+    if PRECIO_MERCADO_DISPONIBLE:
+        try:
+            filas_top = list(zip(top["id_fuente"], top["fecha_remate"].astype(str), top["oportunidad_pct"]))
+            nuevos = precio_mercado.marcar_top_nuevo(DATOS, filas_top)
+            top["nuevo_hoy"] = top["id_fuente"].isin(nuevos)
+        except Exception as e:
+            decir(f"  [TOP_NUEVO] no pude comparar con reportes anteriores ({e}); se muestra todo como nuevo.")
+    top_nuevo = top[top["nuevo_hoy"]]
+
     # El CSV "todas_las_propiedades.csv" se deja con TODAS las columnas (incluida
     # la auditoría interna) - es el respaldo técnico completo, no lo ve Álvaro.
     df.drop(columns=["EN_TOP"]).to_csv(SALIDAS / "todas_las_propiedades.csv", index=False, encoding="utf-8-sig")
     ordenar_columnas(top).to_csv(SALIDAS / "TOP_OPORTUNIDADES.csv", index=False, encoding="utf-8-sig")
     ruta = SALIDAS / "OPORTUNIDADES.xlsx"
     with pd.ExcelWriter(ruta, engine="openpyxl") as w:
-        hojas = [("TOP_CONSOLIDADO", ordenar_columnas(top)), ("CANDIDATAS", ordenar_columnas(cand)),
+        hojas = [("TOP_CONSOLIDADO", ordenar_columnas(top)), ("TOP_NUEVO", ordenar_columnas(top_nuevo)),
+                 ("CANDIDATAS", ordenar_columnas(cand)),
                  ("REVISAR", ordenar_columnas(rev)), ("TODAS", ordenar_columnas(df)), ("RESUMEN", resumen)]
         for nombre, d in hojas:
             d.to_excel(w, sheet_name=nombre, index=False)
@@ -3337,8 +3354,8 @@ def prueba():
             ruta = exportar(r2, None, True, {"PRUEBA": "OK"}, falt)
             import openpyxl
             hojas = openpyxl.load_workbook(ruta).sheetnames
-            comprobar("Excel con hojas TOP_CONSOLIDADO, CANDIDATAS, REVISAR, TODAS, RESUMEN",
-                      hojas == ["TOP_CONSOLIDADO", "CANDIDATAS", "REVISAR", "TODAS", "RESUMEN"])
+            comprobar("Excel con hojas TOP_CONSOLIDADO, TOP_NUEVO, CANDIDATAS, REVISAR, TODAS, RESUMEN",
+                      hojas == ["TOP_CONSOLIDADO", "TOP_NUEVO", "CANDIDATAS", "REVISAR", "TODAS", "RESUMEN"])
             comprobar("CSV del top guardado", (SALIDAS / "TOP_OPORTUNIDADES.csv").exists())
         finally:
             SALIDAS = salidas_original

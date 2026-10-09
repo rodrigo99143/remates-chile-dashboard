@@ -157,6 +157,63 @@ def registrar_avisos_procesados(carpeta_datos, rutas):
     return nuevos
 
 
+# ------------------------------------------------------------------------------
+# PROPIEDADES "NUEVAS" EN EL TOP (para distinguir, en un reporte diario, qué
+# cambió hoy de lo que ya se vio antes) - pedido de Rodrigo el 2026-10-09
+# ------------------------------------------------------------------------------
+
+def marcar_top_nuevo(carpeta_datos, filas):
+    """'filas' es una lista de tuplas (id_fuente, fecha_remate_texto, oportunidad_pct)
+    - una por cada propiedad del TOP de hoy. Una propiedad se considera NUEVA si
+    nunca apareció en un reporte anterior, O si ya apareció pero con una fecha de
+    remate distinta, O con un % de oportunidad distinto (criterio pedido por
+    Rodrigo: si algo cambió, vale la pena volver a mirarla). Devuelve el conjunto
+    de id_fuente que son nuevos hoy, y deja registrado el estado de hoy para la
+    próxima corrida."""
+    conexion, cursor = conectar_bd_mercado(carpeta_datos)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS top_historico (
+            id_fuente TEXT PRIMARY KEY,
+            fecha_remate TEXT,
+            oportunidad_pct REAL,
+            primera_vez TEXT,
+            ultima_vez TEXT
+        )
+    """)
+    conexion.commit()
+    hoy = dt.date.today().isoformat()
+    nuevos = set()
+    for id_fuente, fecha_remate, oportunidad_pct in filas:
+        if not id_fuente:
+            continue
+        fecha_txt = str(fecha_remate) if fecha_remate is not None else ""
+        cursor.execute("SELECT fecha_remate, oportunidad_pct FROM top_historico WHERE id_fuente = ?", (id_fuente,))
+        fila = cursor.fetchone()
+        if fila is None:
+            es_nuevo = True
+        else:
+            fecha_antes, pct_antes = fila
+            cambio_fecha = (fecha_antes or "") != fecha_txt
+            if oportunidad_pct is None or pct_antes is None:
+                cambio_pct = oportunidad_pct != pct_antes
+            else:
+                cambio_pct = abs(float(pct_antes) - float(oportunidad_pct)) > 0.01
+            es_nuevo = cambio_fecha or cambio_pct
+        if es_nuevo:
+            nuevos.add(id_fuente)
+        cursor.execute("""
+            INSERT INTO top_historico (id_fuente, fecha_remate, oportunidad_pct, primera_vez, ultima_vez)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(id_fuente) DO UPDATE SET
+                fecha_remate=excluded.fecha_remate,
+                oportunidad_pct=excluded.oportunidad_pct,
+                ultima_vez=excluded.ultima_vez
+        """, (id_fuente, fecha_txt, oportunidad_pct, hoy, hoy))
+    conexion.commit()
+    conexion.close()
+    return nuevos
+
+
 def guardar_publicacion(cursor, fuente, comuna, tipo_propiedad, precio_m2, año_publicacion, url, hoy):
     if not comuna or not tipo_propiedad or not precio_m2 or precio_m2 <= 0:
         return "descartada_datos_incompletos"
