@@ -43,19 +43,37 @@ def construir_resumen_html():
     if top.empty:
         return "<p>Esta corrida no encontró oportunidades que entraran al TOP.</p>", 0
 
+    # Auditoría 2026-10-09: estos nombres de columna quedaron desactualizados
+    # (comuna_sii -> comuna_propiedad, link_demanda_pjud -> link_poder_judicial)
+    # cuando remates_v2.py cambió de nombre esas columnas; como se leían con
+    # r.get(..., "") el correo seguía "funcionando" pero mostrando comuna
+    # vacía y "(sin link)" en TODAS las filas, sin ningún error visible. Es
+    # justo el tipo de rotura silenciosa que hay que evitar: nadie se entera
+    # salvo que mire el correo con lupa. Tribunal/mandante_acreedor son
+    # mutuamente excluyentes según la fuente (ver tabla_macal), por eso se
+    # muestra el que corresponda en cada fila.
     columnas_mostrar = [c for c in [
-        "direccion_final", "comuna_sii", "oportunidad_pct", "tribunal",
-        "rol_causa", "link_demanda_pjud",
+        "direccion_final", "comuna_propiedad", "oportunidad_pct", "tribunal",
+        "mandante_acreedor", "rol_causa", "link_poder_judicial",
     ] if c in top.columns]
+
+    def v(x):
+        # pandas deja NaN (no "") en celdas vacías al leer el Excel con
+        # read_excel; "NaN or X" en Python es True (NaN no es falsy), así que
+        # sin este filtro una celda vacía terminaba mostrando el texto "nan"
+        # en el correo en vez de quedar en blanco. Otra rotura silenciosa
+        # encontrada en la misma auditoría del 2026-10-09.
+        return "" if pd.isna(x) else x
 
     filas_html = []
     for _, r in top.iterrows():
-        direccion = r.get("direccion_final", "")
-        comuna = r.get("comuna_sii", "")
-        pct = r.get("oportunidad_pct", "")
-        tribunal = r.get("tribunal", "")
-        rol = r.get("rol_causa", "")
-        link = r.get("link_demanda_pjud", "")
+        direccion = v(r.get("direccion_final", ""))
+        comuna = v(r.get("comuna_propiedad", ""))
+        pct = v(r.get("oportunidad_pct", ""))
+        pct = f"{pct:.1f}" if isinstance(pct, (int, float)) else pct
+        tribunal = v(r.get("tribunal", "")) or v(r.get("mandante_acreedor", ""))
+        rol = v(r.get("rol_causa", ""))
+        link = v(r.get("link_poder_judicial", ""))
         link_html = f'<a href="{link}">Ver causa en el Poder Judicial</a>' if isinstance(link, str) and link.startswith("http") else "(sin link)"
         filas_html.append(
             f"<tr><td>{direccion}</td><td>{comuna}</td><td>{pct}</td>"
