@@ -548,6 +548,10 @@ COMUNAS = [
 TES2SII = {t: s for s, _, t in COMUNAS}
 NOMBRE2SII = {n: s for s, n, _ in COMUNAS}
 SII2NOMBRE = {s: n for s, n, _ in COMUNAS}
+# Pedido de Álvaro (llamada 13-10-2026): el "rol completo" que se muestra debe usar el
+# código INTERNO de Tesorería (ej. Lebu = "199"), no el código del SII (ej. Lebu = "08303").
+# Son dos numeraciones distintas para la misma comuna - la tabla COMUNAS ya trae ambas.
+SII2TES = {s: t for s, _, t in COMUNAS}
 
 GENERICAS = {"", "s/i", "s/d", "sin informacion", "sin direccion", "null", "none", "nan"}
 
@@ -751,8 +755,13 @@ def construir_tabla_tgr(payload):
 # ------------------------------------------------------------------------------
 # 2. CATASTRO NACIONAL DEL SII  ->  BASE LOCAL (SQLite)
 # ------------------------------------------------------------------------------
-PATRON_ARCHIVO = re.compile(r"^BRORGA\d+([NA])_NAC_(\d{4})_(\d)$")
-PATRON_ZIP = re.compile(r"^BRORGA\d+[NA]_NAC_.*\.zip$", re.IGNORECASE)
+# Antes solo reconocía "N" (roles no agrícolas) y "A" (roles agrícolas). El SII también
+# publica "NL" y "AL" ("terrenos y construcciones"), que traen superficie construida y año
+# de construcción por cada línea de construcción - dato que Álvaro pidió (13-10-2026) y que
+# antes se descartaba por completo porque el programa ni siquiera reconocía esos archivos,
+# aunque ya estaban descargados en la misma carpeta.
+PATRON_ARCHIVO = re.compile(r"^BRORGA\d+([NA]L?)_NAC_(\d{4})_(\d)$")
+PATRON_ZIP = re.compile(r"^BRORGA\d+[NA]L?_NAC_.*\.zip$", re.IGNORECASE)
 
 
 def descomprimir_si_hace_falta():
@@ -841,9 +850,12 @@ def construir_base(hallados, db_path, firmas):
     con = sqlite3.connect(tmp)
     con.execute("PRAGMA journal_mode=OFF")
     con.execute("PRAGMA synchronous=OFF")
+    # "superficie_terreno" (pedido de Álvaro, 13-10-2026): viene en el mismo archivo "N"
+    # (roles no agrícolas) que ya se descarga, en una columna que antes no se leía.
     con.execute("""CREATE TABLE predios(
         comuna TEXT, manzana INTEGER, predio INTEGER, direccion TEXT,
-        avaluo INTEGER, exento INTEGER, destino TEXT, tipo TEXT, fuente TEXT)""")
+        avaluo INTEGER, exento INTEGER, destino TEXT, tipo TEXT, fuente TEXT,
+        superficie_terreno INTEGER)""")
     con.execute("CREATE TABLE meta(clave TEXT, valor TEXT)")
     t0 = time.time()
     total = 0
@@ -858,43 +870,129 @@ def construir_base(hallados, db_path, firmas):
         if n_campos not in esperado:
             raise ValueError(f"El archivo {ruta.name} tiene {n_campos} columnas y esperaba {esperado}. "
                              f"El SII pudo cambiar el formato; envíame una captura de este mensaje.")
-        # N: tipo U/R en la columna 15 ; A: tipo U/R en la columna 8
-        usecols = [0, 1, 2, 3, 4, 5, 6, 15 if serie == "N" else 8]
+        # N: tipo U/R en la columna 15, superficie de terreno en la columna 14 (0-based).
+        # A (roles agrícolas): no trae superficie de terreno en este archivo.
+        if serie == "N":
+            usecols = [0, 1, 2, 3, 4, 5, 6, 14, 15]
+        else:
+            usecols = [0, 1, 2, 3, 4, 5, 6, 8]
         decir(f"  Leyendo {ruta.name} ({ruta.stat().st_size / 1e6:,.0f} MB)...")
         lector = pd.read_csv(ruta, sep="|", header=None, dtype=str, encoding="latin-1",
                              usecols=usecols, index_col=False, chunksize=500_000,
                              na_filter=False)
         for trozo in lector:
-            trozo.columns = ["comuna", "manzana", "predio", "direccion", "avaluo", "exento", "destino", "tipo"]
+            if serie == "N":
+                trozo.columns = ["comuna", "manzana", "predio", "direccion", "avaluo", "exento",
+                                  "destino", "superficie_terreno", "tipo"]
+                trozo["superficie_terreno"] = pd.to_numeric(
+                    trozo["superficie_terreno"], errors="coerce").astype("Int64")
+            else:
+                # El archivo "A" (roles agrícolas) no trae superficie de terreno - se deja en
+                # blanco (no en 0) para no decir "0 m²" cuando en realidad es "no disponible".
+                trozo.columns = ["comuna", "manzana", "predio", "direccion", "avaluo", "exento",
+                                  "destino", "tipo"]
+                trozo["superficie_terreno"] = pd.array([None] * len(trozo), dtype="Int64")
             for c in ("manzana", "predio", "avaluo", "exento"):
                 trozo[c] = pd.to_numeric(trozo[c], errors="coerce").fillna(0).astype("int64")
+            trozo["superficie_terreno"] = trozo["superficie_terreno"].astype(object).where(
+                trozo["superficie_terreno"].notna(), None)
             trozo["direccion"] = trozo["direccion"].str.strip()
             trozo["comuna"] = trozo["comuna"].str.strip()
             trozo["fuente"] = serie
             con.executemany(
-                "INSERT INTO predios VALUES (?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO predios VALUES (?,?,?,?,?,?,?,?,?,?)",
                 trozo[["comuna", "manzana", "predio", "direccion", "avaluo", "exento",
-                       "destino", "tipo", "fuente"]].itertuples(index=False, name=None))
+                       "destino", "tipo", "fuente", "superficie_terreno"]].itertuples(index=False, name=None))
             total += len(trozo)
             print(f"\r    {total:,} predios cargados...", end="", flush=True)
         print()
     decir("  Creando índice de búsqueda...")
     con.execute("CREATE INDEX ix_rol ON predios(comuna, manzana, predio)")
+
+    # ---- Construcciones (NL / AL): superficie construida y año de construcción ----
+    # Pedido de Álvaro (llamada 13-10-2026): "la superficie construida" (sumando todas las
+    # líneas de construcción si la propiedad tiene ampliaciones) y "el año de construcción,
+    # siempre el más antiguo". El archivo "N"/"A" solo trae el rol y el avalúo; este detalle
+    # línea por línea viene en archivos aparte ("NL" = terrenos y construcciones no agrícolas,
+    # "AL" = suelos y construcciones agrícolas) que el SII también publica y que YA estaban
+    # descargados junto a los otros (confirmado 13-10-2026), pero el programa nunca los leía
+    # porque no reconocía esos nombres de archivo.
+    con.execute("""CREATE TABLE construcciones_lineas(
+        comuna TEXT, manzana INTEGER, predio INTEGER, anio INTEGER, superficie INTEGER)""")
+    n_lineas = 0
+    for serie in ("NL", "AL"):
+        if serie not in hallados:
+            continue
+        ruta = hallados[serie][0]
+        with open(ruta, "r", encoding="latin-1") as f:
+            primera = f.readline().rstrip("\n").split("|")
+        n_campos = len(primera)
+        esperado = (11, 12)
+        if n_campos not in esperado:
+            decir(f"  AVISO: {ruta.name} tiene {n_campos} columnas (esperaba {esperado}) - "
+                  f"me salto la superficie construida/año de ese archivo, el resto sigue igual.")
+            continue
+        # NL: comuna, manzana, predio, correlativo, material, calidad, AÑO, superficie, destino, condición.
+        # AL: comuna, manzana, predio, cod_suelo, superficie_suelo, correlativo, material, calidad,
+        #     superficie_construcción, destino, condición (no trae año de construcción).
+        if serie == "NL":
+            usecols = [0, 1, 2, 6, 7]
+        else:
+            usecols = [0, 1, 2, 8]
+        decir(f"  Leyendo {ruta.name} ({ruta.stat().st_size / 1e6:,.0f} MB)...")
+        lector = pd.read_csv(ruta, sep="|", header=None, dtype=str, encoding="latin-1",
+                             usecols=usecols, index_col=False, chunksize=500_000,
+                             na_filter=False)
+        for trozo in lector:
+            if serie == "NL":
+                trozo.columns = ["comuna", "manzana", "predio", "anio", "superficie"]
+            else:
+                trozo.columns = ["comuna", "manzana", "predio", "superficie"]
+                trozo["anio"] = "0"
+            for c in ("manzana", "predio", "anio", "superficie"):
+                trozo[c] = pd.to_numeric(trozo[c], errors="coerce").fillna(0).astype("int64")
+            trozo["comuna"] = trozo["comuna"].str.strip()
+            con.executemany(
+                "INSERT INTO construcciones_lineas VALUES (?,?,?,?,?)",
+                trozo[["comuna", "manzana", "predio", "anio", "superficie"]].itertuples(index=False, name=None))
+            n_lineas += len(trozo)
+            print(f"\r    {n_lineas:,} líneas de construcción cargadas...", end="", flush=True)
+        print()
+    # Se crea siempre (aunque quede vacía) para que el cruce de más abajo (cruzar_con_catastro)
+    # no tenga que preguntar si la tabla existe.
+    con.execute("""CREATE TABLE construcciones(
+        comuna TEXT, manzana INTEGER, predio INTEGER,
+        superficie_construida INTEGER, anio_construccion INTEGER)""")
+    if n_lineas:
+        decir("  Sumando superficie construida y buscando el año más antiguo por propiedad...")
+        con.execute("""INSERT INTO construcciones
+            SELECT comuna, manzana, predio,
+                   SUM(superficie) AS superficie_construida,
+                   MIN(CASE WHEN anio > 0 THEN anio END) AS anio_construccion
+            FROM construcciones_lineas GROUP BY comuna, manzana, predio""")
+    con.execute("CREATE INDEX ix_construcciones ON construcciones(comuna, manzana, predio)")
+    con.execute("DROP TABLE construcciones_lineas")
+
     for s, f in firmas.items():
         con.execute("INSERT INTO meta VALUES (?,?)", (f"firma_{s}", f))
     con.execute("INSERT INTO meta VALUES ('predios', ?)", (str(total),))
+    con.execute("INSERT INTO meta VALUES ('lineas_construccion', ?)", (str(n_lineas),))
     con.execute("INSERT INTO meta VALUES ('completo', '1')")
     con.commit()
     con.close()
     if db_path.exists():
         db_path.unlink()
     tmp.rename(db_path)
-    decir(f"  Base lista: {total:,} predios en {time.time() - t0:,.0f} segundos.")
+    decir(f"  Base lista: {total:,} predios, {n_lineas:,} líneas de construcción, "
+          f"en {time.time() - t0:,.0f} segundos.")
 
 
 def cruzar_con_catastro(df, db_path):
     """Agrega dirección y avalúo del SII a cada remate (por comuna SII + manzana + predio)."""
-    columnas_nuevas = ["direccion_sii", "avaluo_sii", "exento_sii", "destino_sii", "tipo_sii", "fuente_sii"]
+    # superficie_terreno_sii / superficie_construida_sii / anio_construccion_sii: pedido de
+    # Álvaro (llamada 13-10-2026). Antes solo se traía dirección y avalúo.
+    columnas_nuevas = ["direccion_sii", "avaluo_sii", "exento_sii", "destino_sii", "tipo_sii", "fuente_sii",
+                        "superficie_terreno_sii", "superficie_construida_sii", "anio_construccion_sii"]
     for c in columnas_nuevas:
         df[c] = None
     llaves = df.loc[df["comuna_sii"].notna() & df["manzana"].notna() & df["predio"].notna(),
@@ -908,9 +1006,14 @@ def cruzar_con_catastro(df, db_path):
         encontrados = pd.read_sql_query(
             """SELECT k.comuna AS comuna_sii, k.manzana, k.predio,
                       p.direccion AS direccion_sii, p.avaluo AS avaluo_sii, p.exento AS exento_sii,
-                      p.destino AS destino_sii, p.tipo AS tipo_sii, p.fuente AS fuente_sii
+                      p.destino AS destino_sii, p.tipo AS tipo_sii, p.fuente AS fuente_sii,
+                      p.superficie_terreno AS superficie_terreno_sii,
+                      c.superficie_construida AS superficie_construida_sii,
+                      c.anio_construccion AS anio_construccion_sii
                FROM k JOIN predios p
-                 ON p.comuna = k.comuna AND p.manzana = k.manzana AND p.predio = k.predio""", con)
+                 ON p.comuna = k.comuna AND p.manzana = k.manzana AND p.predio = k.predio
+               LEFT JOIN construcciones c
+                 ON c.comuna = k.comuna AND c.manzana = k.manzana AND c.predio = k.predio""", con)
         con.close()
         encontrados = encontrados.drop_duplicates(subset=["comuna_sii", "manzana", "predio"])
     base = df.drop(columns=columnas_nuevas)
@@ -2130,7 +2233,12 @@ def parsear_aviso(texto, cab=None):
     mrc = re.search(r"(?i)\b(?:rol|causa)\s*(?:n[º°o.]*\s*)?([A-Z]{1,2})\s*[-–]\s*([\d.]+)\s*[-–]\s*(\d{4})", texto)
     rol_causa = f"{mrc.group(1).upper()}-{mrc.group(2).replace('.', '')}-{mrc.group(3)}" if mrc else None
     alertas = []
-    if re.search(r"(?i)\b(derechos?\s+(?:inscritos|equivalentes|proindiviso|del?\s+\d)|cuota|proindiviso|\d+\s*/\s*\d+\s+avas?)", texto):
+    # Pedido de Álvaro (llamada 13-10-2026): "cuando diga derechos, cualquier remate... fuera,
+    # motivo de descarte, no me interesa en esta etapa meterme a derechos" - instrucción
+    # amplia (antes el patrón solo cazaba frases específicas como "derechos inscritos" o
+    # "derechos equivalentes"; ahora cualquier mención de "derecho(s)" descarta el remate,
+    # igual que "cuota", "proindiviso" o fracciones tipo "3/8 avas").
+    if re.search(r"(?i)\b(derechos?|cuota|proindiviso|\d+\s*/\s*\d+\s+avas?)\b", texto):
         alertas.append("DERECHOS_PARCIALES_O_CUOTA")
     if re.search(r"(?i)aprovechamiento de aguas?|derechos de agua", texto):
         alertas.append("INCLUYE_DERECHOS_DE_AGUA")
@@ -2458,13 +2566,15 @@ def estimar_valor_mercado_por_comuna_tipo(df, tabla_precio_mercado):
 def calcular(df, hay_catastro, tabla_precio_mercado=None):
     for c in ("minimo_valor", "minimo_unidad", "alertas_fuente", "ocupacion", "rol_origen", "minimo_nota",
               "verif_direccion_catastro", "estado_busqueda_direccion", "direccion_tgr", "fuente_sii", "tipo_sii",
-              "destino_sii", "cruce_estado"):
+              "destino_sii", "cruce_estado", "tipo_propiedad", "superficie_util_m2", "superficie_total_m2",
+              "superficie_terreno_sii", "superficie_construida_sii", "anio_construccion_sii"):
         if c not in df.columns:
             df[c] = None
     df["minimo_valor"] = pd.to_numeric(df["minimo_valor"], errors="coerce")
     if not hay_catastro:
         df["cruce_estado"] = "SIN CATASTRO CARGADO"
-        for c in ("direccion_sii", "avaluo_sii", "exento_sii", "destino_sii", "tipo_sii", "fuente_sii"):
+        for c in ("direccion_sii", "avaluo_sii", "exento_sii", "destino_sii", "tipo_sii", "fuente_sii",
+                  "superficie_terreno_sii", "superficie_construida_sii", "anio_construccion_sii"):
             df[c] = None
     for c in ("avaluo_sii", "tasacion", "avaluo_tgr", "avaluo_roles_total", "n_roles_encontrados", "n_roles"):
         if c not in df.columns:
@@ -2481,8 +2591,26 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
         else ("FUENTE" if direccion_valida(f.get("direccion_tgr")) else "SIN DIRECCION"), axis=1)
     df["destino_desc"] = df["destino_sii"].map(
         lambda d: DESTINOS_CONFIRMADOS.get(d, f"(código {d})") if isinstance(d, str) and d else None)
+    # Pedido de Álvaro (llamada 13-10-2026): "tipo de propiedad" se llenaba solo para Macal
+    # (viene directo del aviso); para TGR quedaba vacío aunque el destino ya se sacaba del
+    # catastro del SII para otra columna (destino_desc). Se usa ese mismo dato como relleno.
+    df["tipo_propiedad"] = df["tipo_propiedad"].where(
+        df["tipo_propiedad"].notna() & (df["tipo_propiedad"] != ""), df["destino_desc"])
+    # Pedido de Álvaro (llamada 13-10-2026): superficie de terreno y superficie construida
+    # (sumando todas las líneas de construcción) para TGR, que antes solo venían para Macal.
+    df["superficie_total_m2"] = pd.to_numeric(df["superficie_total_m2"], errors="coerce")
+    df["superficie_total_m2"] = df["superficie_total_m2"].where(
+        df["superficie_total_m2"].notna(), pd.to_numeric(df["superficie_terreno_sii"], errors="coerce"))
+    df["superficie_util_m2"] = pd.to_numeric(df["superficie_util_m2"], errors="coerce")
+    df["superficie_util_m2"] = df["superficie_util_m2"].where(
+        df["superficie_util_m2"].notna(), pd.to_numeric(df["superficie_construida_sii"], errors="coerce"))
+    df["anio_construccion"] = pd.to_numeric(df["anio_construccion_sii"], errors="coerce").astype("Int64")
+    # Pedido de Álvaro (llamada 13-10-2026): el rol que se muestra debe usar el código INTERNO
+    # de Tesorería (ej. Lebu = "199"), no el código del SII (ej. Lebu = "08303") - son dos
+    # numeraciones distintas para la misma comuna. Si por algún motivo una comuna no está en
+    # la tabla de conversión, se deja el código del SII para no perder el rol por completo.
     df["rol_completo"] = df.apply(
-        lambda f: f"{f['comuna_sii']}-{int(f['manzana'])}-{int(f['predio'])}"
+        lambda f: f"{SII2TES.get(f['comuna_sii'], f['comuna_sii'])}-{int(f['manzana'])}-{int(f['predio'])}"
         if pd.notna(f["manzana"]) and pd.notna(f["predio"]) and f["comuna_sii"] else None, axis=1)
     df["dif_avaluo_tgr_vs_sii_pct"] = (df["avaluo_tgr"] / df["avaluo_sii"] - 1) * 100
     df["ratio_tasacion_avaluo_tgr"] = df["tasacion"] / df["avaluo_tgr"]
@@ -2968,14 +3096,24 @@ COLUMNAS_TOP = [
     # ---- vitrina (lo primero que se ve) ----
     "razon_seleccion",            # por qué quedó seleccionada (dice "FORZADO: ..." cuando se forzó una cuota)
     "nuevo_hoy",                  # True si no estaba en un reporte anterior (o le cambió la fecha/% de oportunidad)
-    # rol_completo = comuna-manzana-predio, el rol ENTERO (antes salía solo "rol_formato",
-    # manzana-predio sin la comuna, lo que Álvaro marcó como "rol incompleto")
-    "rol_completo", "rol_formato", "direccion_final", "comuna_propiedad", "tipo_propiedad",
+    # rol_completo = código de Tesorería-manzana-predio (pedido de Álvaro, 13-10-2026: antes
+    # mostraba el código del SII, que es una numeración distinta). "rol_formato" se saca de la
+    # vitrina (pedido del 13-10-2026: "no me interesa tener dos columnas") - sigue existiendo
+    # internamente, por si hace falta para depurar, pero no se exporta.
+    "rol_completo", "direccion_final", "comuna_propiedad", "tipo_propiedad",
     "fuente", "fecha_remate", "hora_remate", "modalidad",
+    # fecha_primera_publicacion: pedido de Álvaro (13-10-2026) para poder ubicar el aviso
+    # directamente por fecha en vez de tener que buscarlo a mano. Por ahora solo viene de la
+    # TGR (Macal no publica una fecha de aviso propia en su sitio, solo la de la subasta).
+    "fecha_primera_publicacion",
     "minimo_pesos", "avaluo_sii", "valor_ref_pesos", "oportunidad_pct",
     # superficie construida (útil) y superficie de terreno (total), lado a lado y
-    # tituladas sin ambigüedad - pedido de Álvaro (09-10-2026)
+    # tituladas sin ambigüedad - pedido de Álvaro (09-10-2026). Desde el 13-10-2026 también
+    # se llenan para TGR (antes solo Macal), sacadas del catastro del SII.
     "superficie_util_m2", "superficie_total_m2",
+    # año de construcción: pedido de Álvaro (13-10-2026), siempre el MÁS ANTIGUO de todas las
+    # líneas de construcción de la propiedad (ver calcular()).
+    "anio_construccion",
     # "tribunal" = juzgado real (solo TGR/Avisos, remates judiciales).
     # "mandante_acreedor" = banco/inmobiliaria/persona que vende (solo Macal, remates
     # privados sin juicio) - antes venía mezclado adentro de "tribunal" y Álvaro lo marcó
@@ -3007,7 +3145,7 @@ COLUMNAS_OCULTAS = {
     # columnas de auditoría interna: cruces de datos, cálculos intermedios, etc.
     "ranking_fiscal", "ranking_mercado", "tambien_en", "rol_origen", "base_valor_ref",
     "margen_fiscal_pesos", "margen_mercado_pesos", "fojas_numero", "fojas_anio", "plazo_pago",
-    "id_fuente", "fecha_primera_publicacion", "comuna_sii", "comuna_estado", "manzana", "predio",
+    "id_fuente", "comuna_sii", "comuna_estado", "manzana", "predio",
     "rol_consistente", "direccion_tgr", "tasacion", "avaluo_tgr", "tipo_deuda", "comuna_tribunal",
     "direccion_tribunal", "expediente", "cod_demanda", "minimo_valor", "minimo_unidad",
     "roles_texto", "n_roles", "rol_candidatos", "estado_busqueda_direccion", "verif_direccion_catastro",
@@ -3016,6 +3154,12 @@ COLUMNAS_OCULTAS = {
     "dif_avaluo_tgr_vs_sii_pct", "ratio_tasacion_avaluo_tgr", "n_demandas",
     "valor_mercado_pesos", "valor_mercado_estimado_m2_pesos",
     "motivo_no_elegible_fiscal", "motivo_no_elegible_mercado",
+    # Pedido de Álvaro (13-10-2026): sacar "rol_formato" de la vitrina, solo "rol_completo".
+    "rol_formato",
+    # Datos crudos del cruce con el SII que ya quedaron copiados a columnas públicas
+    # (superficie_util_m2, superficie_total_m2, anio_construccion, tipo_propiedad) - se
+    # ocultan para no duplicar la misma información dos veces.
+    "superficie_terreno_sii", "superficie_construida_sii", "anio_construccion_sii",
 }
 
 
