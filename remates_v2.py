@@ -2525,7 +2525,16 @@ def estimar_valor_mercado_por_comuna_tipo(df, tabla_precio_mercado):
     def _tipo_desde_destino(f):
         # Traducción simple del tipo de propiedad del SII/fuente al vocabulario del
         # módulo de precio de mercado. Se puede refinar con el tiempo.
-        d = str(f.get("tipo_propiedad") or f.get("destino_desc") or "").lower()
+        # OJO (auditoría 2026-10-20): si tipo_propiedad es NaN de pandas, el "or"
+        # nunca caía a destino_desc (un NaN es "truthy" en Python) - en esta
+        # corrida no cambió ningún resultado porque ninguna de las filas con
+        # tipo_propiedad vacío tenía destino_desc disponible, pero es el mismo
+        # tipo de bug que el de "alertas" más arriba y conviene dejarlo bien.
+        tp = f.get("tipo_propiedad")
+        tp = tp if isinstance(tp, str) and tp.strip() else None
+        dd = f.get("destino_desc")
+        dd = dd if isinstance(dd, str) and dd.strip() else None
+        d = (tp or dd or "").lower()
         if "depart" in d or "depto" in d:
             return "departamento"
         if "casa" in d:
@@ -2694,7 +2703,15 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
     hoy = pd.Timestamp(dt.date.today())
 
     def alertas(f):
-        a = [x for x in str(f.get("alertas_fuente") or "").split("; ") if x]
+        # OJO (auditoría 2026-10-20, detectado en el PDF): si alertas_fuente es
+        # NaN de pandas, "NaN or ''" da NaN (un NaN es "truthy" en Python, no
+        # cae en el `or ""`) y str(NaN) es el texto "nan" - eso se colaba como
+        # si fuera una alerta real ("nan; MINIMO_ESTIMADO_TGR", etc.), visible
+        # en el PDF entregado hoy. Mismo tipo de bug que ya se corrigió en
+        # enviar_correo.py (función v()) y en generar_pdf.py (función _vacio()).
+        af = f.get("alertas_fuente")
+        af = af if isinstance(af, str) else ""
+        a = [x for x in af.split("; ") if x]
         if f["fuente"] == "TGR":
             a.append("MINIMO_ESTIMADO_TGR")
             r = f.get("ratio_tasacion_avaluo_tgr")

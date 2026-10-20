@@ -45,11 +45,16 @@ GRIS = colors.HexColor("#555555")
 
 ESTILOS = getSampleStyleSheet()
 TITULO = ParagraphStyle("titulo", parent=ESTILOS["Title"], textColor=AZUL, fontSize=17, spaceAfter=2)
-SUBTITULO = ParagraphStyle("subtitulo", parent=ESTILOS["Normal"], textColor=GRIS, fontSize=10)
+SUBTITULO = ParagraphStyle("subtitulo", parent=ESTILOS["Normal"], textColor=GRIS, fontSize=10, leading=12)
 SECCION = ParagraphStyle("seccion", parent=ESTILOS["Normal"], textColor=colors.white, fontSize=10,
-                          leading=14, leftIndent=4)
-OPORTUNIDAD_GRANDE = ParagraphStyle("oport", parent=ESTILOS["Normal"], fontSize=22, textColor=NARANJA, leading=26)
-CELDA = ParagraphStyle("celda", parent=ESTILOS["Normal"], fontSize=9, textColor=colors.black)
+                          leading=12, leftIndent=4)
+OPORTUNIDAD_GRANDE = ParagraphStyle("oport", parent=ESTILOS["Normal"], fontSize=20, textColor=NARANJA, leading=23)
+# OJO (auditoría 2026-10-20): "Normal" trae leading=14 por defecto sin importar
+# el fontSize que uno le ponga - con fontSize=9 eso dejaba cada fila de la
+# tabla ~40% más alta de lo necesario, y era la causa principal de que la
+# ficha no entrara en una sola página (más que el tamaño del mapa). Por eso
+# acá SÍ se fija el leading a mano, un poco más que el fontSize (9 -> 11).
+CELDA = ParagraphStyle("celda", parent=ESTILOS["Normal"], fontSize=9, leading=11, textColor=colors.black)
 PORTADA_TXT = ParagraphStyle("portada_txt", parent=ESTILOS["Normal"], fontSize=11, textColor=GRIS, leading=16)
 
 # Alertas en lenguaje simple para quien lee el PDF (no programador). Las que no
@@ -76,6 +81,51 @@ ALERTAS_PDF = {
 }
 
 GEOCODER_UA = "remates-chile-dashboard/1.0 (contacto: rbastias1991@gmail.com)"
+
+# Auditoría 2026-10-20 (corrida de validación): de 30 fichas, 11 salieron sin
+# mapa. Las 11 direcciones tenían algo en común - casi todas traen un
+# descriptor de unidad/lote PEGADO después del número de la calle (ej. "AV
+# DEL VALLE 662 OF 601", "SANTA VICTORIA 411 DP 719", "AMSTERDAM ORIENTE 4401
+# M 8 L 23"), y Nominatim (el geocodificador gratuito que usamos) no logra
+# encontrar la calle cuando la consulta incluye ese texto extra - busca "calle
+# número OF 601" como si fuera parte de la dirección, no la encuentra, y
+# devuelve vacío. La solución: para geocodificar (solo para ESO, no para lo
+# que se muestra en la ficha) se recorta la dirección hasta el primer número,
+# descartando cualquier descriptor de depto/oficina/lote que venga después -
+# igual que ya hace remates_v2.py para cruzar contra el catastro del SII (ver
+# MARCAS_UNIDAD / MARCAS_LOTE ahí). Un par de direcciones (hijuelas/parcelas
+# rurales, sin un "calle + número" reconocible) van a seguir sin poder
+# geocodificarse - eso es una limitación real de los mapas gratuitos con
+# direcciones rurales, no un error del programa.
+_MARCAS_CORTE = {
+    "DP", "DPTO", "DEPTO", "OF", "OFICINA", "BX", "BD", "LC", "ES", "BO", "EST",
+    "LT", "LO", "LOTE", "MZ", "MZA", "M", "ST", "SI", "CA", "CS", "SITIO", "KM",
+    "EDIF", "EDIFICIO", "BL", "BLOCK", "BLOQUE", "TORRE", "HJ", "HIJUELA",
+    "CHACRA", "RESTO", "EX",
+}
+import re as _re
+_RE_NUMERO = _re.compile(r"\d+")
+
+
+def _limpiar_para_geocodificar(direccion):
+    """Deja la dirección hasta el primer número + lo que sigue pegado (ej. '662'
+    o '411'), cortando antes del primer descriptor de depto/oficina/lote que
+    venga después (ver _MARCAS_CORTE arriba). Si no hay número reconocible,
+    devuelve la dirección tal cual (es probablemente rural; no hay mucho más
+    que limpiar)."""
+    m = _RE_NUMERO.search(direccion)
+    if not m:
+        return direccion
+    palabras = direccion[m.end():].split()
+    corte = len(direccion)
+    for palabra in palabras:
+        p = palabra.strip(".,").upper()
+        if p in _MARCAS_CORTE:
+            # recorta desde donde empieza esa palabra en el string original
+            idx = direccion.index(palabra, m.end())
+            corte = idx
+            break
+    return direccion[:corte].strip(" ,.-")
 
 
 def _vacio(v):
@@ -127,13 +177,16 @@ def _fila_seccion(titulo_txt):
     return Table([[Paragraph(titulo_txt, SECCION)]], colWidths=[170 * mm],
                  style=TableStyle([
                      ("BACKGROUND", (0, 0), (-1, -1), AZUL),
-                     ("TOPPADDING", (0, 0), (-1, -1), 4),
-                     ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+                     ("TOPPADDING", (0, 0), (-1, -1), 3),
+                     ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
                      ("LEFTPADDING", (0, 0), (-1, -1), 6),
                  ]))
 
 
 def _tabla_datos(pares):
+    # Padding de celda reducido (antes 4/4) a propósito - ver nota junto al
+    # mapa más abajo: con padding 4 + mapa a tamaño completo, la ficha no
+    # entraba en una sola página (2026-10-20).
     data = [[k, Paragraph(str(v), CELDA)] for k, v in pares]
     t = Table(data, colWidths=[62 * mm, 108 * mm])
     t.setStyle(TableStyle([
@@ -141,8 +194,8 @@ def _tabla_datos(pares):
         ("TEXTCOLOR", (0, 0), (0, -1), GRIS),
         ("FONTNAME", (0, 0), (0, -1), "Helvetica-Bold"),
         ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#DDDDDD")),
-        ("TOPPADDING", (0, 0), (-1, -1), 4),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ("TOPPADDING", (0, 0), (-1, -1), 2),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
         ("LEFTPADDING", (0, 0), (-1, -1), 6),
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
         ("ROWBACKGROUNDS", (0, 0), (-1, -1), [colors.white, AZUL_CLARO]),
@@ -154,13 +207,24 @@ def _geocodificar(direccion, comuna, cache, geocoder):
     clave = f"{direccion}, {comuna}, Chile"
     if clave in cache:
         return cache[clave]
+    direccion_limpia = _limpiar_para_geocodificar(direccion)
+    consulta = f"{direccion_limpia}, {comuna}, Chile"
     resultado = None
+    motivo = None
     try:
-        loc = geocoder.geocode(clave, timeout=10)
+        loc = geocoder.geocode(consulta, timeout=10)
         if loc:
             resultado = (loc.latitude, loc.longitude)
-    except Exception:
-        resultado = None
+        else:
+            motivo = "Nominatim no encontró resultados"
+    except Exception as e:
+        motivo = f"error al geocodificar: {e}"
+    if resultado is None:
+        # Se deja impreso en el log de la corrida (GitHub Actions) para poder
+        # revisar más adelante qué direcciones quedan sin mapa y por qué -
+        # antes esto fallaba en silencio y no había forma de saber la causa.
+        print(f"  [PDF-MAPA] sin mapa para '{direccion}' ({comuna}): {motivo} "
+              f"(consulta usada: '{consulta}')")
     cache[clave] = resultado
     time.sleep(1.1)  # política de uso de Nominatim: máx. 1 solicitud por segundo
     return resultado
@@ -182,25 +246,30 @@ def _ficha_propiedad(fila, cache_geo, geocoder, carpeta_tmp, idx):
     elementos = []
     elementos.append(Paragraph("Ficha de Oportunidad de Remate", TITULO))
     elementos.append(Paragraph(f"{direccion} — {comuna}, {region}", SUBTITULO))
-    elementos.append(Spacer(1, 6 * mm))
+    elementos.append(Spacer(1, 3 * mm))
 
     pct = fila.get("oportunidad_pct")
     if not _vacio(pct):
         elementos.append(Paragraph(f"Oportunidad estimada: {pct:+.0f}% vs. valor de referencia", OPORTUNIDAD_GRANDE))
     else:
         elementos.append(Paragraph("Oportunidad estimada: sin datos suficientes", OPORTUNIDAD_GRANDE))
-    elementos.append(Spacer(1, 4 * mm))
+    elementos.append(Spacer(1, 2 * mm))
 
     # ---- Mapa (si se logra geocodificar la dirección) ----
+    # Tamaño reducido (antes 170x99mm) a propósito: con el mapa a tamaño
+    # completo la ficha no alcanzaba a entrar en una sola página y la sección
+    # REMATE se pasaba a una segunda hoja (detectado en la auditoría del
+    # 2026-10-20: 19 de 30 fichas con mapa ocupaban 2 páginas). A este tamaño
+    # entra todo en una página, con o sin mapa.
     try:
         coords = _geocodificar(direccion, comuna, cache_geo, geocoder)
         if coords:
             ruta_png = carpeta_tmp / f"mapa_{idx}.png"
             _mapa_png(coords[0], coords[1], ruta_png)
-            elementos.append(RLImage(str(ruta_png), width=170 * mm, height=99 * mm))
-            elementos.append(Spacer(1, 4 * mm))
-    except Exception:
-        pass  # sin mapa esta vez, no es razón para botar la ficha completa
+            elementos.append(RLImage(str(ruta_png), width=130 * mm, height=76 * mm))
+            elementos.append(Spacer(1, 2 * mm))
+    except Exception as e:
+        print(f"  [PDF-MAPA] no se pudo generar la imagen del mapa para '{direccion}' ({comuna}): {e}")
 
     tipo = fila.get("tipo_propiedad")
     tipo = tipo if not _vacio(tipo) else fila.get("destino_desc")
