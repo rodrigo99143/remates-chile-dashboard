@@ -4,3 +4,7 @@ beautifulsoup4
 playwright
 openpyxl
 python-docx
+reportlab
+geopy
+staticmap
+Pillow

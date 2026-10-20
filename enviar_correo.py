@@ -42,6 +42,7 @@ import pandas as pd
 BASE = Path(__file__).resolve().parent
 SALIDAS = BASE / "salidas"
 EXCEL = SALIDAS / "OPORTUNIDADES.xlsx"
+PDF = SALIDAS / "OPORTUNIDADES.pdf"
 
 CORREO_DESDE = os.environ.get("CORREO_DESDE", "").strip()
 CORREO_PARA = os.environ.get("CORREO_PARA", "").strip()
@@ -145,6 +146,17 @@ def enviar(destinatarios, asunto, html_body, adjuntar_excel):
             maintype="application",
             subtype="vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             filename="OPORTUNIDADES.xlsx",
+        )
+
+    # El PDF es opcional: puede no existir (ej. no había ninguna propiedad
+    # nueva esta corrida, o la generación falló) y eso no debe impedir que
+    # el resto del correo (Excel incluido) se mande igual.
+    if adjuntar_excel and PDF.exists():
+        msg.add_attachment(
+            PDF.read_bytes(),
+            maintype="application",
+            subtype="pdf",
+            filename="OPORTUNIDADES.pdf",
         )
 
     contexto = ssl.create_default_context()

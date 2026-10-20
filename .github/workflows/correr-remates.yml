@@ -4,7 +4,16 @@ name: Correr barrido de remates
 # pestaña "Actions" de GitHub. Cualquiera con acceso al repositorio lo puede
 # apretar desde el navegador, sin VS Code y sin tener el computador prendido.
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      sembrar_baseline:
+        description: >-
+          SOLO para la corrida de validación del 2026-10-20: si es "true",
+          antes de correr el programa se siembra candidatas_historico con la
+          línea base acordada (corrida del 13-10 22:12), para que "nuevo" se
+          calcule contra esa fecha. En corridas normales se deja en "false".
+        type: boolean
+        default: false
 
 jobs:
   barrido:
@@ -57,6 +66,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
+
+      - name: Sembrar línea base de candidatas (solo validación 2026-10-20)
+        # Paso de una sola vez: solo corre si se dispara el workflow con
+        # "sembrar_baseline" = true. Ver sembrar_historico.py para el detalle.
+        if: inputs.sembrar_baseline == true
+        run: |
+          mkdir -p datos
+          python sembrar_historico.py datos/precio_mercado.db semillas/seed_candidatas_2026-10-13.csv
 
       - name: Correr el programa
         # El programa está hecho para seguir funcionando igual aunque falte

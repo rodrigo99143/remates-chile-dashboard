@@ -162,6 +162,59 @@ def registrar_avisos_procesados(carpeta_datos, rutas):
 # cambió hoy de lo que ya se vio antes) - pedido de Rodrigo el 2026-10-09
 # ------------------------------------------------------------------------------
 
+def marcar_candidatas_nuevas(carpeta_datos, filas):
+    """Igual que marcar_top_nuevo, pero aplicada a TODO el universo de candidatas
+    elegibles (no solo a las 50 del Top). Antes, "nuevo" se definía como "nunca
+    estuvo en el Top" - pero el Top es relativo (si otras propiedades se caen del
+    ranking, una que llevaba semanas más abajo sube de posición sin que en los
+    hechos sea una oportunidad nueva). Acá la clave NO es el id_fuente (que
+    cambia si la misma propiedad pasa de estar reportada por la TGR a estarlo
+    por un aviso de diario, por ejemplo), sino la PROPIEDAD/remate real: su rol
+    de Tesorería + la fecha de remate (o dirección + fecha si no hay rol). Así,
+    aunque una propiedad cambie de fuente entre una corrida y otra, se sigue
+    reconociendo como "la misma". (Pedido de Rodrigo y Álvaro, 2026-10-20.)
+    'filas' es una lista de tuplas (clave, oportunidad_pct). Devuelve el
+    conjunto de claves nuevas hoy, y deja registrado el estado de hoy."""
+    conexion, cursor = conectar_bd_mercado(carpeta_datos)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS candidatas_historico (
+            clave TEXT PRIMARY KEY,
+            oportunidad_pct REAL,
+            primera_vez TEXT,
+            ultima_vez TEXT
+        )
+    """)
+    conexion.commit()
+    hoy = dt.date.today().isoformat()
+    nuevos = set()
+    for clave, oportunidad_pct in filas:
+        if not clave:
+            continue
+        cursor.execute("SELECT oportunidad_pct FROM candidatas_historico WHERE clave = ?", (clave,))
+        fila = cursor.fetchone()
+        if fila is None:
+            es_nuevo = True
+        else:
+            (pct_antes,) = fila
+            if oportunidad_pct is None or pct_antes is None:
+                cambio_pct = oportunidad_pct != pct_antes
+            else:
+                cambio_pct = abs(float(pct_antes) - float(oportunidad_pct)) > 0.5
+            es_nuevo = cambio_pct
+        if es_nuevo:
+            nuevos.add(clave)
+        cursor.execute("""
+            INSERT INTO candidatas_historico (clave, oportunidad_pct, primera_vez, ultima_vez)
+            VALUES (?, ?, ?, ?)
+            ON CONFLICT(clave) DO UPDATE SET
+                oportunidad_pct=excluded.oportunidad_pct,
+                ultima_vez=excluded.ultima_vez
+        """, (clave, oportunidad_pct, hoy, hoy))
+    conexion.commit()
+    conexion.close()
+    return nuevos
+
+
 def marcar_top_nuevo(carpeta_datos, filas):
     """'filas' es una lista de tuplas (id_fuente, fecha_remate_texto, oportunidad_pct)
     - una por cada propiedad del TOP de hoy. Una propiedad se considera NUEVA si

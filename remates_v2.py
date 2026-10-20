@@ -3226,19 +3226,54 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     rev = rev[~rev["motivo_no_elegible"].str.contains("vencido", na=False)]
     resumen = resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes)
 
-    # ---- Marcar qué del TOP es NUEVO respecto a reportes anteriores (pedido de
-    # Rodrigo, 2026-10-09): nueva si nunca estuvo en el TOP, o si cambió la fecha
-    # de remate, o si cambió el % de oportunidad. Si algo falla al revisar el
-    # histórico, se asume que todo es nuevo (nunca se esconde nada por error). ----
-    top["nuevo_hoy"] = True
+    # ---- Marcar qué es NUEVO respecto a reportes anteriores (pedido de Rodrigo,
+    # 2026-10-09; rediseñado el 2026-10-20 a pedido de Rodrigo y Álvaro):
+    # "nuevo" ya NO es "nunca estuvo en el Top 50" (eso es relativo: una propiedad
+    # puede llevar semanas afuera y subir de posición solo porque otras se cayeron
+    # del ranking, sin ser una oportunidad nueva de verdad). Ahora es "nunca se vio
+    # antes en TODO el universo de candidatas elegibles", comparando por la
+    # PROPIEDAD real (rol de Tesorería + fecha de remate), no por el id_fuente -
+    # así, si la misma propiedad pasa de estar reportada por la TGR a estarlo por
+    # un aviso de diario, se sigue reconociendo como "la misma". Si algo falla al
+    # revisar el histórico, se asume que todo es nuevo (nunca se esconde nada por
+    # error). ----
+    def _clave_real(f):
+        if pd.notna(f.get("rol_completo")) and f.get("rol_completo"):
+            fecha = f["fecha_remate"].date() if pd.notna(f["fecha_remate"]) else "sf"
+            return f"{f['rol_completo']}|{fecha}"
+        fecha = f["fecha_remate"].date() if pd.notna(f["fecha_remate"]) else "sf"
+        return f"{f.get('direccion_final')}|{fecha}"
+
+    # OJO (acordado con Rodrigo el 2026-10-20): "nuevo" se calcula sobre TODO el
+    # universo de candidatas elegibles (cand), no solo sobre las que ya alcanzaron
+    # el Top 50. Antes TOP_NUEVO era "del Top, las que son nuevas" - eso dejaba
+    # afuera oportunidades nuevas que todavía no entraban al Top por cupos de zona
+    # u otros criterios de la selección, aunque sí fueran candidatas nuevas de
+    # verdad. Los ~30 que Rodrigo y Álvaro acordaron como ejemplo (19 TGR + 8
+    # AVISO + 3 MACAL) salieron de comparar CANDIDATAS completo contra el
+    # histórico, no del Top - así que TOP_NUEVO y el PDF usan esa misma base.
+    cand = cand.copy()
+    cand["clave_real"] = cand.apply(_clave_real, axis=1)
+    top["clave_real"] = top.apply(_clave_real, axis=1)
+    cand["nuevo_hoy"] = True
+    nuevos = set()
     if PRECIO_MERCADO_DISPONIBLE:
         try:
-            filas_top = list(zip(top["id_fuente"], top["fecha_remate"].astype(str), top["oportunidad_pct"]))
-            nuevos = precio_mercado.marcar_top_nuevo(DATOS, filas_top)
-            top["nuevo_hoy"] = top["id_fuente"].isin(nuevos)
+            # Se registra TODO el universo de candidatas (no solo el Top), para que
+            # una propiedad que hoy está en el puesto #80 quede marcada como "ya
+            # vista" y, si sube al Top la próxima semana, no se muestre como nueva.
+            filas_cand = list(zip(cand["clave_real"], cand["oportunidad_pct"]))
+            nuevos = precio_mercado.marcar_candidatas_nuevas(DATOS, filas_cand)
+            cand["nuevo_hoy"] = cand["clave_real"].isin(nuevos)
         except Exception as e:
             decir(f"  [TOP_NUEVO] no pude comparar con reportes anteriores ({e}); se muestra todo como nuevo.")
-    top_nuevo = top[top["nuevo_hoy"]]
+    # El Top 50 también queda marcado (columna "nuevo_hoy" visible en TOP_CONSOLIDADO)
+    # con el MISMO set "nuevos" ya calculado arriba - no se vuelve a registrar en la
+    # base de datos (eso duplicaría el registro histórico de esas mismas claves).
+    top["nuevo_hoy"] = top["clave_real"].isin(nuevos) if nuevos else True
+    top = top.drop(columns=["clave_real"])
+    cand = cand.drop(columns=["clave_real"])
+    top_nuevo = cand[cand["nuevo_hoy"]].sort_values(["fecha_remate", "oportunidad_pct"], ascending=[True, False])
 
     # El CSV "todas_las_propiedades.csv" se deja con TODAS las columnas (incluida
     # la auditoría interna) - es el respaldo técnico completo, no lo ve Álvaro.
@@ -3252,6 +3287,19 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
         for nombre, d in hojas:
             d.to_excel(w, sheet_name=nombre, index=False)
             dar_formato(w.sheets[nombre])
+
+    # ---- PDF con ficha por propiedad (pedido de Rodrigo y Álvaro, 2026-10-20):
+    # una ficha por página, estilo "informe de propiedad" (como el de avaluos.cl
+    # que compartió Rodrigo), con mapa de ubicación. Se arma SOLO con lo nuevo
+    # (top_nuevo), para no repetirle a Álvaro cada semana lo mismo. Si algo falla
+    # (sin internet para el mapa, biblioteca faltante, etc.) el Excel de todas
+    # formas se entrega igual - el PDF nunca debe tumbar la corrida completa. ----
+    try:
+        import generar_pdf
+        generar_pdf.construir_pdf(top_nuevo, SALIDAS / "OPORTUNIDADES.pdf")
+    except Exception as e:
+        decir(f"  [PDF] no se pudo generar el PDF esta vez ({e}); el Excel se entrega igual.")
+
     return ruta
 
 
