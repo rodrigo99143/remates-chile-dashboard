@@ -239,37 +239,40 @@ def _mapa_png(lat, lon, ruta_png):
     imagen.save(ruta_png)
 
 
-def _ficha_propiedad(fila, cache_geo, geocoder, carpeta_tmp, idx):
+def _ficha_propiedad(fila, carpeta_tmp, idx):
     direccion = texto(fila.get("direccion_final"), "(sin dirección)")
     comuna = texto(fila.get("comuna_propiedad"), "")
     region = texto(fila.get("region"), "")
     elementos = []
     elementos.append(Paragraph("Ficha de Oportunidad de Remate", TITULO))
     elementos.append(Paragraph(f"{direccion} — {comuna}, {region}", SUBTITULO))
-    elementos.append(Spacer(1, 3 * mm))
+    elementos.append(Spacer(1, 2 * mm))
 
     pct = fila.get("oportunidad_pct")
     if not _vacio(pct):
         elementos.append(Paragraph(f"Oportunidad estimada: {pct:+.0f}% vs. valor de referencia", OPORTUNIDAD_GRANDE))
     else:
         elementos.append(Paragraph("Oportunidad estimada: sin datos suficientes", OPORTUNIDAD_GRANDE))
-    elementos.append(Spacer(1, 2 * mm))
+    elementos.append(Spacer(1, 1 * mm))
 
-    # ---- Mapa (si se logra geocodificar la dirección) ----
-    # Tamaño reducido (antes 170x99mm) a propósito: con el mapa a tamaño
-    # completo la ficha no alcanzaba a entrar en una sola página y la sección
-    # REMATE se pasaba a una segunda hoja (detectado en la auditoría del
-    # 2026-10-20: 19 de 30 fichas con mapa ocupaban 2 páginas). A este tamaño
-    # entra todo en una página, con o sin mapa.
-    try:
-        coords = _geocodificar(direccion, comuna, cache_geo, geocoder)
-        if coords:
+    # ---- Mapa y coordenadas ----
+    # La geocodificación YA se hizo antes (ver geocodificar_top_nuevo) - acá
+    # solo se lee latitud/longitud de la fila, no se vuelve a consultar a
+    # Nominatim (si se repitiera acá, además de más lento, se duplicaría el
+    # tiempo de la corrida completa). Tamaño del mapa reducido (antes
+    # 170x99mm) a propósito: con el mapa a tamaño completo la ficha no
+    # alcanzaba a entrar en una sola página (auditoría 2026-10-20).
+    lat, lon = fila.get("latitud"), fila.get("longitud")
+    coords = (lat, lon) if not _vacio(lat) and not _vacio(lon) else None
+    if coords:
+        try:
             ruta_png = carpeta_tmp / f"mapa_{idx}.png"
             _mapa_png(coords[0], coords[1], ruta_png)
             elementos.append(RLImage(str(ruta_png), width=130 * mm, height=76 * mm))
-            elementos.append(Spacer(1, 2 * mm))
-    except Exception as e:
-        print(f"  [PDF-MAPA] no se pudo generar la imagen del mapa para '{direccion}' ({comuna}): {e}")
+            elementos.append(Spacer(1, 1 * mm))
+        except Exception as e:
+            print(f"  [PDF-MAPA] no se pudo generar la imagen del mapa para '{direccion}' ({comuna}): {e}")
+    coordenadas_txt = f"{lat:.6f}, {lon:.6f}" if coords else "No disponibles (no se pudo ubicar la dirección en el mapa)"
 
     tipo = fila.get("tipo_propiedad")
     tipo = tipo if not _vacio(tipo) else fila.get("destino_desc")
@@ -283,6 +286,7 @@ def _ficha_propiedad(fila, cache_geo, geocoder, carpeta_tmp, idx):
         ("Dirección", direccion),
         ("Comuna", comuna),
         ("Región", region),
+        ("Coordenadas", coordenadas_txt),
         ("Rol de avalúo (Tesorería)", texto(fila.get("rol_completo"))),
         ("Tipo", texto(tipo)),
         ("Dormitorios / Baños", f"{texto(fila.get('dormitorios'))} / {texto(fila.get('banos'))}"),
@@ -291,7 +295,7 @@ def _ficha_propiedad(fila, cache_geo, geocoder, carpeta_tmp, idx):
                                        f"{num(fila.get('superficie_total_m2'), ' m2')}"),
         ("Año de construcción", num(fila.get("anio_construccion"))),
     ]))
-    elementos.append(Spacer(1, 3 * mm))
+    elementos.append(Spacer(1, 2 * mm))
 
     elementos.append(_fila_seccion("VALORES Y OPORTUNIDAD"))
     elementos.append(_tabla_datos([
@@ -300,7 +304,7 @@ def _ficha_propiedad(fila, cache_geo, geocoder, carpeta_tmp, idx):
         ("Valor de referencia usado", peso(fila.get("valor_ref_pesos"))),
         ("Confianza del dato de mercado", texto(confianza)),
     ]))
-    elementos.append(Spacer(1, 3 * mm))
+    elementos.append(Spacer(1, 2 * mm))
 
     elementos.append(_fila_seccion("REMATE"))
     fecha_remate = fila.get("fecha_remate")
@@ -319,16 +323,52 @@ def _ficha_propiedad(fila, cache_geo, geocoder, carpeta_tmp, idx):
     return elementos
 
 
+def geocodificar_top_nuevo(df_filas):
+    """Devuelve una COPIA de df_filas con dos columnas nuevas: 'latitud' y
+    'longitud' (float; NaN si no se pudo ubicar la dirección). Pedido de
+    Rodrigo (2026-10-27): que las coordenadas aparezcan también en el Excel,
+    no solo como mapa en el PDF. Se geocodifica UNA sola vez por propiedad
+    acá - tanto remates_v2.py (columna en la hoja TOP_NUEVO) como
+    construir_pdf (mapa + texto "Coordenadas" en la ficha) reutilizan este
+    mismo resultado, para no consultar Nominatim dos veces por la misma
+    dirección (son ~1.1 segundos de espera por dirección; duplicarlo
+    duplicaría ese tramo de la corrida)."""
+    import pandas as pd
+    if df_filas is None or len(df_filas) == 0:
+        return df_filas
+    from geopy.geocoders import Nominatim
+    geocoder = Nominatim(user_agent=GEOCODER_UA)
+    cache_geo = {}
+    lats, lons = [], []
+    for _, fila in df_filas.iterrows():
+        direccion = texto(fila.get("direccion_final"), "")
+        comuna = texto(fila.get("comuna_propiedad"), "")
+        coords = None
+        if direccion and direccion != "—":
+            try:
+                coords = _geocodificar(direccion, comuna, cache_geo, geocoder)
+            except Exception as e:
+                print(f"  [PDF-MAPA] error geocodificando '{direccion}' ({comuna}): {e}")
+        lats.append(coords[0] if coords else None)
+        lons.append(coords[1] if coords else None)
+    resultado = df_filas.copy()
+    resultado["latitud"] = lats
+    resultado["longitud"] = lons
+    return resultado
+
+
 def construir_pdf(df_filas, ruta_salida):
     """df_filas: DataFrame con las propiedades a incluir (ya filtradas y
-    ordenadas por quien llama). ruta_salida: Path del .pdf a generar."""
+    ordenadas por quien llama). Si ya trae columnas 'latitud'/'longitud'
+    (puestas por geocodificar_top_nuevo), se reutilizan tal cual; si no,
+    se geocodifica acá mismo (para poder seguir usando esta función sola).
+    ruta_salida: Path del .pdf a generar."""
     import tempfile
     if df_filas is None or len(df_filas) == 0:
         return None
 
-    from geopy.geocoders import Nominatim
-    geocoder = Nominatim(user_agent=GEOCODER_UA)
-    cache_geo = {}
+    if "latitud" not in df_filas.columns or "longitud" not in df_filas.columns:
+        df_filas = geocodificar_top_nuevo(df_filas)
 
     carpeta_tmp = Path(tempfile.mkdtemp(prefix="mapas_pdf_"))
     elementos = []
@@ -343,7 +383,7 @@ def construir_pdf(df_filas, ruta_salida):
     elementos.append(PageBreak())
 
     for idx, (_, fila) in enumerate(df_filas.iterrows()):
-        elementos.extend(_ficha_propiedad(fila, cache_geo, geocoder, carpeta_tmp, idx))
+        elementos.extend(_ficha_propiedad(fila, carpeta_tmp, idx))
 
     doc = SimpleDocTemplate(str(ruta_salida), pagesize=A4, topMargin=16 * mm, bottomMargin=16 * mm,
                              leftMargin=20 * mm, rightMargin=20 * mm)

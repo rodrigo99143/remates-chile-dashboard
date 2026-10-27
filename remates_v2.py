@@ -3117,7 +3117,12 @@ COLUMNAS_TOP = [
     # mostraba el código del SII, que es una numeración distinta). "rol_formato" se saca de la
     # vitrina (pedido del 13-10-2026: "no me interesa tener dos columnas") - sigue existiendo
     # internamente, por si hace falta para depurar, pero no se exporta.
-    "rol_completo", "direccion_final", "comuna_propiedad", "tipo_propiedad",
+    "rol_completo", "direccion_final", "comuna_propiedad",
+    # latitud/longitud: pedido de Rodrigo (2026-10-27) - solo se calculan para
+    # TOP_NUEVO (ver geocodificar_top_nuevo en generar_pdf.py), así que en las
+    # demás hojas (TOP_CONSOLIDADO, CANDIDATAS, etc.) estas columnas no existen
+    # y ordenar_columnas simplemente las omite, sin error.
+    "latitud", "longitud", "tipo_propiedad",
     "fuente", "fecha_remate", "hora_remate", "modalidad",
     # fecha_primera_publicacion: pedido de Álvaro (13-10-2026) para poder ubicar el aviso
     # directamente por fecha en vez de tener que buscarlo a mano. Por ahora solo viene de la
@@ -3291,6 +3296,18 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     top = top.drop(columns=["clave_real"])
     cand = cand.drop(columns=["clave_real"])
     top_nuevo = cand[cand["nuevo_hoy"]].sort_values(["fecha_remate", "oportunidad_pct"], ascending=[True, False])
+
+    # ---- Coordenadas (pedido de Rodrigo, 2026-10-27): que aparezcan también
+    # en el Excel, no solo como mapa dentro del PDF. Se calcula ACÁ, antes de
+    # escribir la hoja TOP_NUEVO, y el PDF más abajo reutiliza estas mismas
+    # columnas en vez de geocodificar de nuevo (ver geocodificar_top_nuevo en
+    # generar_pdf.py). Si falla (sin internet, etc.), la hoja se entrega
+    # igual, solo que sin latitud/longitud - nunca debe tumbar la corrida. ----
+    try:
+        import generar_pdf
+        top_nuevo = generar_pdf.geocodificar_top_nuevo(top_nuevo)
+    except Exception as e:
+        decir(f"  [COORDENADAS] no se pudieron calcular coordenadas esta vez ({e}); TOP_NUEVO se entrega sin ellas.")
 
     # El CSV "todas_las_propiedades.csv" se deja con TODAS las columnas (incluida
     # la auditoría interna) - es el respaldo técnico completo, no lo ve Álvaro.
