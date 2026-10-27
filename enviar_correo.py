@@ -166,9 +166,24 @@ def enviar(destinatarios, asunto, html_body, adjuntar_excel):
 
 
 def main():
+    # OJO (auditoría 2026-10-27): antes este script SIEMPRE terminaba con
+    # código de salida 0 (éxito), incluso cuando el envío del correo fallaba
+    # de verdad (ej. Gmail bloqueó el inicio de sesión) - el error quedaba
+    # atrapado en el "except" de más abajo y solo se imprimía en el registro
+    # técnico. Como ese registro no se puede leer desde este entorno (ni
+    # Rodrigo entra a mirarlo normalmente), el resultado era: "todo salió
+    # verde" en GitHub Actions, pero el correo nunca llegó, y nadie se
+    # enteraba. Ahora, si un envío falla de verdad, el paso "Enviar el
+    # correo" del workflow va a quedar marcado en rojo (sigue sin tumbar el
+    # resto de la corrida, por el "continue-on-error" del workflow) - así
+    # se puede detectar el problema mirando la lista de pasos, sin necesitar
+    # el registro técnico completo.
+    hubo_falla_envio = False
+
     if not APP_PASSWORD or not CORREO_DESDE:
         print("  [CORREO] Faltan variables (CORREO_DESDE / GMAIL_APP_PASSWORD). No envío nada.")
-        sys.exit(0)  # no es un error grave, simplemente no manda correo
+        sys.exit(1)  # antes era 0 ("no es grave") - pero si faltan estas variables, ningún
+        # correo se manda nunca, así que conviene que quede visible como falla.
 
     fallas = detectar_fallas()
 
@@ -188,18 +203,19 @@ def main():
             enviar(CORREO_ALERTAS, "⚠️ Remates Chile - revisar: hubo fallas en la corrida de hoy", cuerpo, adjuntar_excel=False)
             print(f"  [CORREO-ALERTA] Enviado solo a {CORREO_ALERTAS} ({len(fallas)} falla(s)).")
         except Exception as e:
-            print(f"  [CORREO-ALERTA] FALLÓ el envío de la alerta (no detiene el programa): {e}")
+            print(f"  [CORREO-ALERTA] FALLÓ el envío de la alerta: {e}")
+            hubo_falla_envio = True
 
     # --- Correo de RESULTADOS: a la lista pública (CORREO_PARA) ---
     if not CORREO_PARA:
         print("  [CORREO] Falta CORREO_PARA. No envío el correo de resultados.")
-        return
+        sys.exit(1 if hubo_falla_envio else 0)
 
     if not EXCEL.exists():
         # Nada que mostrar, y no queremos que el correo público diga "no se
         # generó Excel" - eso ya quedó avisado en el correo de alerta privado.
         print("  [CORREO] No se generó Excel esta corrida; no envío el correo de resultados (ya se avisó por alerta privada).")
-        return
+        sys.exit(1 if hubo_falla_envio else 0)
 
     tabla_html, n = construir_resumen_html()
     cuerpo = (
@@ -212,7 +228,11 @@ def main():
         enviar(CORREO_PARA, f"Remates Chile - {n} oportunidades en el TOP de hoy", cuerpo, adjuntar_excel=True)
         print(f"  [CORREO] Enviado a {CORREO_PARA} ({n} oportunidades).")
     except Exception as e:
-        print(f"  [CORREO] FALLÓ el envío (no detiene el programa): {e}")
+        print(f"  [CORREO] FALLÓ el envío: {e}")
+        hubo_falla_envio = True
+
+    if hubo_falla_envio:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
