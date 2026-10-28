@@ -2621,8 +2621,16 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
     df["rol_completo"] = df.apply(
         lambda f: f"{SII2TES.get(f['comuna_sii'], f['comuna_sii'])}-{int(f['manzana'])}-{int(f['predio'])}"
         if pd.notna(f["manzana"]) and pd.notna(f["predio"]) and f["comuna_sii"] else None, axis=1)
-    df["dif_avaluo_tgr_vs_sii_pct"] = (df["avaluo_tgr"] / df["avaluo_sii"] - 1) * 100
-    df["ratio_tasacion_avaluo_tgr"] = df["tasacion"] / df["avaluo_tgr"]
+    # OJO (auditoría 2026-10-28, mismo motivo que la oportunidad más abajo):
+    # avaluo_sii y avaluo_tgr pueden venir en 0 o faltantes para muchas filas
+    # (TGR sin cruce con el SII, por ejemplo). Se evita dividir por un 0
+    # literal reemplazándolo por NaN antes, así nunca revienta con
+    # "ZeroDivisionError" (antes pandas lo toleraba dando infinito; con la
+    # versión instalada ahora, ya no).
+    avaluo_sii_div = df["avaluo_sii"].where(df["avaluo_sii"] > 0, other=float("nan"))
+    avaluo_tgr_div = df["avaluo_tgr"].where(df["avaluo_tgr"] > 0, other=float("nan"))
+    df["dif_avaluo_tgr_vs_sii_pct"] = (df["avaluo_tgr"] / avaluo_sii_div - 1) * 100
+    df["ratio_tasacion_avaluo_tgr"] = df["tasacion"] / avaluo_tgr_div
     df["fecha_remate"] = pd.to_datetime(df["fecha_remate"], errors="coerce")
     # Pedido de Álvaro (09-10-2026): fecha y hora en columnas separadas, en vez de una
     # sola celda "2026-10-28 00:00" (que además confundía porque el 00:00 no siempre es
@@ -2677,9 +2685,19 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
     df["base_valor_ref"] = df.apply(_origen_valor_ref, axis=1)
 
     # ---- Oportunidad (general: usa lo mejor disponible - mercado si hay, si no avalúo) ----
+    # OJO (auditoría 2026-10-28): "costo" puede venir en 0 para algunas filas
+    # (dato faltante o erróneo de la fuente). Antes "valor_ref_pesos / costo"
+    # con costo=0 simplemente daba infinito (pandas lo toleraba) y la línea
+    # de abajo ("df.loc[~(costo > 0), ...] = None") lo limpiaba después. Con
+    # la versión de pandas instalada ahora, esa misma división por 0 hace que
+    # el programa se caiga con "ZeroDivisionError: float division by zero" en
+    # vez de dar infinito - se detuvo toda la corrida por esto. Se evita
+    # directamente: se reemplaza el costo no positivo por NaN ANTES de
+    # dividir, así la división nunca encuentra un 0 de verdad.
     costo = df["minimo_pesos"]
     df["margen_pesos"] = df["valor_ref_pesos"] - costo
-    df["oportunidad_pct"] = (df["valor_ref_pesos"] / costo - 1) * 100
+    costo_para_dividir = costo.where(costo > 0, other=float("nan"))
+    df["oportunidad_pct"] = (df["valor_ref_pesos"] / costo_para_dividir - 1) * 100
     df.loc[~(costo > 0), ["oportunidad_pct", "margen_pesos"]] = None
     df["oportunidad_pct"] = pd.to_numeric(df["oportunidad_pct"], errors="coerce")
     df["margen_pesos"] = pd.to_numeric(df["margen_pesos"], errors="coerce")
@@ -2687,14 +2705,14 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
     # ---- Oportunidad SEPARADA por tipo de referencia, para el doble ranking ----
     # Ranking A: siempre contra el avalúo fiscal del SII (como funcionaba hasta ahora).
     df["margen_fiscal_pesos"] = avaluo_ref - costo
-    df["oportunidad_fiscal_pct"] = (avaluo_ref / costo - 1) * 100
+    df["oportunidad_fiscal_pct"] = (avaluo_ref / costo_para_dividir - 1) * 100
     df.loc[~(costo > 0) | avaluo_ref.isna(), ["oportunidad_fiscal_pct", "margen_fiscal_pesos"]] = None
     df["oportunidad_fiscal_pct"] = pd.to_numeric(df["oportunidad_fiscal_pct"], errors="coerce")
     df["margen_fiscal_pesos"] = pd.to_numeric(df["margen_fiscal_pesos"], errors="coerce")
 
     # Ranking B: solo contra un precio de mercado (exacto por ROL, o estimado con confianza ALTA/MEDIA).
     df["margen_mercado_pesos"] = valor_mercado_final - costo
-    df["oportunidad_mercado_pct"] = (valor_mercado_final / costo - 1) * 100
+    df["oportunidad_mercado_pct"] = (valor_mercado_final / costo_para_dividir - 1) * 100
     df.loc[~(costo > 0) | valor_mercado_final.isna(), ["oportunidad_mercado_pct", "margen_mercado_pesos"]] = None
     df["oportunidad_mercado_pct"] = pd.to_numeric(df["oportunidad_mercado_pct"], errors="coerce")
     df["margen_mercado_pesos"] = pd.to_numeric(df["margen_mercado_pesos"], errors="coerce")
