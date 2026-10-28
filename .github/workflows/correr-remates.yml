@@ -80,17 +80,37 @@ jobs:
         # el catastro o los avisos .docx (esos .docx solo existen en el Mac
         # de Rodrigo todavía) - entrega lo que puede con TGR, Macal, precio
         # de mercado y Poder Judicial, que buscan todo solos desde internet.
+        #
+        # OJO (2026-10-27): este paso tenía "continue-on-error: true", igual
+        # que el de "Enviar el correo". Mismo problema: si remates_v2.py se
+        # cae con una excepción de verdad (termina con código de error), ese
+        # flag hacía que GitHub Actions igual mostrara el paso en verde
+        # ("success"), ocultando la falla real. Los pasos siguientes ya
+        # tienen "if: always()", así que de todas formas siguen corriendo
+        # aunque este paso falle - lo que cambia es que ahora SÍ queda
+        # visible si el programa se cae antes de llegar a generar el Excel
+        # (que es, justamente, lo que explicaría por qué "enviar_correo.py"
+        # no encuentra el Excel y nunca llega a intentar mandar el correo).
         run: python remates_v2.py
-        continue-on-error: true
 
       - name: Enviar el correo con el resumen y el Excel adjunto
+        # OJO (2026-10-27): este paso NO lleva "continue-on-error: true" a
+        # propósito. Con ese flag puesto, GitHub Actions siempre reporta este
+        # paso como "success" (verde) para quien mira la corrida desde afuera
+        # - aunque el script internamente termine con código de error -,
+        # porque "continue-on-error" pisa el resultado real ("outcome") y lo
+        # reemplaza por "success" en el campo "conclusion". Eso es justo lo
+        # que impidió detectar, durante una semana, que el correo de
+        # resultados dejó de enviarse: el paso siempre se veía en verde. Los
+        # pasos que vienen después ya tienen "if: always()", así que siguen
+        # corriendo igual aunque este paso falle de verdad - lo único que
+        # cambia es que ahora SÍ queda visible (rojo) si el envío falla.
         if: always()
         run: python enviar_correo.py
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           CORREO_DESDE: rbastias1991@gmail.com
           CORREO_PARA: rbastias1991@gmail.com
-        continue-on-error: true
 
       - name: Guardar los cambios de hoy en la base de precios de mercado (para la próxima corrida)
         # Así la nube va quedando cada vez más completa sola, sin que Rodrigo

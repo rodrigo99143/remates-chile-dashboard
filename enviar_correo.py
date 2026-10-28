@@ -207,15 +207,26 @@ def main():
             hubo_falla_envio = True
 
     # --- Correo de RESULTADOS: a la lista pública (CORREO_PARA) ---
+    # OJO (auditoria 2026-10-27, segunda parte): estas dos salidas quedaban
+    # con "sys.exit(1 if hubo_falla_envio else 0)" - pero hubo_falla_envio
+    # todavia es False en este punto (solo se pone True mas abajo, dentro de
+    # los "except"), asi que en la practica SIEMPRE salian con codigo 0
+    # ("exito"). Sumado al "continue-on-error: true" que tenia el paso en
+    # el workflow (ya quitado), esto explica por que el correo de resultados
+    # dejo de llegar sin que nada se viera en rojo: el script terminaba aca
+    # sin haber intentado jamas mandar el correo, y GitHub Actions lo
+    # mostraba como un paso exitoso de todas formas. En una corrida normal
+    # (con CORREO_PARA configurado) no mandar el correo de resultados ES el
+    # problema que hay que detectar, asi que ahora se sale siempre con error.
     if not CORREO_PARA:
         print("  [CORREO] Falta CORREO_PARA. No envío el correo de resultados.")
-        sys.exit(1 if hubo_falla_envio else 0)
+        sys.exit(1)
 
     if not EXCEL.exists():
         # Nada que mostrar, y no queremos que el correo público diga "no se
         # generó Excel" - eso ya quedó avisado en el correo de alerta privado.
         print("  [CORREO] No se generó Excel esta corrida; no envío el correo de resultados (ya se avisó por alerta privada).")
-        sys.exit(1 if hubo_falla_envio else 0)
+        sys.exit(1)
 
     tabla_html, n = construir_resumen_html()
     cuerpo = (
