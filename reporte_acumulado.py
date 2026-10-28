@@ -81,20 +81,30 @@ def main():
     conexion.close()
 
     cand["primera_vez"] = cand["clave_real"].map(primeras_vez)
-    acumulado = cand[cand["primera_vez"] >= fecha_desde].copy()
-    acumulado = acumulado.drop(columns=["clave_real"])
-    print(f"  [ACUMULADO] {len(acumulado)} de esas son nuevas desde el {fecha_desde} (primera_vez registrada en esa fecha o después).")
+    pool = cand[cand["primera_vez"] >= fecha_desde].copy()
+    pool = pool.drop(columns=["clave_real"])
+    print(f"  [ACUMULADO] {len(pool)} de esas son nuevas desde el {fecha_desde} (primera_vez registrada en esa fecha o después).")
 
-    if acumulado.empty:
+    if pool.empty:
         print("  [ACUMULADO] No hay ninguna propiedad nueva desde esa fecha. No se genera ni se envía nada.")
         return
 
-    acumulado = acumulado.sort_values(["fecha_remate", "oportunidad_pct"], ascending=[True, False])
+    # OJO (pedido de Rodrigo, 2026-10-28, aclarado después del primer intento):
+    # NO se manda el pool completo (puede ser enorme, cientos de propiedades) -
+    # se cura a las MEJORES, igual que el reporte normal de cada semana: las
+    # 50 mejores por % de oportunidad van al Excel; de esas, las 30 mejores
+    # (las que encabezan la lista) van también al PDF - menos fichas con mapa
+    # significa un PDF bastante más liviano, para que nunca sea un problema
+    # de peso al enviarlo por correo.
+    MAX_EXCEL = 50
+    MAX_PDF = 30
+    acumulado = pool.sort_values("oportunidad_pct", ascending=False).head(MAX_EXCEL)
+    print(f"  [ACUMULADO] de esas, las {len(acumulado)} mejores por % de oportunidad van al Excel.")
 
     import remates_v2
     import generar_pdf
 
-    acumulado = generar_pdf.geocodificar_top_nuevo(acumulado)
+    acumulado = generar_pdf.geocodificar_top_nuevo(acumulado)  # coordenadas para las 50 (se usan en el Excel también)
 
     ruta_excel = SALIDAS / "REPORTE_ACUMULADO.xlsx"
     ruta_pdf = SALIDAS / "REPORTE_ACUMULADO.pdf"
@@ -104,9 +114,10 @@ def main():
         remates_v2.dar_formato(w.sheets["ACUMULADO"])
     print(f"  [ACUMULADO] Excel: {ruta_excel.name} ({len(acumulado)} filas)")
 
+    acumulado_pdf = acumulado.head(MAX_PDF)
     try:
-        generar_pdf.construir_pdf(acumulado, ruta_pdf)
-        print(f"  [ACUMULADO] PDF: {ruta_pdf.name}")
+        generar_pdf.construir_pdf(acumulado_pdf, ruta_pdf)
+        print(f"  [ACUMULADO] PDF: {ruta_pdf.name} ({len(acumulado_pdf)} fichas, las mejores del Excel)")
     except Exception as e:
         print(f"  [ACUMULADO] no se pudo generar el PDF ({e}); el Excel se manda igual.")
 
@@ -120,16 +131,17 @@ def main():
     omitir_pdf = ruta_pdf.exists() and (tamano_excel + tamano_pdf) > limite
 
     msg = EmailMessage()
-    msg["Subject"] = f"Remates Chile - reporte acumulado desde el {fecha_desde} ({len(acumulado)} oportunidades)"
+    msg["Subject"] = f"Remates Chile - reporte acumulado desde el {fecha_desde} (mejores {len(acumulado)} de {len(pool)} oportunidades)"
     msg["From"] = CORREO_DESDE
     msg["To"] = CORREO_PARA
     aviso_pdf = ("<p style='color:#A05A00'>El PDF quedó muy pesado para enviarlo por correo; "
                  "queda disponible para descargar en los resultados de esta corrida en GitHub Actions.</p>") if omitir_pdf else ""
     cuerpo = (
-        f"<h2>Reporte acumulado - todo lo nuevo desde el {fecha_desde}</h2>"
-        f"<p>Se juntaron <b>{len(acumulado)}</b> propiedades que aparecieron como oportunidad "
-        f"nueva desde el {fecha_desde} hasta hoy ({dt.date.today().isoformat()}), "
-        f"sin importar cuántas corridas se hicieron en el medio.</p>"
+        f"<h2>Reporte acumulado - lo mejor de lo nuevo desde el {fecha_desde}</h2>"
+        f"<p>Desde el {fecha_desde} hasta hoy ({dt.date.today().isoformat()}) aparecieron "
+        f"<b>{len(pool)}</b> propiedades como oportunidad nueva. Este reporte trae las "
+        f"<b>{len(acumulado)}</b> mejores por % de oportunidad (el mismo criterio del reporte "
+        f"semanal normal), con dirección y coordenadas de cada una.</p>"
         f"{aviso_pdf}"
         f"<p style='color:#888;font-size:12px'>Correo generado automáticamente - reporte de una sola vez, pedido el 2026-10-28.</p>"
     )
