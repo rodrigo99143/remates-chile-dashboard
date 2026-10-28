@@ -24,12 +24,62 @@ on:
           normales.
         type: string
         default: ""
+      probar_geocodificacion:
+        description: >-
+          Opcional, "de una sola vez" (pedido de Álvaro vía Rodrigo,
+          2026-10-28): si es "true", en vez de correr el programa completo,
+          solo se prueban con Nominatim las 12 direcciones del reporte
+          acumulado que quedaron sin coordenadas, para ver cuáles se
+          arreglaron con la mejora de limpieza de direcciones. Mucho más
+          rápido que una corrida normal. Se deja en "false" en corridas
+          normales.
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
 jobs:
+  probar_geocodificacion:
+    # Job aparte y liviano (no depende de "barrido"): no necesita TGR, Macal,
+    # el catastro ni nada de eso, así que no tiene sentido esperar los ~40-50
+    # minutos de una corrida normal solo para probar 12 direcciones.
+    if: ${{ inputs.probar_geocodificacion == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar solo lo necesario para geocodificar
+        run: pip install --quiet geopy reportlab Pillow
+
+      - name: Probar las 12 direcciones
+        run: |
+          mkdir -p logs
+          set -o pipefail
+          python probar_geocodificacion.py 2>&1 | tee logs/ultima_prueba_geocodificacion.log
+
+      - name: Guardar el resultado
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -- logs/ultima_prueba_geocodificacion.log 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: resultado de la prueba de geocodificación [skip ci]"
+            git push
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   barrido:
+    if: ${{ inputs.probar_geocodificacion != true }}
     runs-on: ubuntu-latest
     # Tope de seguridad: si algo se cuelga, que no corra para siempre.
     timeout-minutes: 180

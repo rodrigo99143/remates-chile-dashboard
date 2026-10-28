@@ -112,15 +112,29 @@ def _limpiar_para_geocodificar(direccion):
     o '411'), cortando antes del primer descriptor de depto/oficina/lote que
     venga después (ver _MARCAS_CORTE arriba). Si no hay número reconocible,
     devuelve la dirección tal cual (es probablemente rural; no hay mucho más
-    que limpiar)."""
+    que limpiar).
+
+    OJO (auditoría 2026-10-28, pedido de Álvaro vía Rodrigo): revisando las 12
+    direcciones del reporte acumulado que quedaron sin coordenadas, dos
+    patrones adicionales se podían limpiar mejor:
+      1. Letras de bloque/casa SUELTAS después del número (ej. "2615 B 6" o
+         "64 -A") - antes solo se cortaba con palabras completas de la lista
+         _MARCAS_CORTE ("DP", "LT", etc.), no con una letra sola.
+      2. Un guión pegado al descriptor (ej. "DP-" en vez de "DP") hacía que
+         la comparación con _MARCAS_CORTE fallara, porque antes solo se
+         limpiaban comas y puntos (".strip('.,')"), no guiones.
+    Esto NO resuelve direcciones genuinamente rurales (hijuelas, parcelas,
+    remanentes sin calle real) - esas no tienen un "número de calle" que
+    limpiar, es una limitación real del mapa gratuito, no de este filtro."""
     m = _RE_NUMERO.search(direccion)
     if not m:
         return direccion
     palabras = direccion[m.end():].split()
     corte = len(direccion)
     for palabra in palabras:
-        p = palabra.strip(".,").upper()
-        if p in _MARCAS_CORTE:
+        p = palabra.strip(" .,-").upper()
+        es_letra_de_bloque = len(p) == 1 and p.isalpha()
+        if p in _MARCAS_CORTE or es_letra_de_bloque:
             # recorta desde donde empieza esa palabra en el string original
             idx = direccion.index(palabra, m.end())
             corte = idx
