@@ -1,0 +1,42 @@
+DIRECCIÓN ORIGINAL                            | CONSULTA LIMPIA                     | RESULTADO
+--------------------------------------------------------------------------------------------------------------
+  [PDF-MAPA] sin mapa para 'LT B- 1 PROL CALLE EJERC. LIBER. 2735' (RIO BUENO): Nominatim no encontró resultados (consulta usada: 'LT B- 1 PROL CALLE EJERC. LIBER. 2735, RIO BUENO, Chile')
+LT B- 1 PROL CALLE EJERC. LIBER. 2735         | LT B- 1 PROL CALLE EJERC. LIBER. 2735 | sigue sin encontrarse
+CANAL SARMIENTO 6081 -F DP- 304               | CANAL SARMIENTO 6081                | OK -> -41.46851, -72.99401
+  [PDF-MAPA] sin mapa para 'V MACKENNA EDIF C 7735 DP 702' (LA FLORIDA): Nominatim no encontró resultados (consulta usada: 'V MACKENNA EDIF C 7735, LA FLORIDA, Chile')
+V MACKENNA EDIF C 7735 DP 702                 | V MACKENNA EDIF C 7735              | sigue sin encontrarse
+  [PDF-MAPA] sin mapa para 'HJ. 2 LOS MAITENES LT C' (MULCHEN): Nominatim no encontró resultados (consulta usada: 'HJ. 2 LOS MAITENES, MULCHEN, Chile')
+HJ. 2 LOS MAITENES LT C                       | HJ. 2 LOS MAITENES                  | sigue sin encontrarse
+  [PDF-MAPA] sin mapa para 'AV G J ARTIGAS 3121 DP 813' (NUNOA): Nominatim no encontró resultados (consulta usada: 'AV G J ARTIGAS 3121, NUNOA, Chile')
+AV G J ARTIGAS 3121 DP 813                    | AV G J ARTIGAS 3121                 | sigue sin encontrarse
+  [PDF-MAPA] sin mapa para 'PJ PARTICULAR 64 -A' (QUILPUE): Nominatim no encontró resultados (consulta usada: 'PJ PARTICULAR 64, QUILPUE, Chile')
+PJ PARTICULAR 64 -A                           | PJ PARTICULAR 64                    | sigue sin encontrarse
+  [PDF-MAPA] sin mapa para 'PJE. GLACIAR NEF 41 LT D 7' (QUILPUE): Nominatim no encontró resultados (consulta usada: 'PJE. GLACIAR NEF 41, QUILPUE, Chile')
+PJE. GLACIAR NEF 41 LT D 7                    | PJE. GLACIAR NEF 41                 | sigue sin encontrarse
+  [PDF-MAPA] sin mapa para 'LOTE A 2 C 2' (VILLA ALEMANA): Nominatim no encontró resultados (consulta usada: 'LOTE A 2, VILLA ALEMANA, Chile')
+LOTE A 2 C 2                                  | LOTE A 2                            | sigue sin encontrarse
+  [PDF-MAPA] sin mapa para 'HDA RENACA PC 154' (VINA DEL MAR): Nominatim no encontró resultados (consulta usada: 'HDA RENACA PC 154, VINA DEL MAR, Chile')
+HDA RENACA PC 154                             | HDA RENACA PC 154                   | sigue sin encontrarse
+  [PDF-MAPA] sin mapa para 'AV LAS AMERICAS REMANENTE 1' (VILLA ALEMANA): Nominatim no encontró resultados (consulta usada: 'AV LAS AMERICAS REMANENTE 1, VILLA ALEMANA, Chile')
+AV LAS AMERICAS REMANENTE 1                   | AV LAS AMERICAS REMANENTE 1         | sigue sin encontrarse
+LAS HIJUELAS 2615 B 6                         | LAS HIJUELAS 2615                   | OK -> -33.07411, -71.42770
+  [PDF-MAPA] sin mapa para 'PJE. ISLA MOCHA 892 CS 3' (QUILPUE): Nominatim no encontró resultados (consulta usada: 'PJE. ISLA MOCHA 892, QUILPUE, Chile')
+PJE. ISLA MOCHA 892 CS 3                      | PJE. ISLA MOCHA 892                 | sigue sin encontrarse
+
+RESUMEN: 2 de 12 se arreglaron con la mejora de limpieza.
+
+ARREGLADAS:
+  - CANAL SARMIENTO 6081 -F DP- 304 (PUERTO MONTT) -> -41.46851, -72.99401
+  - LAS HIJUELAS 2615 B 6 (QUILPUE) -> -33.07411, -71.42770
+
+SIGUEN SIN COORDENADAS (dirección rural/informal, sin calle real que mapear):
+  - LT B- 1 PROL CALLE EJERC. LIBER. 2735 (RIO BUENO)
+  - V MACKENNA EDIF C 7735 DP 702 (LA FLORIDA)
+  - HJ. 2 LOS MAITENES LT C (MULCHEN)
+  - AV G J ARTIGAS 3121 DP 813 (NUNOA)
+  - PJ PARTICULAR 64 -A (QUILPUE)
+  - PJE. GLACIAR NEF 41 LT D 7 (QUILPUE)
+  - LOTE A 2 C 2 (VILLA ALEMANA)
+  - HDA RENACA PC 154 (VINA DEL MAR)
+  - AV LAS AMERICAS REMANENTE 1 (VILLA ALEMANA)
+  - PJE. ISLA MOCHA 892 CS 3 (QUILPUE)
