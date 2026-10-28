@@ -230,13 +230,23 @@ def _geocodificar(direccion, comuna, cache, geocoder):
     return resultado
 
 
-def _mapa_png(lat, lon, ruta_png):
+def _mapa_png(lat, lon, ruta_imagen):
+    # OJO (auditoría 2026-10-28): el correo de resultados empezó a fallar con
+    # "Your message exceeded Google's message size limits" (Gmail rechaza
+    # adjuntos de más de 25 MB en total). La causa: cada mapa se guardaba
+    # como PNG (sin pérdida) de 600x350, y con muchas fichas nuevas en una
+    # corrida normal (reportando TODO lo nuevo de la semana, no solo ~30 de
+    # una validación) el PDF entero se volvía gigante. Ahora se guarda como
+    # JPEG con compresión (85% de calidad) - visualmente casi idéntico para
+    # un mapa, pero el archivo pesa una fracción de lo que pesaba antes.
     from staticmap import StaticMap, CircleMarker
     m = StaticMap(600, 350, url_template="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png")
     m.add_marker(CircleMarker((lon, lat), "#E8793A", 14))
     m.add_marker(CircleMarker((lon, lat), "#FFFFFF", 6))
     imagen = m.render(zoom=15)
-    imagen.save(ruta_png)
+    if imagen.mode != "RGB":
+        imagen = imagen.convert("RGB")  # JPEG no admite el canal de transparencia (RGBA) que entrega staticmap
+    imagen.save(ruta_imagen, format="JPEG", quality=85, optimize=True)
 
 
 def _ficha_propiedad(fila, carpeta_tmp, idx):
@@ -266,7 +276,7 @@ def _ficha_propiedad(fila, carpeta_tmp, idx):
     coords = (lat, lon) if not _vacio(lat) and not _vacio(lon) else None
     if coords:
         try:
-            ruta_png = carpeta_tmp / f"mapa_{idx}.png"
+            ruta_png = carpeta_tmp / f"mapa_{idx}.jpg"
             _mapa_png(coords[0], coords[1], ruta_png)
             elementos.append(RLImage(str(ruta_png), width=130 * mm, height=76 * mm))
             elementos.append(Spacer(1, 1 * mm))

@@ -132,13 +132,42 @@ def detectar_fallas():
     return fallas
 
 
+# OJO (auditoría 2026-10-28): Gmail rechaza un correo completo si, una vez
+# codificados, los adjuntos superan 25 MB. La codificación (base64) que usan
+# los adjuntos de correo infla el tamaño original en ~37%, así que para
+# quedar tranquilos bajo esos 25 MB hay que limitar los archivos SIN
+# codificar a bastante menos. Este fue justo el motivo real de que el correo
+# de resultados dejara de llegar: el PDF (con un mapa por propiedad) se
+# volvió demasiado pesado en una corrida normal con muchas propiedades
+# nuevas de la semana. Además de comprimir los mapas (ver generar_pdf.py),
+# se deja esta protección: si aun así pesa demasiado, el PDF se omite y el
+# correo se manda solo con el Excel - nunca debería volver a fallar en
+# silencio por este motivo.
+LIMITE_ADJUNTOS_BYTES = 18 * 1024 * 1024  # 18 MB sin codificar (~24.7 MB ya codificados)
+
+
 def enviar(destinatarios, asunto, html_body, adjuntar_excel):
     msg = EmailMessage()
     msg["Subject"] = asunto
     msg["From"] = CORREO_DESDE
     msg["To"] = destinatarios
+
+    tamano_excel = EXCEL.stat().st_size if EXCEL.exists() else 0
+    tamano_pdf = PDF.stat().st_size if PDF.exists() else 0
+    omitir_pdf = adjuntar_excel and tamano_pdf and (tamano_excel + tamano_pdf) > LIMITE_ADJUNTOS_BYTES
+
+    aviso_html = ""
+    if omitir_pdf:
+        mb = tamano_pdf / (1024 * 1024)
+        print(f"  [CORREO] El PDF pesa {mb:.1f} MB; junto con el Excel supera el límite de Gmail. "
+              f"Se manda el correo SOLO con el Excel (el PDF queda disponible para descargar en GitHub Actions).")
+        aviso_html = (
+            "<p style='color:#A05A00'>El PDF de esta corrida quedó muy pesado para enviarlo por correo "
+            "(límite de Gmail). Puedes descargarlo desde los resultados de la corrida en GitHub Actions.</p>"
+        )
+
     msg.set_content("Tu cliente de correo no muestra HTML. Revisa el Excel adjunto si corresponde.")
-    msg.add_alternative(html_body, subtype="html")
+    msg.add_alternative(html_body.replace("</h2>", "</h2>" + aviso_html, 1) if aviso_html else html_body, subtype="html")
 
     if adjuntar_excel and EXCEL.exists():
         msg.add_attachment(
@@ -149,9 +178,10 @@ def enviar(destinatarios, asunto, html_body, adjuntar_excel):
         )
 
     # El PDF es opcional: puede no existir (ej. no había ninguna propiedad
-    # nueva esta corrida, o la generación falló) y eso no debe impedir que
-    # el resto del correo (Excel incluido) se mande igual.
-    if adjuntar_excel and PDF.exists():
+    # nueva esta corrida, o la generación falló), o quedar fuera a propósito
+    # por pesar demasiado (ver omitir_pdf arriba) - en ningún caso eso debe
+    # impedir que el resto del correo (Excel incluido) se mande igual.
+    if adjuntar_excel and PDF.exists() and not omitir_pdf:
         msg.add_attachment(
             PDF.read_bytes(),
             maintype="application",
