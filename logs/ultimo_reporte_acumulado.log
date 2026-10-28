@@ -1,1 +1,18 @@
-  [ACUMULADO] No existe /home/runner/work/remates-chile-dashboard/remates-chile-dashboard/salidas/OPORTUNIDADES.xlsx (parece que 'Correr el programa' no llegó a generar el Excel esta corrida). Sin esto no se puede armar el reporte acumulado.
+  [ACUMULADO] 863 candidatas elegibles en el universo de hoy.
+  [ACUMULADO] 863 de esas son nuevas desde el 2026-10-20 (primera_vez registrada en esa fecha o después).
+  [ACUMULADO] de esas, las 50 mejores por % de oportunidad van al Excel.
+  [PDF-MAPA] sin mapa para 'LT B- 1 PROL CALLE EJERC. LIBER. 2735' (RIO BUENO): Nominatim no encontró resultados (consulta usada: 'LT B- 1 PROL CALLE EJERC. LIBER. 2735, RIO BUENO, Chile')
+  [PDF-MAPA] sin mapa para 'CANAL SARMIENTO 6081 -F DP- 304' (PUERTO MONTT): Nominatim no encontró resultados (consulta usada: 'CANAL SARMIENTO 6081 -F DP- 304, PUERTO MONTT, Chile')
+  [PDF-MAPA] sin mapa para 'V MACKENNA EDIF C 7735 DP 702' (LA FLORIDA): Nominatim no encontró resultados (consulta usada: 'V MACKENNA EDIF C 7735, LA FLORIDA, Chile')
+  [PDF-MAPA] sin mapa para 'HJ. 2 LOS MAITENES LT C' (MULCHEN): Nominatim no encontró resultados (consulta usada: 'HJ. 2 LOS MAITENES, MULCHEN, Chile')
+  [PDF-MAPA] sin mapa para 'AV G J ARTIGAS 3121 DP 813' (NUNOA): Nominatim no encontró resultados (consulta usada: 'AV G J ARTIGAS 3121, NUNOA, Chile')
+  [PDF-MAPA] sin mapa para 'PJ PARTICULAR 64 -A' (QUILPUE): Nominatim no encontró resultados (consulta usada: 'PJ PARTICULAR 64 -A, QUILPUE, Chile')
+  [PDF-MAPA] sin mapa para 'PJE. GLACIAR NEF 41 LT D 7' (QUILPUE): Nominatim no encontró resultados (consulta usada: 'PJE. GLACIAR NEF 41, QUILPUE, Chile')
+  [PDF-MAPA] sin mapa para 'LOTE A 2 C 2' (VILLA ALEMANA): Nominatim no encontró resultados (consulta usada: 'LOTE A 2 C 2, VILLA ALEMANA, Chile')
+  [PDF-MAPA] sin mapa para 'HDA RENACA PC 154' (VINA DEL MAR): Nominatim no encontró resultados (consulta usada: 'HDA RENACA PC 154, VINA DEL MAR, Chile')
+  [PDF-MAPA] sin mapa para 'AV LAS AMERICAS REMANENTE 1' (VILLA ALEMANA): Nominatim no encontró resultados (consulta usada: 'AV LAS AMERICAS REMANENTE 1, VILLA ALEMANA, Chile')
+  [PDF-MAPA] sin mapa para 'LAS HIJUELAS 2615 B 6' (QUILPUE): Nominatim no encontró resultados (consulta usada: 'LAS HIJUELAS 2615 B 6, QUILPUE, Chile')
+  [PDF-MAPA] sin mapa para 'PJE. ISLA MOCHA 892 CS 3' (QUILPUE): Nominatim no encontró resultados (consulta usada: 'PJE. ISLA MOCHA 892, QUILPUE, Chile')
+  [ACUMULADO] Excel: REPORTE_ACUMULADO.xlsx (50 filas)
+  [ACUMULADO] PDF: REPORTE_ACUMULADO.pdf (30 fichas, las mejores del Excel)
+  [ACUMULADO] Enviado a rbastias1991@gmail.com.
