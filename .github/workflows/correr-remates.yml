@@ -15,6 +15,9 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: write
+
 jobs:
   barrido:
     runs-on: ubuntu-latest
@@ -106,11 +109,39 @@ jobs:
         # corriendo igual aunque este paso falle de verdad - lo único que
         # cambia es que ahora SÍ queda visible (rojo) si el envío falla.
         if: always()
-        run: python enviar_correo.py
+        run: |
+          # OJO (2026-10-27, parte 2): además de dejar el paso en rojo cuando
+          # falla, guardo TODO lo que va imprimiendo el script (incluido
+          # cualquier error) en un archivo de texto. La contraseña de Gmail
+          # nunca se imprime en ningún "print()" del script, así que este
+          # archivo es seguro de guardar en el repositorio (no público el
+          # repo, igual se evita a propósito). Esto es para poder revisar el
+          # motivo exacto de una falla sin depender de los registros de
+          # GitHub Actions, que no siempre se pueden leer desde todos lados.
+          mkdir -p logs
+          set -o pipefail
+          python enviar_correo.py 2>&1 | tee logs/ultimo_envio_correo.log
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
           CORREO_DESDE: rbastias1991@gmail.com
           CORREO_PARA: rbastias1991@gmail.com
+
+      - name: Guardar el registro del envío del correo (para poder revisarlo después)
+        # Este archivo (logs/ultimo_envio_correo.log) se sobrescribe en cada
+        # corrida - siempre refleja el ÚLTIMO intento de envío, falle o no.
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -f logs/ultimo_envio_correo.log ]; then
+            git add logs/ultimo_envio_correo.log
+            if ! git diff --cached --quiet; then
+              git commit -m "chore: registro del último intento de envío de correo [skip ci]"
+              git push
+            fi
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Guardar los cambios de hoy en la base de precios de mercado (para la próxima corrida)
         # Así la nube va quedando cada vez más completa sola, sin que Rodrigo
