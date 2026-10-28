@@ -14,6 +14,16 @@ on:
           calcule contra esa fecha. En corridas normales se deja en "false".
         type: boolean
         default: false
+      reporte_acumulado_desde:
+        description: >-
+          Opcional, "de una sola vez" (pedido de Rodrigo, 2026-10-28): si se
+          pone una fecha (AAAA-MM-DD), además de la corrida normal se arma y
+          se manda un Excel+PDF aparte con TODO lo que apareció como
+          oportunidad nueva desde esa fecha hasta hoy, sin importar cuántas
+          corridas se hicieron en el medio. Se deja vacío en corridas
+          normales.
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -105,6 +115,20 @@ jobs:
           set -o pipefail
           python remates_v2.py 2>&1 | tee logs/ultima_corrida.log
 
+      - name: Armar y mandar el reporte acumulado (solo si se pidió una fecha)
+        # Ver reporte_acumulado.py para el detalle. Reutiliza el Excel y la
+        # base de datos que acaba de dejar listos el paso anterior - no
+        # vuelve a barrer ninguna fuente.
+        if: ${{ always() && inputs.reporte_acumulado_desde != '' }}
+        run: |
+          mkdir -p logs
+          set -o pipefail
+          python reporte_acumulado.py "${{ inputs.reporte_acumulado_desde }}" 2>&1 | tee logs/ultimo_reporte_acumulado.log
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          CORREO_DESDE: rbastias1991@gmail.com
+          CORREO_PARA: rbastias1991@gmail.com
+
       - name: Enviar el correo con el resumen y el Excel adjunto
         # OJO (2026-10-27): este paso NO lleva "continue-on-error: true" a
         # propósito. Con ese flag puesto, GitHub Actions siempre reporta este
@@ -143,7 +167,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -- logs/ultima_corrida.log logs/ultimo_envio_correo.log 2>/dev/null || true
+          git add -- logs/ultima_corrida.log logs/ultimo_envio_correo.log logs/ultimo_reporte_acumulado.log 2>/dev/null || true
           if ! git diff --cached --quiet; then
             git commit -m "chore: registros de la última corrida [skip ci]"
             git push
