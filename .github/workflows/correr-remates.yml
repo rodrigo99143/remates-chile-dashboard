@@ -94,7 +94,16 @@ jobs:
         # visible si el programa se cae antes de llegar a generar el Excel
         # (que es, justamente, lo que explicaría por qué "enviar_correo.py"
         # no encuentra el Excel y nunca llega a intentar mandar el correo).
-        run: python remates_v2.py
+        run: |
+          # OJO (2026-10-28): además de este archivo, también se guarda la
+          # salida COMPLETA de esta corrida en logs/ultima_corrida.log (ver
+          # paso "Guardar el registro del envío del correo", que ahora sube
+          # los dos archivos) - para poder revisar, por ejemplo, por qué no
+          # se generó el PDF en alguna corrida, sin depender de los
+          # registros de GitHub Actions.
+          mkdir -p logs
+          set -o pipefail
+          python remates_v2.py 2>&1 | tee logs/ultima_corrida.log
 
       - name: Enviar el correo con el resumen y el Excel adjunto
         # OJO (2026-10-27): este paso NO lleva "continue-on-error: true" a
@@ -126,19 +135,18 @@ jobs:
           CORREO_DESDE: rbastias1991@gmail.com
           CORREO_PARA: rbastias1991@gmail.com
 
-      - name: Guardar el registro del envío del correo (para poder revisarlo después)
-        # Este archivo (logs/ultimo_envio_correo.log) se sobrescribe en cada
-        # corrida - siempre refleja el ÚLTIMO intento de envío, falle o no.
+      - name: Guardar los registros de la corrida (para poder revisarlos después)
+        # Estos dos archivos (logs/ultima_corrida.log y
+        # logs/ultimo_envio_correo.log) se sobrescriben en cada corrida -
+        # siempre reflejan el ÚLTIMO intento, falle o no.
         if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if [ -f logs/ultimo_envio_correo.log ]; then
-            git add logs/ultimo_envio_correo.log
-            if ! git diff --cached --quiet; then
-              git commit -m "chore: registro del último intento de envío de correo [skip ci]"
-              git push
-            fi
+          git add -- logs/ultima_corrida.log logs/ultimo_envio_correo.log 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: registros de la última corrida [skip ci]"
+            git push
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
