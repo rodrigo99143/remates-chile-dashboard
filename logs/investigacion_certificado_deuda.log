@@ -1,7 +1,10 @@
 ==========================================================================================
 PASO 1: revisar las páginas públicas que describen el trámite
 ==========================================================================================
-  GET https://www.chileatiende.gob.cl/fichas/4288-certificado-de-pago-de-deuda-de-contribuciones-de-bienes-raices -> HTTP 403 (919 bytes)
+  GET https://www.chileatiende.gob.cl/fichas/4288-certificado-de-pago-de-deuda-de-contribuciones-de-bienes-raices -> HTTP 200 (154781 bytes)
+  [https://www.chileatiende.gob.cl/fichas/4288-certificado-de-pago-de-deuda-de-contribuciones-de-bienes-raices] posibles endpoints/strings con 'tgr.cl' + v1/api/certificado/deuda:
+     - https://www.tgr.cl/tramites-tgr/certificado-de-deuda-de-contribuciones/
+     - https://www.tgr.cl/tramites-tgr/certificado-de-pago-de-deudas-de-contribuciones/
   GET https://www.tgr.cl/tramites-tgr/certificado-de-pago-de-deudas-de-contribuciones/ -> HTTP 200 (583802 bytes)
   [https://www.tgr.cl/tramites-tgr/certificado-de-pago-de-deudas-de-contribuciones/] posibles endpoints/strings con 'tgr.cl' + v1/api/certificado/deuda:
      - https://ayuda.tgr.cl/hc/es-419/articles/10966102406167-Certificados-de-Contribuciones
@@ -35,18 +38,179 @@ PASO 1: revisar las páginas públicas que describen el trámite
      - https://ayuda.tgr.cl/hc/es-419/articles/9831207572375-Solicitar-certificado-de-deudas-ex-Cora
      - https://ayuda.tgr.cl/hc/es-419/categories/360001296194-Certificados-y-Comprobantes
 
-  Scripts JS encontrados en la(s) página(s) de la TGR: 2
+  Scripts JS encontrados en la(s) página(s) de la TGR: 3
      - https://tgr.cl/assets/ajax/libs/jquery/jquery-3.6.0.min.js
+     - https://www.tgr.cl//f1-na.readspeaker.com/script/6404/ReadSpeaker.js?pids=embhl
      - https://www.tgr.cl//www.google.com/jsapi?ver=7.1
+
+==========================================================================================
+PASO 1b: revisar links/botones de la página de la TGR (a dónde lleva el trámite)
+==========================================================================================
+  GET https://www.chileatiende.gob.cl/fichas/4288-certificado-de-pago-de-deuda-de-contribuciones-de-bienes-raices -> HTTP 200 (154781 bytes)
+  [https://www.chileatiende.gob.cl/fichas/4288-certificado-de-pago-de-deuda-de-contribuciones-de-bienes-raices] links que mencionan certificado/deuda/tramite/clave/login/e-services/sii:
+     - href='javascript:void(0);'  texto='Solicita el certificado \n                                                     Co'
+     - href='https://www.tgr.cl/tramites-tgr/certificado-de-pago-de-deudas-de-contribuciones/'  texto='sitio web de la TGR'
+     - href='https://www.tgr.cl/tramites-tgr/certificado-de-deuda-de-contribuciones/'  texto='Entendido, Ir al trámite'
+     - href='fichas/3229-pago-de-contribuciones-de-bienes-raices-en-sii'  texto='Pago de contribuciones de bienes raíces en SII'
+     - href='fichas/4261-certificado-de-deuda-fiscal'  texto='Certificado de deuda fiscal'
+  GET https://www.tgr.cl/tramites-tgr/certificado-de-pago-de-deudas-de-contribuciones/ -> HTTP 200 (583802 bytes)
+  [https://www.tgr.cl/tramites-tgr/certificado-de-pago-de-deudas-de-contribuciones/] links que mencionan certificado/deuda/tramite/clave/login/e-services/sii:
+     - href='https://www.tesoreria.cl/LoginPortalCognito/login?go=cf12_w12&sp=%2Ftramites-tgr%2Fmi-cartola-fiscal%2F'  texto='Revisar mi cartola'
+     - href='https://tgr.gob.cl/contribuciones/'  texto='Pago de Contribuciones'
+     - href='https://tgr.gob.cl/tramites-tgr/pago-aduana-agentes/'  texto='Pago Aduana Agentes'
+     - href='https://tgr.gob.cl/tramites-tgr/pago-aduana-importadores/'  texto='Pago Aduana Importadores'
+     - href='https://tgr.gob.cl/tramites-tgr/rectificatoria-impuesto-verde/'  texto='Rectificatoria Impuesto Verde'
+     - href='https://tgr.gob.cl/tramites-tgr/venta-de-estampillas-exclusivo-poder-judicial/'  texto='Venta de Estampillas Exclusivo Poder Judicial'
+     - href='https://tgr.gob.cl/ley-de-reconstruccion-alivio-financiero-y-regularizacion-de-deudas/'  texto='Nuevos Beneficios Ley de Reconstrucción'
+     - href='https://tgr.gob.cl/convenios-de-pago/'  texto='Crear convenio de deudas fiscales'
+     - href='https://tgr.gob.cl/convenios-de-pago/'  texto='Crear convenio de deudas de contribuciones'
+     - href='https://tgr.gob.cl/tramites-tgr/cuota-de-ajuste/'  texto='Pagar cuota de ajuste'
+     - href='https://tgr.gob.cl/tramites-tgr/convenios-vigentes/'  texto='Convenios Vigentes'
+     - href='https://tgr.gob.cl/tramites-tgr/convenios-caducados/'  texto='Convenios Caducados'
+     - href='https://tgr.gob.cl/tramites-tgr/exclusiones-sii/'  texto='Exclusiones SII'
+     - href='https://tgr.gob.cl/tramites-tgr/exclusiones-tgr/'  texto='Exclusiones TGR'
+     - href='https://tgr.gob.cl/tramites-tgr/imprimir-comprobante-de-resolucion/'  texto='Imprimir Comprobante de Resolución'
+     - href='https://tgr.gob.cl/tramites-tgr/imprimir-estado-de-pago-de-convenio/'  texto='Imprimir Estado de Pago de Convenio'
+     - href='https://tgr.gob.cl/tramites-tgr/imprimir-cuotas-de-convenios-vigentes/'  texto='Imprimir Cuotas de Convenios Vigentes'
+     - href='https://tgr.gob.cl/tramites-tgr/oferta-economica-de-casinos/'  texto='Oferta económica casinos Ley N° 19.995 / 2005'
+     - href='https://tgr.gob.cl/tramites-tgr/f10-tribunal-de-cuentas/'  texto='Tribunal de Cuentas'
+     - href='https://tgr.gob.cl/tramites-tgr/f23-notarios-y-martilleros-publicos/'  texto='Notarios y Martilleros Públicos'
+     - href='https://tgr.gob.cl/tramites-tgr/multas-juzgados/'  texto='Multas Juzgados y Tribunales (excluye Juzgados de Policía Local)'
+     - href='https://tgr.gob.cl/tramites-tgr/multas-subtel/'  texto='Multas SUBTEL'
+     - href='https://tgr.gob.cl/tramites-tgr/multas-ley-de-transparencia/'  texto='Multas Ley de Transparencia'
+     - href='https://tgr.gob.cl/tramites-tgr/pago-de-multas-aplicadas-por-servicios-publicos/'  texto='Pago de Multas Aplicadas por Servicio Público'
+     - href='https://tgr.gob.cl/tramites-tgr/subsidio-ley-20378/'  texto='Subsidio de Ley 20.378'
+     - href='https://tgr.gob.cl/tramites-tgr/pago-informe-ambiental-sernapesca/'  texto='SERNAPESCA Pago Informe Ambiental'
+     - href='https://tgr.gob.cl/tramites-tgr/reintegro-de-instituciones-f112/'  texto='Reintegro de Instituciones'
+     - href='https://tgr.gob.cl/tramites-tgr/recaudacion-fondo-de-estabilizacion-de-tarifas-electricas-ley-21-472/'  texto='Recaudación Fondo de Estabilización de Tarifas Eléctricas Ley 21.472'
+     - href='https://tgr.gob.cl/solicita-pagar-cuotas-de-deuda-ex-cora/'  texto='Solicitar pagar cuotas de deuda Ex CORA (Corporación de Reforma Agraria)'
+     - href='https://tgr.gob.cl/solicita-pagar-consignacion-por-oferta-de-pago/'  texto='Solicitar consignar deudas morosas por oferta de pago rechazada'
+     - href='https://tgr.gob.cl/tramites-tgr/bonificacion-de-zonas-extremas/'  texto='Bonificación de Zonas Extremas'
+     - href='https://tgr.gob.cl/tramites-tgr/solicitud-de-devolucion-impuesto-verde-a-taxistas/'  texto='Solicitud de Devolución Impuesto Verde a Taxistas'
+     - href='https://tgr.gob.cl/tramites-tgr/registro-de-personas-juridicas/'  texto='Registro de Personas Jurídicas'
+     - href='https://tgr.gob.cl/tramites-tgr/devolucion-iva-turista/'  texto='Devolución IVA Turista'
+     - href='https://tgr.gob.cl/pago-deuda-historica-profesores/'  texto='Pago deuda histórica profesores'
+     - href='https://tgr.gob.cl/tramites-tgr/beneficio-trabajadores-portuarios-eventuales/'  texto='Beneficio Trabajadores Portuarios Eventuales'
+     - href='https://tgr.gob.cl/tramites-tgr/bonificacion-forestal-y-bosque-nativo/'  texto='Bonificación Forestal y Bosque Nativo'
+     - href='https://tgr.gob.cl/tramites-tgr/bonificacion-apv-ley-3500/'  texto='Bonificación APV Ley 3.500'
+     - href='https://tgr.gob.cl/tramites-tgr/comision-nacional-de-riego-cnr-subpesca-y-portuarios/'  texto='Comisión Nacional de Riego CNR, SUBPESCA y Portuarios'
+     - href='/tramites-tgr/consulta-de-devolucion-impuesto-verde-a-taxistas/'  texto='Solicitar el estado de la devolución del Impuesto Verde a taxistas (Ley 20.780)'
+     - href='https://tgr.gob.cl/tramites-tgr/deudas-compensadas/'  texto='Deudas Compensadas'
+     - href='https://tgr.gob.cl/tramites-tgr/retenciones-credito-universitario/'  texto='Retenciones Crédito Universitario'
+     - href='https://tgr.gob.cl/tramites-tgr/estado-reintegro-leyes-18708-19420/'  texto='Estado Reintegro Leyes 18.708-19.420'
+     - href='https://tgr.gob.cl/tramites-tgr/consulta-devoluciones/'  texto='Consulta Renta'
+     - href='https://tgr.gob.cl/tramites-tgr/devolucion-pagos-sence/'  texto='Devolución Pagos Sence'
+     - href='https://tgr.gob.cl/tramites-tgr/fomento-empleo-ley-20330/'  texto='Fomento Empleo Ley 20.330'
+     - href='https://tgr.gob.cl/tramites-tgr/devolucion-contribuciones/'  texto='Devolución Contribuciones'
+     - href='https://tgr.gob.cl/tramites-tgr/otras-devoluciones-de-iva/'  texto='Otras Devoluciones de IVA'
+     - href='https://tgr.gob.cl/tramites-tgr/otras-devoluciones/'  texto='Otras Devoluciones'
+     - href='/tramites-tgr/mi-cartola-fiscal/'  texto='Consultar Devoluciones No Cobradas'
+     - href='https://tgr.gob.cl/certificado-deuda-ex-cora/'  texto='Certificado Deuda Ex Cora'
+     - href='https://tgr.gob.cl/solicitar-actualizacion-de-propietarios-de-predios-con-deuda-ex-cora/'  texto='Solicitar actualización de propietarios de predios con deuda Ex Cora'
+     - href='https://tgr.gob.cl/certificado-deudas-fiscales/'  texto='Certificado Deudas Fiscales'
+     - href='https://tgr.gob.cl/tramites-tgr/movimientos-deudas-fiscales/'  texto='Certificado Movimientos Deudas Fiscales'
+     - href='https://tgr.gob.cl/certificado-pago-deudas-fiscales/'  texto='Certificado Pagos Deudas Fiscales'
+     - href='https://tgr.gob.cl/certificado-chile-proveedores/'  texto='Certificado de Registro de Proveedores Mercado Público'
+     - href='https://tgr.gob.cl/certificado-deuda-contribuciones/'  texto='Certificado Deudas de Contribuciones'
+     - href='https://tgr.gob.cl/certificados-pago-deudas-contribuciones/'  texto='Certificado Pagos Deudas de Contribuciones'
+     - href='https://tgr.gob.cl/certificado-movimientos-de-contribuciones/'  texto='Certificado Movimientos de Contribuciones'
+     - href='https://tgr.gob.cl/tramites-tgr/pagos-por-bonificacion-zonas-extremas/'  texto='Certificado Pagos por Bonificación Zonas Extremas'
+     - href='https://tgr.gob.cl/tramites-tgr/pagos-patentes-mineras/'  texto='Certificado Pagos Patentes Mineras'
+     - href='https://donaciones.hacienda.gob.cl/certificados'  texto='Certificado de Donaciones'
+     - href='https://tgr.gob.cl/tramites-tgr/comprobantes-pagos-sitio/'  texto='Comprobantes Pagos Sitio'
+     - href='https://tgr.gob.cl/tramites-tgr/comprobantes-pagos-cajas/'  texto='Comprobantes Pagos Cajas'
+     - href='https://tgr.gob.cl/tramites-tgr/consulta-pagos-caja-banco/'  texto='Consulta Pagos Caja Banco'
+     - href='https://tgr.gob.cl/tramites-tgr/mi-cartola-fiscal/'  texto='Mi Cartola Fiscal'
+     - href='https://tgr.gob.cl/tramites-tgr/consulta-de-movimientos-rechazados/'  texto='Consulta de Movimientos Rechazados'
+     - href='https://tgr.gob.cl/tramites-tgr/consulta-rechazos-agente-aduana/'  texto='Consulta Rechazos Agente Aduana'
+     - href='https://tgr.gob.cl/tramites-tgr/consulta-de-pago-automatico-de-bienes-raices/'  texto='Consulta de pago automático de bienes raíces (PAC)'
+     - href='https://tgr.gob.cl/tramites-tgr/'  texto='Trámites TGR'
+     - href='/listado-de-tramites-tgr/'  texto='Listado de trámites'
+     - href='/tramites-tgr/indicadores-economicos/'  texto='Indicadores Económicos'
+  GET https://www.tgr.cl/tramites-tgr/certificado-de-deuda-de-contribuciones/ -> HTTP 200 (583576 bytes)
+  [https://www.tgr.cl/tramites-tgr/certificado-de-deuda-de-contribuciones/] links que mencionan certificado/deuda/tramite/clave/login/e-services/sii:
+     - href='https://www.tesoreria.cl/LoginPortalCognito/login?go=cf12_w12&sp=%2Ftramites-tgr%2Fmi-cartola-fiscal%2F'  texto='Revisar mi cartola'
+     - href='https://tgr.gob.cl/contribuciones/'  texto='Pago de Contribuciones'
+     - href='https://tgr.gob.cl/tramites-tgr/pago-aduana-agentes/'  texto='Pago Aduana Agentes'
+     - href='https://tgr.gob.cl/tramites-tgr/pago-aduana-importadores/'  texto='Pago Aduana Importadores'
+     - href='https://tgr.gob.cl/tramites-tgr/rectificatoria-impuesto-verde/'  texto='Rectificatoria Impuesto Verde'
+     - href='https://tgr.gob.cl/tramites-tgr/venta-de-estampillas-exclusivo-poder-judicial/'  texto='Venta de Estampillas Exclusivo Poder Judicial'
+     - href='https://tgr.gob.cl/ley-de-reconstruccion-alivio-financiero-y-regularizacion-de-deudas/'  texto='Nuevos Beneficios Ley de Reconstrucción'
+     - href='https://tgr.gob.cl/convenios-de-pago/'  texto='Crear convenio de deudas fiscales'
+     - href='https://tgr.gob.cl/convenios-de-pago/'  texto='Crear convenio de deudas de contribuciones'
+     - href='https://tgr.gob.cl/tramites-tgr/cuota-de-ajuste/'  texto='Pagar cuota de ajuste'
+     - href='https://tgr.gob.cl/tramites-tgr/convenios-vigentes/'  texto='Convenios Vigentes'
+     - href='https://tgr.gob.cl/tramites-tgr/convenios-caducados/'  texto='Convenios Caducados'
+     - href='https://tgr.gob.cl/tramites-tgr/exclusiones-sii/'  texto='Exclusiones SII'
+     - href='https://tgr.gob.cl/tramites-tgr/exclusiones-tgr/'  texto='Exclusiones TGR'
+     - href='https://tgr.gob.cl/tramites-tgr/imprimir-comprobante-de-resolucion/'  texto='Imprimir Comprobante de Resolución'
+     - href='https://tgr.gob.cl/tramites-tgr/imprimir-estado-de-pago-de-convenio/'  texto='Imprimir Estado de Pago de Convenio'
+     - href='https://tgr.gob.cl/tramites-tgr/imprimir-cuotas-de-convenios-vigentes/'  texto='Imprimir Cuotas de Convenios Vigentes'
+     - href='https://tgr.gob.cl/tramites-tgr/oferta-economica-de-casinos/'  texto='Oferta económica casinos Ley N° 19.995 / 2005'
+     - href='https://tgr.gob.cl/tramites-tgr/f10-tribunal-de-cuentas/'  texto='Tribunal de Cuentas'
+     - href='https://tgr.gob.cl/tramites-tgr/f23-notarios-y-martilleros-publicos/'  texto='Notarios y Martilleros Públicos'
+     - href='https://tgr.gob.cl/tramites-tgr/multas-juzgados/'  texto='Multas Juzgados y Tribunales (excluye Juzgados de Policía Local)'
+     - href='https://tgr.gob.cl/tramites-tgr/multas-subtel/'  texto='Multas SUBTEL'
+     - href='https://tgr.gob.cl/tramites-tgr/multas-ley-de-transparencia/'  texto='Multas Ley de Transparencia'
+     - href='https://tgr.gob.cl/tramites-tgr/pago-de-multas-aplicadas-por-servicios-publicos/'  texto='Pago de Multas Aplicadas por Servicio Público'
+     - href='https://tgr.gob.cl/tramites-tgr/subsidio-ley-20378/'  texto='Subsidio de Ley 20.378'
+     - href='https://tgr.gob.cl/tramites-tgr/pago-informe-ambiental-sernapesca/'  texto='SERNAPESCA Pago Informe Ambiental'
+     - href='https://tgr.gob.cl/tramites-tgr/reintegro-de-instituciones-f112/'  texto='Reintegro de Instituciones'
+     - href='https://tgr.gob.cl/tramites-tgr/recaudacion-fondo-de-estabilizacion-de-tarifas-electricas-ley-21-472/'  texto='Recaudación Fondo de Estabilización de Tarifas Eléctricas Ley 21.472'
+     - href='https://tgr.gob.cl/solicita-pagar-cuotas-de-deuda-ex-cora/'  texto='Solicitar pagar cuotas de deuda Ex CORA (Corporación de Reforma Agraria)'
+     - href='https://tgr.gob.cl/solicita-pagar-consignacion-por-oferta-de-pago/'  texto='Solicitar consignar deudas morosas por oferta de pago rechazada'
+     - href='https://tgr.gob.cl/tramites-tgr/bonificacion-de-zonas-extremas/'  texto='Bonificación de Zonas Extremas'
+     - href='https://tgr.gob.cl/tramites-tgr/solicitud-de-devolucion-impuesto-verde-a-taxistas/'  texto='Solicitud de Devolución Impuesto Verde a Taxistas'
+     - href='https://tgr.gob.cl/tramites-tgr/registro-de-personas-juridicas/'  texto='Registro de Personas Jurídicas'
+     - href='https://tgr.gob.cl/tramites-tgr/devolucion-iva-turista/'  texto='Devolución IVA Turista'
+     - href='https://tgr.gob.cl/pago-deuda-historica-profesores/'  texto='Pago deuda histórica profesores'
+     - href='https://tgr.gob.cl/tramites-tgr/beneficio-trabajadores-portuarios-eventuales/'  texto='Beneficio Trabajadores Portuarios Eventuales'
+     - href='https://tgr.gob.cl/tramites-tgr/bonificacion-forestal-y-bosque-nativo/'  texto='Bonificación Forestal y Bosque Nativo'
+     - href='https://tgr.gob.cl/tramites-tgr/bonificacion-apv-ley-3500/'  texto='Bonificación APV Ley 3.500'
+     - href='https://tgr.gob.cl/tramites-tgr/comision-nacional-de-riego-cnr-subpesca-y-portuarios/'  texto='Comisión Nacional de Riego CNR, SUBPESCA y Portuarios'
+     - href='/tramites-tgr/consulta-de-devolucion-impuesto-verde-a-taxistas/'  texto='Solicitar el estado de la devolución del Impuesto Verde a taxistas (Ley 20.780)'
+     - href='https://tgr.gob.cl/tramites-tgr/deudas-compensadas/'  texto='Deudas Compensadas'
+     - href='https://tgr.gob.cl/tramites-tgr/retenciones-credito-universitario/'  texto='Retenciones Crédito Universitario'
+     - href='https://tgr.gob.cl/tramites-tgr/estado-reintegro-leyes-18708-19420/'  texto='Estado Reintegro Leyes 18.708-19.420'
+     - href='https://tgr.gob.cl/tramites-tgr/consulta-devoluciones/'  texto='Consulta Renta'
+     - href='https://tgr.gob.cl/tramites-tgr/devolucion-pagos-sence/'  texto='Devolución Pagos Sence'
+     - href='https://tgr.gob.cl/tramites-tgr/fomento-empleo-ley-20330/'  texto='Fomento Empleo Ley 20.330'
+     - href='https://tgr.gob.cl/tramites-tgr/devolucion-contribuciones/'  texto='Devolución Contribuciones'
+     - href='https://tgr.gob.cl/tramites-tgr/otras-devoluciones-de-iva/'  texto='Otras Devoluciones de IVA'
+     - href='https://tgr.gob.cl/tramites-tgr/otras-devoluciones/'  texto='Otras Devoluciones'
+     - href='/tramites-tgr/mi-cartola-fiscal/'  texto='Consultar Devoluciones No Cobradas'
+     - href='https://tgr.gob.cl/certificado-deuda-ex-cora/'  texto='Certificado Deuda Ex Cora'
+     - href='https://tgr.gob.cl/solicitar-actualizacion-de-propietarios-de-predios-con-deuda-ex-cora/'  texto='Solicitar actualización de propietarios de predios con deuda Ex Cora'
+     - href='https://tgr.gob.cl/certificado-deudas-fiscales/'  texto='Certificado Deudas Fiscales'
+     - href='https://tgr.gob.cl/tramites-tgr/movimientos-deudas-fiscales/'  texto='Certificado Movimientos Deudas Fiscales'
+     - href='https://tgr.gob.cl/certificado-pago-deudas-fiscales/'  texto='Certificado Pagos Deudas Fiscales'
+     - href='https://tgr.gob.cl/certificado-chile-proveedores/'  texto='Certificado de Registro de Proveedores Mercado Público'
+     - href='https://tgr.gob.cl/certificado-deuda-contribuciones/'  texto='Certificado Deudas de Contribuciones'
+     - href='https://tgr.gob.cl/certificados-pago-deudas-contribuciones/'  texto='Certificado Pagos Deudas de Contribuciones'
+     - href='https://tgr.gob.cl/certificado-movimientos-de-contribuciones/'  texto='Certificado Movimientos de Contribuciones'
+     - href='https://tgr.gob.cl/tramites-tgr/pagos-por-bonificacion-zonas-extremas/'  texto='Certificado Pagos por Bonificación Zonas Extremas'
+     - href='https://tgr.gob.cl/tramites-tgr/pagos-patentes-mineras/'  texto='Certificado Pagos Patentes Mineras'
+     - href='https://donaciones.hacienda.gob.cl/certificados'  texto='Certificado de Donaciones'
+     - href='https://tgr.gob.cl/tramites-tgr/comprobantes-pagos-sitio/'  texto='Comprobantes Pagos Sitio'
+     - href='https://tgr.gob.cl/tramites-tgr/comprobantes-pagos-cajas/'  texto='Comprobantes Pagos Cajas'
+     - href='https://tgr.gob.cl/tramites-tgr/consulta-pagos-caja-banco/'  texto='Consulta Pagos Caja Banco'
+     - href='https://tgr.gob.cl/tramites-tgr/mi-cartola-fiscal/'  texto='Mi Cartola Fiscal'
+     - href='https://tgr.gob.cl/tramites-tgr/consulta-de-movimientos-rechazados/'  texto='Consulta de Movimientos Rechazados'
+     - href='https://tgr.gob.cl/tramites-tgr/consulta-rechazos-agente-aduana/'  texto='Consulta Rechazos Agente Aduana'
+     - href='https://tgr.gob.cl/tramites-tgr/consulta-de-pago-automatico-de-bienes-raices/'  texto='Consulta de pago automático de bienes raíces (PAC)'
+     - href='https://tgr.gob.cl/tramites-tgr/'  texto='Trámites TGR'
+     - href='/listado-de-tramites-tgr/'  texto='Listado de trámites'
+     - href='/tramites-tgr/indicadores-economicos/'  texto='Indicadores Económicos'
 
 ==========================================================================================
 PASO 2: revisar esos scripts JS en busca de endpoints (bundle de Angular/React)
 ==========================================================================================
   GET https://tgr.cl/assets/ajax/libs/jquery/jquery-3.6.0.min.js -> HTTP 200 (89501 bytes)
+  GET https://www.tgr.cl//f1-na.readspeaker.com/script/6404/ReadSpeaker.js?pids=embhl -> HTTP 403 (243 bytes)
   GET https://www.tgr.cl//www.google.com/jsapi?ver=7.1 -> HTTP 403 (243 bytes)
 
 ==========================================================================================
-RESUMEN PASO 1-2: 14 pistas de endpoint encontradas en total.
+RESUMEN PASO 1-2: 16 pistas de endpoint encontradas en total.
 ==========================================================================================
   - https://ayuda.tgr.cl/hc/es-419/articles/10966102406167-Certificados-de-Contribuciones
   - https://ayuda.tgr.cl/hc/es-419/articles/10967547688343-Pagar-impuestos-fiscales-Pago-impuestos-fiscales-Pago-Total-de-Deudas-Fiscales
@@ -62,6 +226,8 @@ RESUMEN PASO 1-2: 14 pistas de endpoint encontradas en total.
   - https://ayuda.tgr.cl/hc/es-419/articles/360063744693-Solicitar-certificado-de-deuda-de-contribuciones
   - https://ayuda.tgr.cl/hc/es-419/articles/9831207572375-Solicitar-certificado-de-deudas-ex-Cora
   - https://ayuda.tgr.cl/hc/es-419/categories/360001296194-Certificados-y-Comprobantes
+  - https://www.tgr.cl/tramites-tgr/certificado-de-deuda-de-contribuciones/
+  - https://www.tgr.cl/tramites-tgr/certificado-de-pago-de-deudas-de-contribuciones/
 
 ==========================================================================================
 PASO 3: probar un pedido directo con la propiedad de Lastarria 70 (070-1713-60)
@@ -69,7 +235,7 @@ PASO 3: probar un pedido directo con la propiedad de Lastarria 70 (070-1713-60)
   Propiedad de prueba: {'region': 'Región Metropolitana de Santiago', 'comuna': 'Santiago', 'rol': '070-1713-60'}
   GET https://remates.tgr.cl/v1/getCertificadoDeudaContribuciones -> HTTP 200 | primeros 200 caracteres: '<!doctype html>\n<html lang="es-CL" data-critters-container>\n<head><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <meta charset="utf-8">\n  <title>TGR | Remates</title>\n  <base h'
   GET https://remates.tgr.cl/v1/certificadoDeuda -> HTTP 200 | primeros 200 caracteres: '<!doctype html>\n<html lang="es-CL" data-critters-container>\n<head><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <meta charset="utf-8">\n  <title>TGR | Remates</title>\n  <base h'
-  GET https://www.tgr.cl/v1/getCertificadoDeudaContribuciones -> HTTP 403 | primeros 200 caracteres: '<?xml version="1.0" encoding="UTF-8"?>\n<Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>AF031MREZV96WHXM</RequestId><HostId>IrRsXgDOaEOV+kKIcMNZ0lu2fOPTQvsLmDXgl1S0/M1BkaoMvC'
+  GET https://www.tgr.cl/v1/getCertificadoDeudaContribuciones -> HTTP 403 | primeros 200 caracteres: '<?xml version="1.0" encoding="UTF-8"?>\n<Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>SYZMX6B0YXVK962V</RequestId><HostId>07/y486gKFVDEmWNT4ptfnaN9UAtwka5Nosv9WAorWCvj0rRL0'
 
 ==========================================================================================
 CONCLUSIÓN (a completar por Claude leyendo este log)
