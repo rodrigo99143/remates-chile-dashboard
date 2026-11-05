@@ -129,6 +129,30 @@ def main():
 
     print()
     print("=" * 90)
+    print("PASO 1c: entrar al iframe 'autentica.tgr.cl/inicio-wp' (ahí vive el formulario real)")
+    print("=" * 90)
+    r = descargar("https://autentica.tgr.cl/inicio-wp")
+    if r is not None and r.status_code == 200:
+        texto_bajo = r.text.lower()
+        print(f"  ¿Pide login/clave en algún punto (password, login, clave, rut)? "
+              f"{'password' in texto_bajo or 'login' in texto_bajo or 'clave' in texto_bajo}")
+        print(f"  ¿Menciona 'certificado'? {'certificado' in texto_bajo}")
+        pistas |= buscar_pistas_endpoint(r.text, "autentica.tgr.cl/inicio-wp")
+        for m in RE_SCRIPT_SRC.finditer(r.text):
+            src = m.group(1)
+            abs_src = src if src.startswith("http") else "https://autentica.tgr.cl" + src
+            scripts_js.add(abs_src)
+        for m in re.finditer(r'<form[^>]*>.{0,400}', r.text, re.IGNORECASE | re.DOTALL):
+            print(f"  <form>...: {re.sub(r'<[^>]+>', ' ', m.group(0))[:300]}")
+        # Mostrar un trozo del body (sin scripts/estilos) para ver qué pide realmente
+        cuerpo = re.sub(r"<script.*?</script>", " ", r.text, flags=re.DOTALL | re.IGNORECASE)
+        cuerpo = re.sub(r"<style.*?</style>", " ", cuerpo, flags=re.DOTALL | re.IGNORECASE)
+        cuerpo = re.sub(r"<[^>]+>", " ", cuerpo)
+        cuerpo = re.sub(r"\s+", " ", cuerpo).strip()
+        print(f"  Primeros 1200 caracteres de texto visible: {cuerpo[:1200]!r}")
+
+    print()
+    print("=" * 90)
     print("PASO 2: revisar esos scripts JS en busca de endpoints (bundle de Angular/React)")
     print("=" * 90)
     for s in sorted(scripts_js)[:15]:
