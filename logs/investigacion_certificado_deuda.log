@@ -399,10 +399,26 @@ PASO 1b: revisar links/botones de la página de la TGR (a dónde lleva el trámi
      iframe -> https://docs.google.com/forms/d/e/1FAIpQLSeBFK_cUnAEtp3npwJ-Uuat7yEQUcGTqe3s1DVgJUzr10sMWA/viewform?usp=pp_url&entry.1160034279=
 
 ==========================================================================================
+PASO 1c: entrar al iframe 'autentica.tgr.cl/inicio-wp' (ahí vive el formulario real)
+==========================================================================================
+  GET https://autentica.tgr.cl/inicio-wp -> HTTP 200 (23436 bytes)
+  ¿Pide login/clave en algún punto (password, login, clave, rut)? False
+  ¿Menciona 'certificado'? False
+  Primeros 1200 caracteres de texto visible: 'AutenticaciÃ³n TGR'
+
+==========================================================================================
 PASO 2: revisar esos scripts JS en busca de endpoints (bundle de Angular/React)
 ==========================================================================================
+  GET https://autentica.tgr.clmain-es2015.0e7fb522b43c57491df4.js -> FALLÓ: HTTPSConnectionPool(host='autentica.tgr.clmain-es2015.0e7fb522b43c57491df4.js', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("HTTPSConnection(host='autentica.tgr.clmain-es2015.0e7fb522b43c57491df4.js', port=443): Failed to resolve 'autentica.tgr.clmain-es2015.0e7fb522b43c57491df4.js' ([Errno -2] Name or service not known)"))
+  GET https://autentica.tgr.clmain-es5.0e7fb522b43c57491df4.js -> FALLÓ: HTTPSConnectionPool(host='autentica.tgr.clmain-es5.0e7fb522b43c57491df4.js', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("HTTPSConnection(host='autentica.tgr.clmain-es5.0e7fb522b43c57491df4.js', port=443): Failed to resolve 'autentica.tgr.clmain-es5.0e7fb522b43c57491df4.js' ([Errno -2] Name or service not known)"))
+  GET https://autentica.tgr.clpolyfills-es2015.d1784a4588c7fb3e5968.js -> FALLÓ: HTTPSConnectionPool(host='autentica.tgr.clpolyfills-es2015.d1784a4588c7fb3e5968.js', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("HTTPSConnection(host='autentica.tgr.clpolyfills-es2015.d1784a4588c7fb3e5968.js', port=443): Failed to resolve 'autentica.tgr.clpolyfills-es2015.d1784a4588c7fb3e5968.js' ([Errno -2] Name or service not known)"))
+  GET https://autentica.tgr.clpolyfills-es5.c93486c40e7d0fbaa176.js -> FALLÓ: HTTPSConnectionPool(host='autentica.tgr.clpolyfills-es5.c93486c40e7d0fbaa176.js', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("HTTPSConnection(host='autentica.tgr.clpolyfills-es5.c93486c40e7d0fbaa176.js', port=443): Failed to resolve 'autentica.tgr.clpolyfills-es5.c93486c40e7d0fbaa176.js' ([Errno -2] Name or service not known)"))
+  GET https://autentica.tgr.clruntime-es2015.55ea2cf4863cb05126d0.js -> FALLÓ: HTTPSConnectionPool(host='autentica.tgr.clruntime-es2015.55ea2cf4863cb05126d0.js', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("HTTPSConnection(host='autentica.tgr.clruntime-es2015.55ea2cf4863cb05126d0.js', port=443): Failed to resolve 'autentica.tgr.clruntime-es2015.55ea2cf4863cb05126d0.js' ([Errno -2] Name or service not known)"))
+  GET https://autentica.tgr.clruntime-es5.55ea2cf4863cb05126d0.js -> FALLÓ: HTTPSConnectionPool(host='autentica.tgr.clruntime-es5.55ea2cf4863cb05126d0.js', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("HTTPSConnection(host='autentica.tgr.clruntime-es5.55ea2cf4863cb05126d0.js', port=443): Failed to resolve 'autentica.tgr.clruntime-es5.55ea2cf4863cb05126d0.js' ([Errno -2] Name or service not known)"))
+  GET https://autentica.tgr.clscripts.d5278d92fb7393171f94.js -> FALLÓ: HTTPSConnectionPool(host='autentica.tgr.clscripts.d5278d92fb7393171f94.js', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("HTTPSConnection(host='autentica.tgr.clscripts.d5278d92fb7393171f94.js', port=443): Failed to resolve 'autentica.tgr.clscripts.d5278d92fb7393171f94.js' ([Errno -2] Name or service not known)"))
+  GET https://front.tgr.cl/temas/cuchufli/variables/js/20200428/material.min.js -> HTTP 200 (62491 bytes)
   GET https://tgr.cl/assets/ajax/libs/jquery/jquery-3.6.0.min.js -> HTTP 200 (89501 bytes)
-  GET https://www.tgr.cl//www.google.com/jsapi?ver=7.1 -> HTTP 403 (243 bytes)
+  GET https://www.tgr.cl//www.google.com/jsapi?ver=7.1 -> HTTP 403 (263 bytes)
 
 ==========================================================================================
 RESUMEN PASO 1-2: 14 pistas de endpoint encontradas en total.
@@ -428,7 +444,7 @@ PASO 3: probar un pedido directo con la propiedad de Lastarria 70 (070-1713-60)
   Propiedad de prueba: {'region': 'Región Metropolitana de Santiago', 'comuna': 'Santiago', 'rol': '070-1713-60'}
   GET https://remates.tgr.cl/v1/getCertificadoDeudaContribuciones -> HTTP 200 | primeros 200 caracteres: '<!doctype html>\n<html lang="es-CL" data-critters-container>\n<head><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <meta charset="utf-8">\n  <title>TGR | Remates</title>\n  <base h'
   GET https://remates.tgr.cl/v1/certificadoDeuda -> HTTP 200 | primeros 200 caracteres: '<!doctype html>\n<html lang="es-CL" data-critters-container>\n<head><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <meta charset="utf-8">\n  <title>TGR | Remates</title>\n  <base h'
-  GET https://www.tgr.cl/v1/getCertificadoDeudaContribuciones -> HTTP 403 | primeros 200 caracteres: '<?xml version="1.0" encoding="UTF-8"?>\n<Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>QVGHPKWT5NYEGK96</RequestId><HostId>Ce/139Po59mMTC+62ZOZCb7bBqyHI68Rgd82z9uRhlsR25zG6n'
+  GET https://www.tgr.cl/v1/getCertificadoDeudaContribuciones -> HTTP 403 | primeros 200 caracteres: '<?xml version="1.0" encoding="UTF-8"?>\n<Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>ZJKK4E4N13SDDY2K</RequestId><HostId>7shbWjT/BukymvjhKeOoR5QihZ3994Pqk3aNH31O/o9sN4wMvu'
 
 ==========================================================================================
 CONCLUSIÓN (a completar por Claude leyendo este log)
