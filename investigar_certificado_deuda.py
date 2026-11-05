@@ -34,6 +34,13 @@ PAGINAS_A_REVISAR = [
     "https://www.chileatiende.gob.cl/fichas/4288-certificado-de-pago-de-deuda-de-contribuciones-de-bienes-raices",
     "https://www.tgr.cl/tramites-tgr/certificado-de-pago-de-deudas-de-contribuciones/",
     "https://www.tgr.cl/tramites-tgr/certificado-de-deuda-de-contribuciones/",
+    # Encontradas en el PASO 1b de la corrida anterior: son links distintos,
+    # en el dominio tgr.gob.cl (no tgr.cl), que apuntan específicamente a
+    # este trámite - hay que revisar si llevan a un formulario abierto o a
+    # un login (como "Revisar mi cartola", que sí exige Clave Única vía
+    # tesoreria.cl/LoginPortalCognito).
+    "https://tgr.gob.cl/certificado-deuda-contribuciones/",
+    "https://tgr.gob.cl/certificados-pago-deudas-contribuciones/",
 ]
 
 # Propiedad de prueba conocida (del reporte del 02-11, caso Lastarria/Álvaro)
@@ -107,6 +114,18 @@ def main():
                     continue
                 vistos.add(clave)
                 print(f"     - href={href!r}  texto={texto_link[:80]!r}")
+
+        # Buscar explícitamente si la PROPIA página exige login (Cognito, Clave
+        # Única, formulario de rol/región abierto, o un iframe a otro sistema)
+        texto_bajo = r.text.lower()
+        print(f"     ¿'logincognito' en la página? {'logincognito' in texto_bajo}")
+        print(f"     ¿'claveunica' o 'clave única' en la página? {'claveunica' in texto_bajo or 'clave única' in texto_bajo}")
+        print(f"     ¿aparece 'region' Y 'comuna' Y 'rol' juntos (posible formulario)? "
+              f"{'region' in texto_bajo and 'comuna' in texto_bajo and ' rol' in texto_bajo}")
+        for m in re.finditer(r'<iframe[^>]+src=["\']([^"\']+)["\']', r.text, re.IGNORECASE):
+            print(f"     iframe -> {m.group(1)}")
+        for m in re.finditer(r'<form[^>]*>', r.text, re.IGNORECASE):
+            print(f"     <form> encontrado: {m.group(0)[:200]}")
 
     print()
     print("=" * 90)
