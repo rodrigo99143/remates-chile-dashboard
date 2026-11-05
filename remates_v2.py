@@ -112,9 +112,17 @@ CORREO_ALERTA_REMITENTE = ""
 CORREO_ALERTA_CONTRASEÑA_APP = ""
 CORREO_ALERTA_DESTINO = ""
 
-# ---- TGR: la TGR NO publica la "postura mínima"; publica "tasacion" y "avaluo" ----
-# Mientras no se confirme la regla real, el mínimo de la TGR se ESTIMA así (rotulado ESTIMADO):
-TGR_MINIMO_FACTOR_SOBRE_TASACION = 2 / 3     # mínimo estimado = tasación x este factor
+# ---- TGR: el mínimo SÍ viene publicado, pero la TGR lo rotula mal ----
+# Confirmado por Álvaro el 04-11-2026 (caso Lastarria 70, rol 070-1713-60): lo
+# que la TGR llama "tasacion" en su propio aviso de remate es, en realidad, el
+# MÍNIMO real de la subasta (es un error de nomenclatura de la propia TGR, no
+# un valor a recalcular). El mínimo NO pasa por ningún factor ni estimación:
+# "el mínimo es el que sale en el aviso, sea cual sea el aviso" (Álvaro).
+# Antes este programa asumía que "tasacion" era un avalúo y ESTIMABA el
+# mínimo multiplicándolo por 2/3 - eso era el bug reportado por Álvaro
+# (mostraba $64MM en vez de los $96.335.353 reales). Se deja esta constante
+# solo como registro histórico del factor incorrecto; ya no se usa.
+TGR_MINIMO_FACTOR_SOBRE_TASACION_HISTORICO = 2 / 3  # NO USAR: factor del bug corregido el 05-11-2026
 
 # ---- Selección de las mejores oportunidades ----
 N_TOP = 30
@@ -734,6 +742,12 @@ def construir_tabla_tgr(payload):
             "fojas_anio": r.get("conservadorAno"),
             "cbr": r.get("cbr"),
             "datos_subasta": r.get("datosSubasta"),
+            # Pedido de Álvaro (llamada 04-11-2026): poder separar 2º/3º aviso (cuando el
+            # propio aviso de la TGR dice "segundo remate"/"tercer remate", lo más habitual
+            # cuando el remate anterior quedó sin postores). Reusa extraer_n_remate(), ya
+            # probado para los avisos de diario, sobre el mismo texto libre "datosSubasta"
+            # que entrega la TGR (antes solo se guardaba, nunca se leía para esto).
+            "n_remate": extraer_n_remate(r.get("datosSubasta") or ""),
         }
         if INCLUIR_DATOS_DEUDOR:
             fila["nombre_dueno"] = r.get("nombreDuegno")
@@ -2437,7 +2451,11 @@ def cargar_valores_mercado():
 
 
 def aplicar_minimos(df):
-    """Mínimo en pesos: REAL si la fuente lo publica (convierte UF con la UF en vivo); ESTIMADO para la TGR."""
+    """Mínimo en pesos: REAL en todos los casos, convirtiendo UF con la UF en
+    vivo cuando corresponde. Para la TGR, el mínimo real es el campo que la
+    TGR llama "tasacion" en su aviso (rótulo equivocado de la propia TGR,
+    confirmado por Álvaro el 04-11-2026) - no se le aplica ningún factor ni
+    estimación."""
     df["minimo_pesos"] = pd.NA
     df["minimo_nota"] = None
     df["tipo_minimo"] = "NO DISPONIBLE"
@@ -2456,8 +2474,8 @@ def aplicar_minimos(df):
                 df.at[i, "minimo_pesos"] = float(val) * uf
                 df.at[i, "minimo_nota"] = "UF_APROXIMADA" if "aprox" in nota else "UF_EXACTA"
         elif f["fuente"] == "TGR" and pd.notna(f.get("tasacion")):
-            df.at[i, "minimo_pesos"] = float(f["tasacion"]) * TGR_MINIMO_FACTOR_SOBRE_TASACION
-            df.at[i, "tipo_minimo"] = "ESTIMADO (tasación x factor; la TGR no publica el mínimo)"
+            df.at[i, "minimo_pesos"] = float(f["tasacion"])
+            df.at[i, "tipo_minimo"] = "REAL (publicado en el aviso de la TGR)"
     df["minimo_pesos"] = pd.to_numeric(df["minimo_pesos"], errors="coerce")
     return df
 
@@ -2654,6 +2672,16 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
 
     df = aplicar_minimos(df)
 
+    # ---- Fiscal vs. Territorial (pedido de Álvaro, llamada 04-11-2026) ----
+    # La TGR ya trae esto en su API (campo "tipoDeuda"), capturado como
+    # "tipo_deuda" pero hasta ahora oculto. Revisado con datos reales en vivo
+    # el 05-11-2026: solo trae dos valores limpios, "FISCAL" o "TERRITORIAL"
+    # (nunca viene para Macal/avisos, que no tienen esa distinción). Se deja
+    # con mayúscula inicial nomás para que se lea mejor en el Excel.
+    _tipo_deuda = df["tipo_deuda"] if "tipo_deuda" in df.columns else pd.Series(None, index=df.index, dtype=object)
+    df["fiscal_o_territorial"] = _tipo_deuda.map(
+        lambda v: v.strip().capitalize() if isinstance(v, str) and v.strip() else None)
+
     # ---- Valor de referencia ----
     # Orden de preferencia: 1) valor de mercado EXACTO por ROL (datos/valores_mercado.csv,
     # si existe) > 2) estimado por comuna+tipo a partir de lo que recorrió precio_mercado.py
@@ -2730,8 +2758,22 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
         af = f.get("alertas_fuente")
         af = af if isinstance(af, str) else ""
         a = [x for x in af.split("; ") if x]
+        # Pedido de Álvaro (llamada 04-11-2026, caso "El Maitén"): el filtro de
+        # "derechos de propiedad" (DERECHOS_PARCIALES_O_CUOTA) antes solo se
+        # aplicaba al TEXTO LIBRE de los avisos de diario (parsear_aviso), así
+        # que un remate de MACAL cuyo propio campo estructurado "Tipo" dice
+        # literalmente "Derechos de propiedad" (o "cuota", "proindiviso", una
+        # fracción tipo "3/8 avas", etc.) se colaba sin ser descartado. Se
+        # revisa aquí el mismo patrón, pero sobre "tipo_propiedad", para que
+        # corra para CUALQUIER fuente (hoy día relevante para MACAL).
+        if isinstance(f.get("tipo_propiedad"), str) and "DERECHOS_PARCIALES_O_CUOTA" not in a \
+                and re.search(r"(?i)\b(derechos?|cuota|proindiviso|\d+\s*/\s*\d+\s+avas?)\b", f["tipo_propiedad"]):
+            a.append("DERECHOS_PARCIALES_O_CUOTA")
         if f["fuente"] == "TGR":
-            a.append("MINIMO_ESTIMADO_TGR")
+            # OJO (corrección 05-11-2026, confirmada por Álvaro): el mínimo de
+            # la TGR ya NO es estimado, es el valor real publicado en el aviso
+            # (ver aplicar_minimos) - por eso ya no se agrega ninguna alerta
+            # de tipo "MINIMO_ESTIMADO_TGR" aquí.
             r = f.get("ratio_tasacion_avaluo_tgr")
             if pd.notna(r) and abs(r - 1.3) > 0.05:
                 a.append("RATIO_TASACION_AVALUO_ANORMAL")
@@ -3127,42 +3169,56 @@ def seleccionar_top_dual(df, n_fiscal=None, n_mercado=None, n_comodin=None, cupo
 # verificación de direcciones, cruces con el SII, notas de depuración, etc.)
 # se saca por completo del Excel - sigue existiendo internamente mientras
 # corre el programa, solo que ya no se exporta.
+# Columnas agrupadas por categoría - pedido explícito de Álvaro (llamada 04-11-2026):
+# "todo lo que es de descripción de la propiedad, agrupado... todo lo que es de la
+# cuestión judicial, agrupado... y después todo lo económico" (antes dormitorios/baños
+# quedaban mezclados entre columnas de plata, "queda como desordenado"). También de esa
+# llamada: se sacan mandante_acreedor, link_poder_judicial e instruccion_poder_judicial
+# ("no me aportan nada"), provincia ("chao") y origen_direccion ("no aportan nada") y
+# ocupación ("sácalo, eso no te entrega") - quedan en COLUMNAS_OCULTAS. Dormitorios y
+# baños SÍ se mantienen ("si está ahí no lo saque"), igual que región ("ya déjala").
 COLUMNAS_TOP = [
-    # ---- vitrina (lo primero que se ve) ----
+    # ---- vitrina/selección (lo primero que se ve) ----
     "razon_seleccion",            # por qué quedó seleccionada (dice "FORZADO: ..." cuando se forzó una cuota)
     "nuevo_hoy",                  # True si no estaba en un reporte anterior (o le cambió la fecha/% de oportunidad)
+
+    # ---- descripción de la propiedad ----
     # rol_completo = código de Tesorería-manzana-predio (pedido de Álvaro, 13-10-2026: antes
     # mostraba el código del SII, que es una numeración distinta). "rol_formato" se saca de la
     # vitrina (pedido del 13-10-2026: "no me interesa tener dos columnas") - sigue existiendo
     # internamente, por si hace falta para depurar, pero no se exporta.
-    "rol_completo", "direccion_final", "comuna_propiedad",
+    "rol_completo", "direccion_final", "comuna_propiedad", "region",
     # latitud/longitud: pedido de Rodrigo (2026-10-27) - solo se calculan para
     # TOP_NUEVO (ver geocodificar_top_nuevo en generar_pdf.py), así que en las
     # demás hojas (TOP_CONSOLIDADO, CANDIDATAS, etc.) estas columnas no existen
     # y ordenar_columnas simplemente las omite, sin error.
-    "latitud", "longitud", "tipo_propiedad",
-    "fuente", "fecha_remate", "hora_remate", "modalidad",
-    # fecha_primera_publicacion: pedido de Álvaro (13-10-2026) para poder ubicar el aviso
-    # directamente por fecha en vez de tener que buscarlo a mano. Por ahora solo viene de la
-    # TGR (Macal no publica una fecha de aviso propia en su sitio, solo la de la subasta).
-    "fecha_primera_publicacion",
-    "minimo_pesos", "avaluo_sii", "valor_ref_pesos", "oportunidad_pct",
+    "latitud", "longitud", "tipo_propiedad", "destino_desc",
     # superficie construida (útil) y superficie de terreno (total), lado a lado y
     # tituladas sin ambigüedad - pedido de Álvaro (09-10-2026). Desde el 13-10-2026 también
     # se llenan para TGR (antes solo Macal), sacadas del catastro del SII.
     "superficie_util_m2", "superficie_total_m2",
     # año de construcción: pedido de Álvaro (13-10-2026), siempre el MÁS ANTIGUO de todas las
     # líneas de construcción de la propiedad (ver calcular()).
-    "anio_construccion",
-    # "tribunal" = juzgado real (solo TGR/Avisos, remates judiciales).
-    # "mandante_acreedor" = banco/inmobiliaria/persona que vende (solo Macal, remates
-    # privados sin juicio) - antes venía mezclado adentro de "tribunal" y Álvaro lo marcó
-    # (09-10-2026): "Estos son mandantes o acreedores, no Tribunal".
-    "tribunal", "mandante_acreedor", "rol_causa", "link_poder_judicial", "instruccion_poder_judicial",
-    # ---- nivel técnico-medio ----
-    "region", "provincia", "origen_direccion", "destino_desc",
-    "dormitorios", "banos", "ocupacion",
-    "tipo_minimo", "margen_pesos", "oportunidad_fiscal_pct", "oportunidad_mercado_pct",
+    "anio_construccion", "dormitorios", "banos",
+
+    # ---- cuestión judicial / del remate ----
+    "fuente", "fecha_remate", "hora_remate", "modalidad",
+    # fecha_primera_publicacion: pedido de Álvaro (13-10-2026) para poder ubicar el aviso
+    # directamente por fecha en vez de tener que buscarlo a mano. Por ahora solo viene de la
+    # TGR (Macal no publica una fecha de aviso propia en su sitio, solo la de la subasta).
+    "fecha_primera_publicacion",
+    # "tribunal" = juzgado real (solo TGR/Avisos, remates judiciales); rol_causa = causa
+    # judicial (Macal, remates privados sin juicio, nunca lo tiene).
+    "tribunal", "rol_causa", "tipo_juicio", "n_remate", "fojas", "cbr",
+    # fiscal_o_territorial: pedido de Álvaro (llamada 04-11-2026) para distinguir, en los
+    # remates de la TGR, si la deuda es FISCAL o TERRITORIAL (dato que la propia API de la
+    # TGR ya entrega, confirmado con datos reales el 05-11-2026: solo esos dos valores).
+    # Viene vacío para Macal/avisos, que no tienen esa distinción.
+    "fiscal_o_territorial", "url",
+
+    # ---- económico: mínimo, avalúo, ratios y plata, todo junto ----
+    "minimo_pesos", "tipo_minimo", "avaluo_sii", "valor_ref_pesos", "oportunidad_pct",
+    "margen_pesos", "garantia_pesos", "oportunidad_fiscal_pct", "oportunidad_mercado_pct",
     # Auditoría 2026-10-09: antes estas 3 columnas se calculaban pero se ocultaban del
     # Excel (estaban en COLUMNAS_OCULTAS). Un % de oportunidad alto, por sí solo, no dice
     # si está bien respaldado - esto muestra CON QUÉ se calculó el valor de mercado:
@@ -3172,10 +3228,10 @@ COLUMNAS_TOP = [
     # "confianza_mercado_m2" = ALTA/MEDIA (nunca se usa un valor en BAJA, pero igual puede
     # ser MEDIA con pocas publicaciones). Así una oportunidad rara se puede chequear a
     # ojo en vez de que parezca un error del programa.
-    "nivel_mercado_m2", "n_publicaciones_mercado_m2", "confianza_mercado_m2",
-    "confianza", "alertas",
-    "tipo_juicio", "n_remate", "fojas", "cbr",
-    "garantia_pesos", "url", "motivo_no_elegible",
+    "nivel_mercado_m2", "n_publicaciones_mercado_m2", "confianza_mercado_m2", "confianza",
+
+    # ---- meta ----
+    "alertas", "motivo_no_elegible",
 ]
 COLUMNAS_OCULTAS = {
     "zonas", "texto_aviso", "direccion_texto_busqueda", "roles_lista", "candidatos_comuna",
@@ -3200,7 +3256,23 @@ COLUMNAS_OCULTAS = {
     # (superficie_util_m2, superficie_total_m2, anio_construccion, tipo_propiedad) - se
     # ocultan para no duplicar la misma información dos veces.
     "superficie_terreno_sii", "superficie_construida_sii", "anio_construccion_sii",
+    # Pedido de Álvaro (llamada 04-11-2026): "no me aportan nada" / "chao" / "sácalo".
+    "mandante_acreedor", "link_poder_judicial", "instruccion_poder_judicial",
+    "provincia", "origen_direccion", "ocupacion",
 }
+
+# Nombres "bonitos" para mostrar en el Excel/CSV en vez del nombre interno de la columna -
+# pedido de Álvaro (llamada 04-11-2026, "avalúo fiscal"). Se aplica SOLO al momento de
+# escribir cada hoja (ver renombrar_para_mostrar), nunca antes - así todo el resto del
+# programa (cálculos, pruebas, dar_formato) sigue usando el nombre interno de siempre.
+RENOMBRES_DISPLAY = {
+    "avaluo_sii": "Avalúo fiscal",
+    "fiscal_o_territorial": "Fiscal / Territorial",
+}
+
+
+def renombrar_para_mostrar(df):
+    return df.rename(columns=RENOMBRES_DISPLAY)
 
 
 def ordenar_columnas(df):
@@ -3226,7 +3298,8 @@ def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
         ("Catastro SII usado", db_path.name if (hay_catastro and db_path) else "NO HAY CATASTRO CARGADO"),
         ("Cupos por zona (se exigen por separado en cada ranking)",
          "; ".join(f"{NOMBRE_ZONA.get(k, k)}={v}" for k, v in CUPOS.items())),
-        ("Mínimo TGR", f"ESTIMADO = tasación x {TGR_MINIMO_FACTOR_SOBRE_TASACION:.3f} (la TGR no publica el mínimo)"),
+        ("Mínimo TGR", "REAL - publicado en el aviso de remate de la TGR (campo rotulado \"tasación\" por "
+                       "la propia TGR, pero corresponde al mínimo real; corregido el 05-11-2026)"),
         ("Valor de referencia", "Ranking A: avalúo fiscal SII siempre. Ranking B: precio de mercado "
                                 "(exacto por ROL, o estimado por comuna/tipo con confianza ALTA/MEDIA)."),
     ]
@@ -3246,8 +3319,9 @@ def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
         filas.append(("AVISO DE CUPO", t))
     filas.append(("NOTA 1", "La oportunidad compara el valor de referencia con el mínimo de entrada. "
                             "Con avalúo fiscal NO es precio de mercado: es una señal para revisar, no una tasación."))
-    filas.append(("NOTA 2", "El mínimo REAL viene publicado por la fuente (Macal, avisos). El de la TGR es ESTIMADO "
-                            "y por eso todas sus propiedades tienen la misma oportunidad teórica."))
+    filas.append(("NOTA 2", "El mínimo de TODAS las fuentes (Macal, avisos y TGR) es REAL, publicado por la "
+                            "propia fuente. En el aviso de la TGR el campo viene rotulado \"tasación\" por un "
+                            "error de nomenclatura de la propia TGR, pero es el mínimo real de la subasta."))
     return pd.DataFrame(filas, columns=["concepto", "valor"])
 
 
@@ -3327,15 +3401,31 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     except Exception as e:
         decir(f"  [COORDENADAS] no se pudieron calcular coordenadas esta vez ({e}); TOP_NUEVO se entrega sin ellas.")
 
+    # ---- Hojas separadas para 2º/3º aviso (pedido de Álvaro, llamada 04-11-2026) ----
+    # "n_remate" (1=primer remate, 2=segundo, 3=tercero...) ya se extraía del texto libre
+    # de los avisos de diario; desde el 05-11-2026 también se extrae del propio texto libre
+    # que entrega la TGR ("datosSubasta"), cuando el aviso dice explícitamente "segundo
+    # remate"/"tercer remate" (lo habitual cuando el remate anterior quedó sin postores).
+    # Se arman sobre "cand" (candidatas elegibles), igual que TOP_NUEVO, no solo sobre el Top.
+    segundos_avisos = cand[cand["n_remate"] == 2] if "n_remate" in cand.columns else cand.iloc[0:0]
+    terceros_avisos = cand[cand["n_remate"] >= 3] if "n_remate" in cand.columns else cand.iloc[0:0]
+
     # El CSV "todas_las_propiedades.csv" se deja con TODAS las columnas (incluida
     # la auditoría interna) - es el respaldo técnico completo, no lo ve Álvaro.
     df.drop(columns=["EN_TOP"]).to_csv(SALIDAS / "todas_las_propiedades.csv", index=False, encoding="utf-8-sig")
-    ordenar_columnas(top).to_csv(SALIDAS / "TOP_OPORTUNIDADES.csv", index=False, encoding="utf-8-sig")
+    renombrar_para_mostrar(ordenar_columnas(top)).to_csv(
+        SALIDAS / "TOP_OPORTUNIDADES.csv", index=False, encoding="utf-8-sig")
     ruta = SALIDAS / "OPORTUNIDADES.xlsx"
     with pd.ExcelWriter(ruta, engine="openpyxl") as w:
-        hojas = [("TOP_CONSOLIDADO", ordenar_columnas(top)), ("TOP_NUEVO", ordenar_columnas(top_nuevo)),
-                 ("CANDIDATAS", ordenar_columnas(cand)),
-                 ("REVISAR", ordenar_columnas(rev)), ("TODAS", ordenar_columnas(df)), ("RESUMEN", resumen)]
+        # RESUMEN no pasa por renombrar_para_mostrar: es una tabla concepto/valor aparte,
+        # no tiene columnas "avaluo_sii"/"fiscal_o_territorial" que renombrar.
+        hojas = [("TOP_CONSOLIDADO", renombrar_para_mostrar(ordenar_columnas(top))),
+                 ("TOP_NUEVO", renombrar_para_mostrar(ordenar_columnas(top_nuevo))),
+                 ("CANDIDATAS", renombrar_para_mostrar(ordenar_columnas(cand))),
+                 ("SEGUNDOS_AVISOS", renombrar_para_mostrar(ordenar_columnas(segundos_avisos))),
+                 ("TERCEROS_AVISOS", renombrar_para_mostrar(ordenar_columnas(terceros_avisos))),
+                 ("REVISAR", renombrar_para_mostrar(ordenar_columnas(rev))),
+                 ("TODAS", renombrar_para_mostrar(ordenar_columnas(df))), ("RESUMEN", resumen)]
         for nombre, d in hojas:
             d.to_excel(w, sheet_name=nombre, index=False)
             dar_formato(w.sheets[nombre])
@@ -3368,7 +3458,10 @@ def dar_formato(ws):
         ws.auto_filter.ref = ws.dimensions
     dinero = {"tasacion", "avaluo_tgr", "avaluo_sii", "exento_sii", "valor_ref_pesos", "minimo_pesos",
               "margen_pesos", "garantia_pesos", "avaluo_roles_total", "valor_mercado_pesos",
-              "margen_fiscal_pesos", "margen_mercado_pesos", "valor_mercado_estimado_m2_pesos"}
+              "margen_fiscal_pesos", "margen_mercado_pesos", "valor_mercado_estimado_m2_pesos",
+              # nombre "bonito" de avaluo_sii al exportar (ver RENOMBRES_DISPLAY) - tiene que
+              # seguir reconociéndose como columna de plata aunque cambie el título.
+              "Avalúo fiscal"}
     anchos45 = {"direccion_final", "direccion_tgr", "direccion_sii", "tribunal", "mandante_acreedor", "valor",
                 "concepto", "alertas", "razon_seleccion", "motivo_no_elegible", "url", "rol_candidatos"}
     for i, celda in enumerate(ws[1], start=1):
@@ -3778,8 +3871,9 @@ def prueba():
             ruta = exportar(r2, None, True, {"PRUEBA": "OK"}, falt)
             import openpyxl
             hojas = openpyxl.load_workbook(ruta).sheetnames
-            comprobar("Excel con hojas TOP_CONSOLIDADO, TOP_NUEVO, CANDIDATAS, REVISAR, TODAS, RESUMEN",
-                      hojas == ["TOP_CONSOLIDADO", "TOP_NUEVO", "CANDIDATAS", "REVISAR", "TODAS", "RESUMEN"])
+            comprobar("Excel con las 8 hojas esperadas (incl. SEGUNDOS/TERCEROS_AVISOS)",
+                      hojas == ["TOP_CONSOLIDADO", "TOP_NUEVO", "CANDIDATAS", "SEGUNDOS_AVISOS",
+                                "TERCEROS_AVISOS", "REVISAR", "TODAS", "RESUMEN"])
             comprobar("CSV del top guardado", (SALIDAS / "TOP_OPORTUNIDADES.csv").exists())
         finally:
             SALIDAS = salidas_original
@@ -3789,9 +3883,12 @@ def prueba():
                             "destino_sii": "H", "fuente_sii": "N", "tipo_sii": "U", "direccion_sii": "X 1",
                             "direccion_tgr": None}])
         rt = calcular(tg, True)
-        comprobar("TGR: mínimo estimado = 2/3 de la tasación", abs(rt.loc[0, "minimo_pesos"] - 130e6 * 2 / 3) < 1)
-        comprobar("TGR: tipo de mínimo dice ESTIMADO y confianza BAJA",
-                  rt.loc[0, "tipo_minimo"].startswith("ESTIMADO") and rt.loc[0, "confianza"] == "BAJA")
+        # Corrección 05-11-2026 (confirmada por Álvaro, caso Lastarria/rol 070-1713-60): el
+        # mínimo de la TGR ya NO se estima con el factor 2/3 - es el valor REAL publicado
+        # en el aviso (el campo que la TGR llama "tasacion" por error de nomenclatura).
+        comprobar("TGR: mínimo = tasación publicada (sin factor)", abs(rt.loc[0, "minimo_pesos"] - 130e6) < 1)
+        comprobar("TGR: tipo de mínimo dice REAL y confianza MEDIA",
+                  rt.loc[0, "tipo_minimo"].startswith("REAL") and rt.loc[0, "confianza"] == "MEDIA")
     finally:
         valor_uf = original_uf
 

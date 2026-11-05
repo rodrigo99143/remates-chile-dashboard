@@ -68,7 +68,6 @@ ALERTAS_PDF = {
     "RATIO_TASACION_AVALUO_ANORMAL": "La tasación de la TGR se ve fuera de lo normal respecto del avalúo",
     "ROL_ES_MATRIZ_DE_CONDOMINIO": "El rol corresponde a todo el edificio/condominio, no a una unidad",
     "OPORTUNIDAD_SOSPECHOSA": "El % de oportunidad es inusualmente alto: conviene revisar el dato a mano",
-    "MINIMO_ESTIMADO_TGR": "La TGR no publica el mínimo: se estimó a partir de la tasación",
     "OCUPADA": "La propiedad figura como ocupada: verificar antes de participar",
     "VARIAS_UNIDADES": "El remate incluye más de una unidad (ej. depto + bodega + estacionamiento)",
     "POSIBLE_PREDIO_RURAL": "Podría tratarse de un predio rural (parcela, hijuela, fundo)",

@@ -109,7 +109,7 @@ def main():
     ruta_excel = SALIDAS / "REPORTE_ACUMULADO.xlsx"
     ruta_pdf = SALIDAS / "REPORTE_ACUMULADO.pdf"
     with pd.ExcelWriter(ruta_excel, engine="openpyxl") as w:
-        hoja = remates_v2.ordenar_columnas(acumulado)
+        hoja = remates_v2.renombrar_para_mostrar(remates_v2.ordenar_columnas(acumulado))
         hoja.to_excel(w, sheet_name="ACUMULADO", index=False)
         remates_v2.dar_formato(w.sheets["ACUMULADO"])
     print(f"  [ACUMULADO] Excel: {ruta_excel.name} ({len(acumulado)} filas)")
