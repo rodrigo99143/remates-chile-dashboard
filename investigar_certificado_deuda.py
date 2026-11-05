@@ -88,6 +88,28 @@ def main():
 
     print()
     print("=" * 90)
+    print("PASO 1b: revisar links/botones de la página de la TGR (a dónde lleva el trámite)")
+    print("=" * 90)
+    RE_LINK = re.compile(r'<a[^>]+href=["\']([^"\']+)["\'][^>]*>(.*?)</a>', re.IGNORECASE | re.DOTALL)
+    for url in PAGINAS_A_REVISAR:
+        r = descargar(url)
+        if r is None or r.status_code != 200:
+            continue
+        print(f"  [{url}] links que mencionan certificado/deuda/tramite/clave/login/e-services/sii:")
+        vistos = set()
+        for m in RE_LINK.finditer(r.text):
+            href, texto_link = m.group(1), re.sub(r"<[^>]+>", " ", m.group(2)).strip()
+            junto = (href + " " + texto_link).lower()
+            if any(p in junto for p in ("certificad", "deuda", "tramite", "clave", "login",
+                                          "e-services", "eservices", "sii.cl", "contribuc")):
+                clave = (href, texto_link[:80])
+                if clave in vistos:
+                    continue
+                vistos.add(clave)
+                print(f"     - href={href!r}  texto={texto_link[:80]!r}")
+
+    print()
+    print("=" * 90)
     print("PASO 2: revisar esos scripts JS en busca de endpoints (bundle de Angular/React)")
     print("=" * 90)
     for s in sorted(scripts_js)[:15]:
