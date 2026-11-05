@@ -3188,10 +3188,12 @@ COLUMNAS_TOP = [
     # vitrina (pedido del 13-10-2026: "no me interesa tener dos columnas") - sigue existiendo
     # internamente, por si hace falta para depurar, pero no se exporta.
     "rol_completo", "direccion_final", "comuna_propiedad", "region",
-    # latitud/longitud: pedido de Rodrigo (2026-10-27) - solo se calculan para
-    # TOP_NUEVO (ver geocodificar_top_nuevo en generar_pdf.py), así que en las
-    # demás hojas (TOP_CONSOLIDADO, CANDIDATAS, etc.) estas columnas no existen
-    # y ordenar_columnas simplemente las omite, sin error.
+    # latitud/longitud: pedido de Rodrigo (2026-10-27), repetido por Álvaro el
+    # 05-11-2026 (lo quiere siempre en el archivo de resultado). Se calculan
+    # para TOP_CONSOLIDADO y TOP_NUEVO (ver geocodificar_top_nuevo en
+    # generar_pdf.py); en las demás hojas (CANDIDATAS, REVISAR, TODAS, etc.)
+    # no se calculan (serían cientos de direcciones, demasiado lento) y
+    # ordenar_columnas simplemente las omite ahí, sin error.
     "latitud", "longitud", "tipo_propiedad", "destino_desc",
     # superficie construida (útil) y superficie de terreno (total), lado a lado y
     # tituladas sin ambigüedad - pedido de Álvaro (09-10-2026). Desde el 13-10-2026 también
@@ -3389,17 +3391,24 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     cand = cand.drop(columns=["clave_real"])
     top_nuevo = cand[cand["nuevo_hoy"]].sort_values(["fecha_remate", "oportunidad_pct"], ascending=[True, False])
 
-    # ---- Coordenadas (pedido de Rodrigo, 2026-10-27): que aparezcan también
-    # en el Excel, no solo como mapa dentro del PDF. Se calcula ACÁ, antes de
-    # escribir la hoja TOP_NUEVO, y el PDF más abajo reutiliza estas mismas
-    # columnas en vez de geocodificar de nuevo (ver geocodificar_top_nuevo en
-    # generar_pdf.py). Si falla (sin internet, etc.), la hoja se entrega
-    # igual, solo que sin latitud/longitud - nunca debe tumbar la corrida. ----
+    # ---- Coordenadas (pedido de Rodrigo, 2026-10-27, y pedido de Álvaro otra
+    # vez el 05-11-2026: lo quiere SIEMPRE en el archivo de resultado, no solo
+    # en TOP_NUEVO). Se calcula ACÁ, antes de escribir las hojas, y el PDF más
+    # abajo reutiliza estas mismas columnas en vez de geocodificar de nuevo
+    # (ver geocodificar_top_nuevo en generar_pdf.py). Se usa UNA sola caché
+    # compartida entre TOP_CONSOLIDADO ("top") y TOP_NUEVO, porque suelen
+    # repetir varias propiedades - así no se consulta Nominatim dos veces por
+    # la misma dirección. Si falla (sin internet, etc.), las hojas se
+    # entregan igual, solo que sin latitud/longitud - nunca debe tumbar la
+    # corrida. ----
     try:
         import generar_pdf
-        top_nuevo = generar_pdf.geocodificar_top_nuevo(top_nuevo)
+        _cache_geo_top = {}
+        top = generar_pdf.geocodificar_top_nuevo(top, _cache_geo_top)
+        top_nuevo = generar_pdf.geocodificar_top_nuevo(top_nuevo, _cache_geo_top)
     except Exception as e:
-        decir(f"  [COORDENADAS] no se pudieron calcular coordenadas esta vez ({e}); TOP_NUEVO se entrega sin ellas.")
+        decir(f"  [COORDENADAS] no se pudieron calcular coordenadas esta vez ({e}); "
+              f"TOP_CONSOLIDADO y TOP_NUEVO se entregan sin ellas.")
 
     # ---- Hojas separadas para 2º/3º aviso (pedido de Álvaro, llamada 04-11-2026) ----
     # "n_remate" (1=primer remate, 2=segundo, 3=tercero...) ya se extraía del texto libre

@@ -346,22 +346,28 @@ def _ficha_propiedad(fila, carpeta_tmp, idx):
     return elementos
 
 
-def geocodificar_top_nuevo(df_filas):
+def geocodificar_top_nuevo(df_filas, cache_geo=None):
     """Devuelve una COPIA de df_filas con dos columnas nuevas: 'latitud' y
     'longitud' (float; NaN si no se pudo ubicar la dirección). Pedido de
     Rodrigo (2026-10-27): que las coordenadas aparezcan también en el Excel,
     no solo como mapa en el PDF. Se geocodifica UNA sola vez por propiedad
-    acá - tanto remates_v2.py (columna en la hoja TOP_NUEVO) como
-    construir_pdf (mapa + texto "Coordenadas" en la ficha) reutilizan este
-    mismo resultado, para no consultar Nominatim dos veces por la misma
-    dirección (son ~1.1 segundos de espera por dirección; duplicarlo
-    duplicaría ese tramo de la corrida)."""
+    acá - tanto remates_v2.py (columnas en las hojas TOP_CONSOLIDADO y
+    TOP_NUEVO) como construir_pdf (mapa + texto "Coordenadas" en la ficha)
+    reutilizan este mismo resultado, para no consultar Nominatim dos veces
+    por la misma dirección (son ~1.1 segundos de espera por dirección;
+    duplicarlo duplicaría ese tramo de la corrida).
+
+    "cache_geo": diccionario opcional {clave: (lat, lon) o None} para
+    REUTILIZAR entre varias llamadas (p. ej. TOP_CONSOLIDADO y TOP_NUEVO
+    suelen compartir varias propiedades) - si no se pasa, se crea uno
+    nuevo y se pierde al terminar la función, como antes."""
     import pandas as pd
     if df_filas is None or len(df_filas) == 0:
         return df_filas
     from geopy.geocoders import Nominatim
     geocoder = Nominatim(user_agent=GEOCODER_UA)
-    cache_geo = {}
+    if cache_geo is None:
+        cache_geo = {}
     lats, lons = [], []
     for _, fila in df_filas.iterrows():
         direccion = texto(fila.get("direccion_final"), "")
