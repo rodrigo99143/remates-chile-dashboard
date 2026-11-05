@@ -46,11 +46,59 @@ on:
           del sistema. Se deja en "false" en corridas normales.
         type: boolean
         default: false
+      investigar_campos_tgr:
+        description: >-
+          Opcional, "de una sola vez" (para implementar bien la columna
+          Fiscal/Territorial que pidió Álvaro, 2026-11-05): si es "true", en
+          vez de correr el programa completo, solo se consulta la API de la
+          TGR para ver qué valores reales trae el campo "tipoDeuda" (y revisar
+          el registro de Lastarria 70). No cambia nada del sistema. Se deja
+          en "false" en corridas normales.
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
 jobs:
+  investigar_campos_tgr:
+    # Job aparte, de solo investigación: no depende de "barrido". Corre en la
+    # nube de GitHub porque desde ahí SÍ se puede llegar a tgr.cl (hay sandbox
+    # donde eso está bloqueado).
+    if: ${{ inputs.investigar_campos_tgr == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar solo lo necesario para esta investigación
+        run: pip install --quiet requests
+
+      - name: Revisar los campos reales de la API de la TGR
+        run: |
+          mkdir -p logs
+          set -o pipefail
+          python investigar_campos_tgr.py 2>&1 | tee logs/investigacion_campos_tgr.log
+
+      - name: Guardar el resultado
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -- logs/investigacion_campos_tgr.log 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: resultado de la investigación de campos TGR [skip ci]"
+            git push
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   investigar_certificado_deuda:
     # Job aparte, de solo investigación: no depende de "barrido" ni de nada
     # del pipeline normal. Corre en la nube de GitHub porque desde ahí SÍ se
@@ -128,7 +176,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   barrido:
-    if: ${{ inputs.probar_geocodificacion != true && inputs.investigar_certificado_deuda != true }}
+    if: ${{ inputs.probar_geocodificacion != true && inputs.investigar_certificado_deuda != true && inputs.investigar_campos_tgr != true }}
     runs-on: ubuntu-latest
     # Tope de seguridad: si algo se cuelga, que no corra para siempre.
     timeout-minutes: 180
