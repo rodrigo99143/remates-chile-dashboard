@@ -1,0 +1,76 @@
+==========================================================================================
+PASO 1: revisar las páginas públicas que describen el trámite
+==========================================================================================
+  GET https://www.chileatiende.gob.cl/fichas/4288-certificado-de-pago-de-deuda-de-contribuciones-de-bienes-raices -> HTTP 403 (919 bytes)
+  GET https://www.tgr.cl/tramites-tgr/certificado-de-pago-de-deudas-de-contribuciones/ -> HTTP 200 (583802 bytes)
+  [https://www.tgr.cl/tramites-tgr/certificado-de-pago-de-deudas-de-contribuciones/] posibles endpoints/strings con 'tgr.cl' + v1/api/certificado/deuda:
+     - https://ayuda.tgr.cl/hc/es-419/articles/10966102406167-Certificados-de-Contribuciones
+     - https://ayuda.tgr.cl/hc/es-419/articles/10967547688343-Pagar-impuestos-fiscales-Pago-impuestos-fiscales-Pago-Total-de-Deudas-Fiscales
+     - https://ayuda.tgr.cl/hc/es-419/articles/1500000490902-Recaudacion-por-Reprogramacion-del-Credito-Adeudado-CAE
+     - https://ayuda.tgr.cl/hc/es-419/articles/1500003310621-Solicitar-certificados-de-movimientos-en-Cuenta-Unica-Tributaria
+     - https://ayuda.tgr.cl/hc/es-419/articles/360015443593-Solicitar-certificado-de-pago-de-deuda-de-contribuciones
+     - https://ayuda.tgr.cl/hc/es-419/articles/360017965074-Certificado-de-deuda-tributaria-para-presentar-en-Chile-Proveedores
+     - https://ayuda.tgr.cl/hc/es-419/articles/360018066514-Suscribir-convenio-de-pago-para-deudas-fiscales-y-territoriales
+     - https://ayuda.tgr.cl/hc/es-419/articles/360018108393-Certificado-de-deuda-fiscal
+     - https://ayuda.tgr.cl/hc/es-419/articles/360018203933-Certificado-de-pago-de-deuda-fiscal
+     - https://ayuda.tgr.cl/hc/es-419/articles/360052197853-Pago-Total-de-Deudas-Fiscales
+     - https://ayuda.tgr.cl/hc/es-419/articles/360055602154-Alegar-que-no-se-reconoce-la-deuda-fuera-del-plazo-legal-para-oponer-excepciones
+     - https://ayuda.tgr.cl/hc/es-419/articles/360063744693-Solicitar-certificado-de-deuda-de-contribuciones
+     - https://ayuda.tgr.cl/hc/es-419/articles/9831207572375-Solicitar-certificado-de-deudas-ex-Cora
+     - https://ayuda.tgr.cl/hc/es-419/categories/360001296194-Certificados-y-Comprobantes
+  GET https://www.tgr.cl/tramites-tgr/certificado-de-deuda-de-contribuciones/ -> HTTP 200 (583576 bytes)
+  [https://www.tgr.cl/tramites-tgr/certificado-de-deuda-de-contribuciones/] posibles endpoints/strings con 'tgr.cl' + v1/api/certificado/deuda:
+     - https://ayuda.tgr.cl/hc/es-419/articles/10966102406167-Certificados-de-Contribuciones
+     - https://ayuda.tgr.cl/hc/es-419/articles/10967547688343-Pagar-impuestos-fiscales-Pago-impuestos-fiscales-Pago-Total-de-Deudas-Fiscales
+     - https://ayuda.tgr.cl/hc/es-419/articles/1500000490902-Recaudacion-por-Reprogramacion-del-Credito-Adeudado-CAE
+     - https://ayuda.tgr.cl/hc/es-419/articles/1500003310621-Solicitar-certificados-de-movimientos-en-Cuenta-Unica-Tributaria
+     - https://ayuda.tgr.cl/hc/es-419/articles/360015443593-Solicitar-certificado-de-pago-de-deuda-de-contribuciones
+     - https://ayuda.tgr.cl/hc/es-419/articles/360017965074-Certificado-de-deuda-tributaria-para-presentar-en-Chile-Proveedores
+     - https://ayuda.tgr.cl/hc/es-419/articles/360018066514-Suscribir-convenio-de-pago-para-deudas-fiscales-y-territoriales
+     - https://ayuda.tgr.cl/hc/es-419/articles/360018108393-Certificado-de-deuda-fiscal
+     - https://ayuda.tgr.cl/hc/es-419/articles/360018203933-Certificado-de-pago-de-deuda-fiscal
+     - https://ayuda.tgr.cl/hc/es-419/articles/360052197853-Pago-Total-de-Deudas-Fiscales
+     - https://ayuda.tgr.cl/hc/es-419/articles/360055602154-Alegar-que-no-se-reconoce-la-deuda-fuera-del-plazo-legal-para-oponer-excepciones
+     - https://ayuda.tgr.cl/hc/es-419/articles/360063744693-Solicitar-certificado-de-deuda-de-contribuciones
+     - https://ayuda.tgr.cl/hc/es-419/articles/9831207572375-Solicitar-certificado-de-deudas-ex-Cora
+     - https://ayuda.tgr.cl/hc/es-419/categories/360001296194-Certificados-y-Comprobantes
+
+  Scripts JS encontrados en la(s) página(s) de la TGR: 2
+     - https://tgr.cl/assets/ajax/libs/jquery/jquery-3.6.0.min.js
+     - https://www.tgr.cl//www.google.com/jsapi?ver=7.1
+
+==========================================================================================
+PASO 2: revisar esos scripts JS en busca de endpoints (bundle de Angular/React)
+==========================================================================================
+  GET https://tgr.cl/assets/ajax/libs/jquery/jquery-3.6.0.min.js -> HTTP 200 (89501 bytes)
+  GET https://www.tgr.cl//www.google.com/jsapi?ver=7.1 -> HTTP 403 (243 bytes)
+
+==========================================================================================
+RESUMEN PASO 1-2: 14 pistas de endpoint encontradas en total.
+==========================================================================================
+  - https://ayuda.tgr.cl/hc/es-419/articles/10966102406167-Certificados-de-Contribuciones
+  - https://ayuda.tgr.cl/hc/es-419/articles/10967547688343-Pagar-impuestos-fiscales-Pago-impuestos-fiscales-Pago-Total-de-Deudas-Fiscales
+  - https://ayuda.tgr.cl/hc/es-419/articles/1500000490902-Recaudacion-por-Reprogramacion-del-Credito-Adeudado-CAE
+  - https://ayuda.tgr.cl/hc/es-419/articles/1500003310621-Solicitar-certificados-de-movimientos-en-Cuenta-Unica-Tributaria
+  - https://ayuda.tgr.cl/hc/es-419/articles/360015443593-Solicitar-certificado-de-pago-de-deuda-de-contribuciones
+  - https://ayuda.tgr.cl/hc/es-419/articles/360017965074-Certificado-de-deuda-tributaria-para-presentar-en-Chile-Proveedores
+  - https://ayuda.tgr.cl/hc/es-419/articles/360018066514-Suscribir-convenio-de-pago-para-deudas-fiscales-y-territoriales
+  - https://ayuda.tgr.cl/hc/es-419/articles/360018108393-Certificado-de-deuda-fiscal
+  - https://ayuda.tgr.cl/hc/es-419/articles/360018203933-Certificado-de-pago-de-deuda-fiscal
+  - https://ayuda.tgr.cl/hc/es-419/articles/360052197853-Pago-Total-de-Deudas-Fiscales
+  - https://ayuda.tgr.cl/hc/es-419/articles/360055602154-Alegar-que-no-se-reconoce-la-deuda-fuera-del-plazo-legal-para-oponer-excepciones
+  - https://ayuda.tgr.cl/hc/es-419/articles/360063744693-Solicitar-certificado-de-deuda-de-contribuciones
+  - https://ayuda.tgr.cl/hc/es-419/articles/9831207572375-Solicitar-certificado-de-deudas-ex-Cora
+  - https://ayuda.tgr.cl/hc/es-419/categories/360001296194-Certificados-y-Comprobantes
+
+==========================================================================================
+PASO 3: probar un pedido directo con la propiedad de Lastarria 70 (070-1713-60)
+==========================================================================================
+  Propiedad de prueba: {'region': 'Región Metropolitana de Santiago', 'comuna': 'Santiago', 'rol': '070-1713-60'}
+  GET https://remates.tgr.cl/v1/getCertificadoDeudaContribuciones -> HTTP 200 | primeros 200 caracteres: '<!doctype html>\n<html lang="es-CL" data-critters-container>\n<head><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <meta charset="utf-8">\n  <title>TGR | Remates</title>\n  <base h'
+  GET https://remates.tgr.cl/v1/certificadoDeuda -> HTTP 200 | primeros 200 caracteres: '<!doctype html>\n<html lang="es-CL" data-critters-container>\n<head><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n  <meta charset="utf-8">\n  <title>TGR | Remates</title>\n  <base h'
+  GET https://www.tgr.cl/v1/getCertificadoDeudaContribuciones -> HTTP 403 | primeros 200 caracteres: '<?xml version="1.0" encoding="UTF-8"?>\n<Error><Code>AccessDenied</Code><Message>Access Denied</Message><RequestId>AF031MREZV96WHXM</RequestId><HostId>IrRsXgDOaEOV+kKIcMNZ0lu2fOPTQvsLmDXgl1S0/M1BkaoMvC'
+
+==========================================================================================
+CONCLUSIÓN (a completar por Claude leyendo este log)
+==========================================================================================
