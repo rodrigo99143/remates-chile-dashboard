@@ -35,11 +35,60 @@ on:
           normales.
         type: boolean
         default: false
+      investigar_certificado_deuda:
+        description: >-
+          Opcional, "de una sola vez" (pedido de Álvaro vía Rodrigo,
+          2026-11-05): si es "true", en vez de correr el programa completo,
+          solo se investiga (sin automatizar nada todavía) si es viable pedir
+          por internet el "certificado de pago de deuda de contribuciones"
+          de la TGR, para más adelante poder descartar remates territoriales
+          con menos de 3 años de deuda. Solo mira y prueba, no cambia nada
+          del sistema. Se deja en "false" en corridas normales.
+        type: boolean
+        default: false
 
 permissions:
   contents: write
 
 jobs:
+  investigar_certificado_deuda:
+    # Job aparte, de solo investigación: no depende de "barrido" ni de nada
+    # del pipeline normal. Corre en la nube de GitHub porque desde ahí SÍ se
+    # puede llegar a tgr.cl (hay sandbox donde eso está bloqueado).
+    if: ${{ inputs.investigar_certificado_deuda == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Descargar el código del repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar solo lo necesario para esta investigación
+        run: pip install --quiet requests
+
+      - name: Investigar si se puede automatizar el certificado de deuda
+        run: |
+          mkdir -p logs
+          set -o pipefail
+          python investigar_certificado_deuda.py 2>&1 | tee logs/investigacion_certificado_deuda.log
+
+      - name: Guardar el resultado
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -- logs/investigacion_certificado_deuda.log 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: resultado de la investigación del certificado de deuda [skip ci]"
+            git push
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   probar_geocodificacion:
     # Job aparte y liviano (no depende de "barrido"): no necesita TGR, Macal,
     # el catastro ni nada de eso, así que no tiene sentido esperar los ~40-50
@@ -79,7 +128,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   barrido:
-    if: ${{ inputs.probar_geocodificacion != true }}
+    if: ${{ inputs.probar_geocodificacion != true && inputs.investigar_certificado_deuda != true }}
     runs-on: ubuntu-latest
     # Tope de seguridad: si algo se cuelga, que no corra para siempre.
     timeout-minutes: 180
