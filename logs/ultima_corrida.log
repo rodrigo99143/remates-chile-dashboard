@@ -14,28 +14,28 @@ Paso 1 de 4: catastro nacional del SII
   Leyendo BRORGA2441AL_NAC_2026_2 (93 MB)...
     11,718,011 líneas de construcción cargadas...    12,218,011 líneas de construcción cargadas...    12,695,895 líneas de construcción cargadas...
   Sumando superficie construida y buscando el año más antiguo por propiedad...
-  Base lista: 9,655,566 predios, 12,695,895 líneas de construcción, en 75 segundos.
+  Base lista: 9,655,566 predios, 12,695,895 líneas de construcción, en 100 segundos.
 
 Paso 2 de 4: barrido en vivo de las fuentes
 
   [TGR] descargando remates EN VIVO...
     Intento 1/3...
-  [TGR] OK: 600 registros
+  [TGR] OK: 693 registros
 
   [MACAL] barrido completo de macal.cl...
-  Macal: 149 fichas encontradas en el listado. Leyendo cada una...
-    25/149 fichas...    50/149 fichas...    75/149 fichas...    100/149 fichas...    125/149 fichas...
-  [MACAL] OK: 149 propiedades
+  Macal: 148 fichas encontradas en el listado. Leyendo cada una...
+    25/148 fichas...    50/148 fichas...    75/148 fichas...    100/148 fichas...    125/148 fichas...
+  [MACAL] OK: 148 propiedades
 
   [AVISOS] leyendo resúmenes .docx...
-  [AVISOS] OK: 540 avisos
-  [AVISOS] ningún archivo nuevo esta semana (ya se usaron todos en una corrida anterior) - no se fuerza el top 3 de avisos.
+  [AVISOS] OK: 679 avisos
+  [AVISOS] archivo(s) NUEVO(s) esta semana (no en una corrida anterior): INFORME_06-11-2026_AL_08-11-2026.docx
 
   [PRECIO_MERCADO] actualizando base propia de precios de mercado...
   [PRECIO_MERCADO: ChilePropiedades] barriendo...
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/concepcion/0
-    [DIAG]   HTML recibido: 156,339 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 187
+    [DIAG]   HTML recibido: 156,293 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 186
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
@@ -46,41 +46,41 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
     [DIAG]   -> de esos, con comuna reconocida: 32 (= 32 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/talcahuano/0
-    [DIAG]   HTML recibido: 160,566 caracteres | bloques article/li/div en la página: 309
+    [DIAG]   HTML recibido: 161,768 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 183
-    [DIAG]   -> con precio Y m2 detectados: 36
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
-    [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
+    [DIAG]   -> con precio Y m2 detectados: 40
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
+    [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/talcahuano/0
-    [DIAG]   HTML recibido: 152,321 caracteres | bloques article/li/div en la página: 306
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 182
+    [DIAG]   HTML recibido: 153,149 caracteres | bloques article/li/div en la página: 306
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 183
     [DIAG]   -> con precio Y m2 detectados: 42
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 42
     [DIAG]   -> de esos, con comuna reconocida: 42 (= 42 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/san-pedro-de-la-paz/0
-    [DIAG]   HTML recibido: 163,545 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
+    [DIAG]   HTML recibido: 163,444 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 189
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/san-pedro-de-la-paz/0
-    [DIAG]   HTML recibido: 152,852 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 153,880 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 184
     [DIAG]   -> con precio Y m2 detectados: 38
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 38
     [DIAG]   -> de esos, con comuna reconocida: 38 (= 38 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/chiguayante/0
-    [DIAG]   HTML recibido: 163,858 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 160,469 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 183
-    [DIAG]   -> con precio Y m2 detectados: 44
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 44
-    [DIAG]   -> de esos, con comuna reconocida: 44 (= 44 avisos aprovechables)
+    [DIAG]   -> con precio Y m2 detectados: 40
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
+    [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/chiguayante/0
-    [DIAG]   HTML recibido: 156,404 caracteres | bloques article/li/div en la página: 306
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 186
-    [DIAG]   -> con precio Y m2 detectados: 48
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 48
-    [DIAG]   -> de esos, con comuna reconocida: 48 (= 48 avisos aprovechables)
+    [DIAG]   HTML recibido: 155,801 caracteres | bloques article/li/div en la página: 306
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 185
+    [DIAG]   -> con precio Y m2 detectados: 46
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 46
+    [DIAG]   -> de esos, con comuna reconocida: 46 (= 46 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/hualpen/0
     [DIAG]   HTML recibido: 160,416 caracteres | bloques article/li/div en la página: 304
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 182
@@ -88,13 +88,13 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/hualpen/0
-    [DIAG]   HTML recibido: 150,169 caracteres | bloques article/li/div en la página: 302
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 177
+    [DIAG]   HTML recibido: 150,275 caracteres | bloques article/li/div en la página: 302
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 178
     [DIAG]   -> con precio Y m2 detectados: 36
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
     [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/coronel/0
-    [DIAG]   HTML recibido: 161,718 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 161,310 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 182
     [DIAG]   -> con precio Y m2 detectados: 42
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 42
@@ -106,23 +106,23 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 7
     [DIAG]   -> de esos, con comuna reconocida: 7 (= 7 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/santiago/0
-    [DIAG]   HTML recibido: 151,153 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 180
+    [DIAG]   HTML recibido: 151,355 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 182
     [DIAG]   -> con precio Y m2 detectados: 28
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 28
     [DIAG]   -> de esos, con comuna reconocida: 28 (= 28 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/santiago/0
-    [DIAG]   HTML recibido: 146,415 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 144,670 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 197
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/providencia/0
-    [DIAG]   HTML recibido: 155,957 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 156,063 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 193
-    [DIAG]   -> con precio Y m2 detectados: 42
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 42
-    [DIAG]   -> de esos, con comuna reconocida: 42 (= 42 avisos aprovechables)
+    [DIAG]   -> con precio Y m2 detectados: 40
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
+    [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/providencia/0
     [DIAG]   HTML recibido: 153,400 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 193
@@ -130,20 +130,20 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/las-condes/0
-    [DIAG]   HTML recibido: 162,112 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
+    [DIAG]   HTML recibido: 162,011 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 189
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/las-condes/0
-    [DIAG]   HTML recibido: 155,683 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 193
+    [DIAG]   HTML recibido: 153,640 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 195
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/nunoa/0
-    [DIAG]   HTML recibido: 160,688 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 196
+    [DIAG]   HTML recibido: 159,635 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 194
     [DIAG]   -> con precio Y m2 detectados: 41
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 41
     [DIAG]   -> de esos, con comuna reconocida: 41 (= 41 avisos aprovechables)
@@ -154,186 +154,186 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
     [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/maipu/0
-    [DIAG]   HTML recibido: 163,154 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 161,357 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 193
-    [DIAG]   -> con precio Y m2 detectados: 40
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
-    [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
-    [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/maipu/0
-    [DIAG]   HTML recibido: 148,072 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
-    [DIAG]   -> con precio Y m2 detectados: 32
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
-    [DIAG]   -> de esos, con comuna reconocida: 32 (= 32 avisos aprovechables)
-    [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/puente-alto/0
-    [DIAG]   HTML recibido: 163,642 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 195
-    [DIAG]   -> con precio Y m2 detectados: 40
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
-    [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
-    [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/puente-alto/0
-    [DIAG]   HTML recibido: 154,454 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 184
     [DIAG]   -> con precio Y m2 detectados: 36
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
     [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
-    [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/la-florida/0
-    [DIAG]   HTML recibido: 162,445 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 196
-    [DIAG]   -> con precio Y m2 detectados: 38
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 38
-    [DIAG]   -> de esos, con comuna reconocida: 38 (= 38 avisos aprovechables)
-    [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/la-florida/0
-    [DIAG]   HTML recibido: 154,878 caracteres | bloques article/li/div en la página: 308
+    [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/maipu/0
+    [DIAG]   HTML recibido: 148,926 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
+    [DIAG]   -> con precio Y m2 detectados: 36
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
+    [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
+    [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/puente-alto/0
+    [DIAG]   HTML recibido: 166,188 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 198
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
+    [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/puente-alto/0
+    [DIAG]   HTML recibido: 154,503 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 188
+    [DIAG]   -> con precio Y m2 detectados: 40
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
+    [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
+    [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/la-florida/0
+    [DIAG]   HTML recibido: 161,804 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 195
+    [DIAG]   -> con precio Y m2 detectados: 42
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 42
+    [DIAG]   -> de esos, con comuna reconocida: 42 (= 42 avisos aprovechables)
+    [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/la-florida/0
+    [DIAG]   HTML recibido: 154,405 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 196
+    [DIAG]   -> con precio Y m2 detectados: 40
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
+    [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/vitacura/0
-    [DIAG]   HTML recibido: 161,872 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 164,566 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 186
     [DIAG]   -> con precio Y m2 detectados: 42
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 42
     [DIAG]   -> de esos, con comuna reconocida: 42 (= 42 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/vitacura/0
-    [DIAG]   HTML recibido: 158,775 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 194
+    [DIAG]   HTML recibido: 159,131 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 196
     [DIAG]   -> con precio Y m2 detectados: 37
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 37
     [DIAG]   -> de esos, con comuna reconocida: 37 (= 37 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/valparaiso/0
-    [DIAG]   HTML recibido: 155,776 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 193
-    [DIAG]   -> con precio Y m2 detectados: 40
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
-    [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
+    [DIAG]   HTML recibido: 155,739 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 187
+    [DIAG]   -> con precio Y m2 detectados: 36
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
+    [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/valparaiso/0
-    [DIAG]   HTML recibido: 145,929 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 189
-    [DIAG]   -> con precio Y m2 detectados: 28
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 28
-    [DIAG]   -> de esos, con comuna reconocida: 28 (= 28 avisos aprovechables)
+    [DIAG]   HTML recibido: 147,898 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 188
+    [DIAG]   -> con precio Y m2 detectados: 33
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 33
+    [DIAG]   -> de esos, con comuna reconocida: 33 (= 33 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/vina-del-mar/0
-    [DIAG]   HTML recibido: 158,823 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 158,460 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 193
     [DIAG]   -> con precio Y m2 detectados: 32
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
     [DIAG]   -> de esos, con comuna reconocida: 32 (= 32 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/vina-del-mar/0
-    [DIAG]   HTML recibido: 155,456 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 196
-    [DIAG]   -> con precio Y m2 detectados: 36
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
-    [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
+    [DIAG]   HTML recibido: 153,416 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 193
+    [DIAG]   -> con precio Y m2 detectados: 32
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
+    [DIAG]   -> de esos, con comuna reconocida: 32 (= 32 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/concon/0
-    [DIAG]   HTML recibido: 160,923 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 160,471 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
-    [DIAG]   -> con precio Y m2 detectados: 43
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 43
-    [DIAG]   -> de esos, con comuna reconocida: 43 (= 43 avisos aprovechables)
+    [DIAG]   -> con precio Y m2 detectados: 41
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 41
+    [DIAG]   -> de esos, con comuna reconocida: 41 (= 41 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/concon/0
-    [DIAG]   HTML recibido: 153,856 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 188
+    [DIAG]   HTML recibido: 154,515 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/quilpue/0
-    [DIAG]   HTML recibido: 160,805 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 161,457 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 191
     [DIAG]   -> con precio Y m2 detectados: 45
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 45
     [DIAG]   -> de esos, con comuna reconocida: 45 (= 45 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/quilpue/0
-    [DIAG]   HTML recibido: 154,410 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 152,910 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 191
     [DIAG]   -> con precio Y m2 detectados: 36
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
     [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/san-antonio/0
-    [DIAG]   HTML recibido: 156,193 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 158,062 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 187
-    [DIAG]   -> con precio Y m2 detectados: 32
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
-    [DIAG]   -> de esos, con comuna reconocida: 32 (= 32 avisos aprovechables)
+    [DIAG]   -> con precio Y m2 detectados: 36
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
+    [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/san-antonio/0
-    [DIAG]   HTML recibido: 150,692 caracteres | bloques article/li/div en la página: 302
+    [DIAG]   HTML recibido: 150,428 caracteres | bloques article/li/div en la página: 302
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 183
     [DIAG]   -> con precio Y m2 detectados: 36
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
     [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/la-serena/0
-    [DIAG]   HTML recibido: 162,593 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
+    [DIAG]   HTML recibido: 163,045 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 189
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/la-serena/0
-    [DIAG]   HTML recibido: 153,641 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 187
+    [DIAG]   HTML recibido: 153,439 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 185
     [DIAG]   -> con precio Y m2 detectados: 34
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 34
     [DIAG]   -> de esos, con comuna reconocida: 34 (= 34 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/antofagasta/0
-    [DIAG]   HTML recibido: 156,190 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 159,313 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 186
-    [DIAG]   -> con precio Y m2 detectados: 36
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
-    [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
+    [DIAG]   -> con precio Y m2 detectados: 40
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
+    [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/antofagasta/0
-    [DIAG]   HTML recibido: 153,652 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
+    [DIAG]   HTML recibido: 153,551 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 189
     [DIAG]   -> con precio Y m2 detectados: 36
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
     [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/temuco/0
-    [DIAG]   HTML recibido: 161,302 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 192
+    [DIAG]   HTML recibido: 161,403 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 193
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/temuco/0
-    [DIAG]   HTML recibido: 148,687 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 148,832 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 189
     [DIAG]   -> con precio Y m2 detectados: 32
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
     [DIAG]   -> de esos, con comuna reconocida: 32 (= 32 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/rancagua/0
-    [DIAG]   HTML recibido: 161,445 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 193
+    [DIAG]   HTML recibido: 161,203 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 191
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/rancagua/0
-    [DIAG]   HTML recibido: 149,334 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 192
-    [DIAG]   -> con precio Y m2 detectados: 36
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
-    [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
-    [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/talca/0
-    [DIAG]   HTML recibido: 162,369 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 187
+    [DIAG]   HTML recibido: 151,488 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
+    [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/talca/0
+    [DIAG]   HTML recibido: 155,551 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 188
+    [DIAG]   -> con precio Y m2 detectados: 29
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 29
+    [DIAG]   -> de esos, con comuna reconocida: 29 (= 29 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/talca/0
-    [DIAG]   HTML recibido: 146,863 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 186
-    [DIAG]   -> con precio Y m2 detectados: 32
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
-    [DIAG]   -> de esos, con comuna reconocida: 32 (= 32 avisos aprovechables)
-  [PRECIO_MERCADO: ChilePropiedades] OK: 17 nuevas, 1774 ya vistas, 0 descartadas
+    [DIAG]   HTML recibido: 148,780 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 187
+    [DIAG]   -> con precio Y m2 detectados: 28
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 28
+    [DIAG]   -> de esos, con comuna reconocida: 28 (= 28 avisos aprovechables)
+  [PRECIO_MERCADO: ChilePropiedades] OK: 82 nuevas, 1705 ya vistas, 0 descartadas
   [PRECIO_MERCADO: TopPropiedades] barriendo...
     [DIAG] https://www.toppropiedades.cl/propiedades/venta
-    [DIAG]   HTML recibido: 285,811 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 82
-    [DIAG]   -> con precio Y m2 detectados: 5
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 5
-    [DIAG]   -> de esos, con comuna reconocida: 5 (= 5 avisos aprovechables)
-  [PRECIO_MERCADO: TopPropiedades] OK: 0 nuevas, 5 ya vistas, 0 descartadas
+    [DIAG]   HTML recibido: 284,765 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 74
+    [DIAG]   -> con precio Y m2 detectados: 1
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 1
+    [DIAG]   -> de esos, con comuna reconocida: 1 (= 1 avisos aprovechables)
+  [PRECIO_MERCADO: TopPropiedades] OK: 0 nuevas, 1 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Procasa] barriendo...
     [DIAG] https://www.procasa.cl/Todos_los_tipos/Venta/Todas_las_comunas
-    [DIAG]   HTML recibido: 98,522 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 128
+    [DIAG]   HTML recibido: 97,641 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 127
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
     [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
@@ -343,62 +343,43 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]     #3: '+56928379070 info@procasa.cl'
   [PRECIO_MERCADO: Procasa] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Doomos] barriendo...
-    [DIAG] https://www.doomos.cl/venta-casas
-    [DIAG]   HTML recibido: 4,264 caracteres | bloques article/li/div en la página: 12
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 7
-    [DIAG]   -> con precio Y m2 detectados: 0
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
-    [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
-    [DIAG]   EJEMPLOS de texto que NO se reconoció como precio+m2 (para ajustar la búsqueda):
-    [DIAG]     #1: 'Please enable cookies.'
-    [DIAG]     #2: 'Sorry, you have been blocked You are unable to access doomos.cl'
-    [DIAG]     #3: 'Why have I been blocked? This website is using a security service to protect itself from online attacks. The action you just performed triggered the security solution. There are several actions that c'
-    [DIAG] https://www.doomos.cl/venta-departamentos
-    [DIAG]   HTML recibido: 4,264 caracteres | bloques article/li/div en la página: 12
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 7
-    [DIAG]   -> con precio Y m2 detectados: 0
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
-    [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
-    [DIAG]   EJEMPLOS de texto que NO se reconoció como precio+m2 (para ajustar la búsqueda):
-    [DIAG]     #1: 'Please enable cookies.'
-    [DIAG]     #2: 'Sorry, you have been blocked You are unable to access doomos.cl'
-    [DIAG]     #3: 'Why have I been blocked? This website is using a security service to protect itself from online attacks. The action you just performed triggered the security solution. There are several actions that c'
-    [DIAG] https://www.doomos.cl/venta-terrenos
-    [DIAG]   HTML recibido: 4,264 caracteres | bloques article/li/div en la página: 12
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 7
-    [DIAG]   -> con precio Y m2 detectados: 0
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
-    [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
-    [DIAG]   EJEMPLOS de texto que NO se reconoció como precio+m2 (para ajustar la búsqueda):
-    [DIAG]     #1: 'Please enable cookies.'
-    [DIAG]     #2: 'Sorry, you have been blocked You are unable to access doomos.cl'
-    [DIAG]     #3: 'Why have I been blocked? This website is using a security service to protect itself from online attacks. The action you just performed triggered the security solution. There are several actions that c'
+    [DIAG] https://www.doomos.cl/venta-casas -> FALLÓ el pedido (navegador): TimeoutError: Page.goto: Timeout 60000ms exceeded.
+Call log:
+  - navigating to "https://www.doomos.cl/venta-casas", waiting until "networkidle"
+
+    [DIAG] https://www.doomos.cl/venta-departamentos -> FALLÓ el pedido (navegador): TimeoutError: Page.goto: Timeout 60000ms exceeded.
+Call log:
+  - navigating to "https://www.doomos.cl/venta-departamentos", waiting until "networkidle"
+
+    [DIAG] https://www.doomos.cl/venta-terrenos -> FALLÓ el pedido (navegador): TimeoutError: Page.goto: Timeout 60000ms exceeded.
+Call log:
+  - navigating to "https://www.doomos.cl/venta-terrenos", waiting until "networkidle"
+
   [PRECIO_MERCADO: Doomos] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Inmoclick] barriendo...
     [DIAG] https://www.inmoclick.cl/casas-en-venta
-    [DIAG]   HTML recibido: 489,546 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 69
-    [DIAG]   -> con precio Y m2 detectados: 3
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 3
+    [DIAG]   HTML recibido: 531,090 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 63
+    [DIAG]   -> con precio Y m2 detectados: 0
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
     [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
-    [DIAG]   EJEMPLOS de texto con tipo reconocido pero SIN comuna detectada:
-    [DIAG]     #1: 'US$ 70.000 Vendo Casa en pozo en Barrio Andesmar, Guaymallén. 150 mtrs terreno total, 110 cubierto. La propiedad cuenta con cocina con lavadero, patio interno, amplio living comedor, 3 habitaciones, 2'
-    [DIAG]     #2: 'US$ 70.000 Vendo Casa en pozo en Barrio Andesmar, Guaymallén. 150 mtrs terreno total, 110 cubierto. La propiedad cuenta con cocina con lavadero, patio interno, amplio living comedor, 3 habitaciones, 2'
-    [DIAG]     #3: 'US$ 88.900 Se ofrecen a la venta dos propiedades en un mismo terreno | San José\r\n\r\nExcelente oportunidad de inversión sobre un terreno de 200 m². La propiedad cuenta con dos unidades independientes:\r\n'
+    [DIAG]   EJEMPLOS de texto que NO se reconoció como precio+m2 (para ajustar la búsqueda):
+    [DIAG]     #1: 'Menu Menu INGRESAR VENTA Casas Departamentos Lotes ALQUILERES Casas Departamentos Locales Temporarios INMOBILIARIAS Busca inmobiliarias en Mendoza Busca inmobiliarias en Neuquén Busca inmobiliarias en'
+    [DIAG]     #2: 'Menu INGRESAR VENTA Casas Departamentos Lotes ALQUILERES Casas Departamentos Locales Temporarios INMOBILIARIAS Busca inmobiliarias en Mendoza Busca inmobiliarias en Neuquén Busca inmobiliarias en Salt'
+    [DIAG]     #3: 'INGRESAR VENTA Casas Departamentos Lotes ALQUILERES Casas Departamentos Locales Temporarios INMOBILIARIAS Busca inmobiliarias en Mendoza Busca inmobiliarias en Neuquén Busca inmobiliarias en Salta Bus'
     [DIAG] https://www.inmoclick.cl/departamentos-en-venta
-    [DIAG]   HTML recibido: 498,793 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 75
-    [DIAG]   -> con precio Y m2 detectados: 4
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 4
+    [DIAG]   HTML recibido: 503,973 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 68
+    [DIAG]   -> con precio Y m2 detectados: 2
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 2
     [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
     [DIAG]   EJEMPLOS de texto con tipo reconocido pero SIN comuna detectada:
     [DIAG]     #1: 'US$ 74.000 EXCELENTE DEPARTAMENTO EN ZONA DE CRECIMIENTO ubicado en PRIMER PISO por escaleras.\r\nCOCINA COMEDOR\r\n2 HABITACIONES CON PLACARES\r\n1 BAÑO\r\nCOCHERA \r\nSE ENCUENTRA EN UN COMPLEJO DE 10 DEPARTA'
     [DIAG]     #2: 'US$ 74.000 EXCELENTE DEPARTAMENTO EN ZONA DE CRECIMIENTO ubicado en PRIMER PISO por escaleras.\r\nCOCINA COMEDOR\r\n2 HABITACIONES CON PLACARES\r\n1 BAÑO\r\nCOCHERA \r\nSE ENCUENTRA EN UN COMPLEJO DE 10 DEPARTA'
-    [DIAG]     #3: 'US$ 58.000 ZELTA Inmobiliaria Vende Departamento en Torres del Barrio Unimev, Guaymallén. \r\n100 mtrs total. \r\nLa propiedad cuenta con cocina con lavadero, living comedor, 3 habitaciones, 1 baño, placa'
   [PRECIO_MERCADO: Inmoclick] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: ProUrbano] barriendo...
     [DIAG] https://www.prourbano.cl/s/casa/venta?id_property_type=1&business_type%5B0%5D=for_sale
-    [DIAG]   HTML recibido: 595,458 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 596,457 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 119
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -408,7 +389,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]     #2: 'escribenos@prourbanogroup.com +56942004000 Select Language \u200b ▼'
     [DIAG]     #3: 'escribenos@prourbanogroup.com +56942004000 Select Language \u200b ▼'
     [DIAG] https://www.prourbano.cl/s/departamento/venta?id_property_type=2&business_type%5B0%5D=for_sale
-    [DIAG]   HTML recibido: 595,596 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 595,588 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 119
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -420,7 +401,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
   [PRECIO_MERCADO: ProUrbano] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Bernal] barriendo...
     [DIAG] https://bernalpropiedades.cl/resultados-de-la-busqueda/?es_category%5B0%5D=10
-    [DIAG]   HTML recibido: 352,035 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 352,811 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 105
     [DIAG]   -> con precio Y m2 detectados: 5
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 5
@@ -428,8 +409,8 @@ Paso 2 de 4: barrido en vivo de las fuentes
   [PRECIO_MERCADO: Bernal] OK: 0 nuevas, 5 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Paz] barriendo...
     [DIAG] https://www.paz.cl/proyectos
-    [DIAG]   HTML recibido: 207,454 caracteres | bloques article/li/div en la página: 198
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 108
+    [DIAG]   HTML recibido: 204,931 caracteres | bloques article/li/div en la página: 197
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 107
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
     [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
@@ -440,7 +421,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
   [PRECIO_MERCADO: Paz] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Siena] barriendo...
     [DIAG] https://www.siena.cl/casas/
-    [DIAG]   HTML recibido: 189,984 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 189,497 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 169
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -450,7 +431,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]     #2: 'Menu PROYECTO ESPACIOS COMUNES CASAS ENTORNO FINANCIAMIENTO Cotiza ahora ➔'
     [DIAG]     #3: 'Menu PROYECTO ESPACIOS COMUNES CASAS ENTORNO FINANCIAMIENTO Cotiza ahora ➔'
     [DIAG] https://www.siena.cl/departamentos/
-    [DIAG]   HTML recibido: 61,392 caracteres | bloques article/li/div en la página: 143
+    [DIAG]   HTML recibido: 60,983 caracteres | bloques article/li/div en la página: 143
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 66
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -462,7 +443,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
   [PRECIO_MERCADO: Siena] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Castro] barriendo...
     [DIAG] https://castropropiedades.cl/wordpress/index.php/propiedades/
-    [DIAG]   HTML recibido: 37,673 caracteres | bloques article/li/div en la página: 102
+    [DIAG]   HTML recibido: 37,677 caracteres | bloques article/li/div en la página: 102
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 28
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -474,7 +455,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
   [PRECIO_MERCADO: Castro] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Maitencillo] barriendo...
     [DIAG] https://maitencillopropiedades.cl/casa/
-    [DIAG]   HTML recibido: 164,653 caracteres | bloques article/li/div en la página: 252
+    [DIAG]   HTML recibido: 164,840 caracteres | bloques article/li/div en la página: 252
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 76
     [DIAG]   -> con precio Y m2 detectados: 8
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 8
@@ -492,7 +473,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
   [PRECIO_MERCADO: Maitencillo] OK: 0 nuevas, 8 ya vistas, 0 descartadas
   [PRECIO_MERCADO: GrupoPremium] barriendo...
     [DIAG] https://gpremium.cl/comprar-una-propiedad/
-    [DIAG]   HTML recibido: 169,313 caracteres | bloques article/li/div en la página: 207
+    [DIAG]   HTML recibido: 169,510 caracteres | bloques article/li/div en la página: 207
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 121
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -534,93 +515,92 @@ Paso 2 de 4: barrido en vivo de las fuentes
   [PRECIO_MERCADO: Dosam] OK: 0 nuevas, 1 ya vistas, 0 descartadas
   [PRECIO_MERCADO: EngelVolkers] barriendo...
     [DIAG] https://www.engelvoelkers.com/cl/en/properties/res/sale/apartment
-    [DIAG]   HTML recibido: 800,406 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 115
+    [DIAG]   HTML recibido: 801,019 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 120
     [DIAG]   -> con precio Y m2 detectados: 14
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 14
-    [DIAG]   -> de esos, con comuna reconocida: 14 (= 14 avisos aprovechables)
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 10
+    [DIAG]   -> de esos, con comuna reconocida: 10 (= 10 avisos aprovechables)
     [DIAG] https://www.engelvoelkers.com/cl/en/properties/res/sale/house
-    [DIAG]   HTML recibido: 858,905 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 119
-    [DIAG]   -> con precio Y m2 detectados: 13
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 11
-    [DIAG]   -> de esos, con comuna reconocida: 11 (= 11 avisos aprovechables)
-  [PRECIO_MERCADO: EngelVolkers] OK: 7 nuevas, 18 ya vistas, 0 descartadas
+    [DIAG]   HTML recibido: 858,409 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 123
+    [DIAG]   -> con precio Y m2 detectados: 14
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 12
+    [DIAG]   -> de esos, con comuna reconocida: 12 (= 12 avisos aprovechables)
+  [PRECIO_MERCADO: EngelVolkers] OK: 9 nuevas, 13 ya vistas, 0 descartadas
   [PRECIO_MERCADO: PropertyPartners] barriendo...
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-metropolitana-de-santiago
-    [DIAG]   HTML recibido: 406,272 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 215
+    [DIAG]   HTML recibido: 407,278 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 216
     [DIAG]   -> con precio Y m2 detectados: 138
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 108
-    [DIAG]   -> de esos, con comuna reconocida: 108 (= 108 avisos aprovechables)
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 114
+    [DIAG]   -> de esos, con comuna reconocida: 114 (= 114 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-metropolitana-de-santiago
-    [DIAG]   HTML recibido: 413,393 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 414,074 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 219
     [DIAG]   -> con precio Y m2 detectados: 144
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 138
-    [DIAG]   -> de esos, con comuna reconocida: 132 (= 132 avisos aprovechables)
+    [DIAG]   -> de esos, con comuna reconocida: 138 (= 138 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-de-valparaiso
-    [DIAG]   HTML recibido: 417,379 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 210
-    [DIAG]   -> con precio Y m2 detectados: 142
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 124
-    [DIAG]   -> de esos, con comuna reconocida: 124 (= 124 avisos aprovechables)
+    [DIAG]   HTML recibido: 418,583 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 212
+    [DIAG]   -> con precio Y m2 detectados: 144
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 126
+    [DIAG]   -> de esos, con comuna reconocida: 126 (= 126 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-de-valparaiso
-    [DIAG]   HTML recibido: 409,764 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 197
-    [DIAG]   -> con precio Y m2 detectados: 117
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 106
-    [DIAG]   -> de esos, con comuna reconocida: 106 (= 106 avisos aprovechables)
+    [DIAG]   HTML recibido: 409,746 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 211
+    [DIAG]   -> con precio Y m2 detectados: 118
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 102
+    [DIAG]   -> de esos, con comuna reconocida: 102 (= 102 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-del-bio-bio
-    [DIAG]   HTML recibido: 410,033 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 410,308 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 214
     [DIAG]   -> con precio Y m2 detectados: 142
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 142
     [DIAG]   -> de esos, con comuna reconocida: 142 (= 142 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-del-bio-bio
-    [DIAG]   HTML recibido: 412,862 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 412,736 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 221
     [DIAG]   -> con precio Y m2 detectados: 144
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 132
     [DIAG]   -> de esos, con comuna reconocida: 132 (= 132 avisos aprovechables)
-  [PRECIO_MERCADO: PropertyPartners] OK: 0 nuevas, 744 ya vistas, 0 descartadas
+  [PRECIO_MERCADO: PropertyPartners] OK: 0 nuevas, 754 ya vistas, 0 descartadas
 
 Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
-  Avisos: 540 leídos | con ROL: 180 (informado: 76, deducido por dirección: 104)
+  Avisos: 679 leídos | con ROL: 221 (informado: 100, deducido por dirección: 121)
   [MACAL] fichas con más de un rol de avalúo: 1 verificadas por dirección, 2 sin poder confirmar cuál corresponde (quedan marcadas para revisar a mano).
   ROL deducido por dirección: 0 únicos | 0 ambiguos (no se asignan) | 0 sin coincidencia/lectura
-  Filas recibidas: 1,289 | propiedades únicas (misma propiedad y fecha): 934
+  Filas recibidas: 1,520 | propiedades únicas (misma propiedad y fecha): 1,027
 /home/runner/work/remates-chile-dashboard/remates-chile-dashboard/remates_v2.py:2700: Pandas4Warning: 'ndarray' is not supported as a fill value for float64 dtype. In a future version, calling fillna with an incompatible value will raise. Explicitly cast to a common dtype before filling.
   valor_mercado_final = df["valor_mercado_pesos"].fillna(df["valor_mercado_estimado_m2_pesos"])
-    Cruce SII - OK: 887
-    Cruce SII - ROL NO ENCONTRADO EN CATASTRO: 27
-    Cruce SII - SIN ROL (no informado ni deducible): 19
-    Cruce SII - COMUNA NO RECONOCIDA: 1
+    Cruce SII - OK: 971
+    Cruce SII - ROL NO ENCONTRADO EN CATASTRO: 30
+    Cruce SII - SIN ROL (no informado ni deducible): 26
 
   [PODER_JUDICIAL] consultando el estado de la causa de cada propiedad del TOP...
-  [PODER_JUDICIAL] 4 causas del TOP con link + instrucción para buscar a mano (ya no se intenta entrar de forma automática - el sitio bloquea las consultas que vienen desde la nube).
+  [PODER_JUDICIAL] 6 causas del TOP con link + instrucción para buscar a mano (ya no se intenta entrar de forma automática - el sitio bloquea las consultas que vienen desde la nube).
 
 Paso 4 de 4: guardando archivos
   [PDF-MAPA] sin mapa para 'LT B- 1 PROL CALLE EJERC. LIBER. 2735' (RIO BUENO): Nominatim no encontró resultados (consulta usada: 'LT B- 1 PROL CALLE EJERC. LIBER. 2735, RIO BUENO, Chile')
   [PDF-MAPA] sin mapa para 'V MACKENNA EDIF C 7735 DP 702' (LA FLORIDA): Nominatim no encontró resultados (consulta usada: 'V MACKENNA EDIF C 7735, LA FLORIDA, Chile')
   [PDF-MAPA] sin mapa para 'SN PEDRO Y SN PABLO 2129' (QUILLOTA): Nominatim no encontró resultados (consulta usada: 'SN PEDRO Y SN PABLO 2129, QUILLOTA, Chile')
 
-LISTO. En el consolidado final (máx. 50): 15 propiedades | elegibles fiscal: 5 | elegibles mercado: 10 de 934 analizadas
+LISTO. En el consolidado final (máx. 50): 16 propiedades | elegibles fiscal: 7 | elegibles mercado: 9 de 1,027 analizadas
   AVISO: OPORTUNIDAD VS. MERCADO - Provincia de Concepción: solo 0 de 2 cupos
   AVISO: OPORTUNIDAD VS. MERCADO - Región de Valparaíso: solo 1 de 2 cupos
-  AVISO: OPORTUNIDAD VS. MERCADO: solo 10 de 20 elegibles en total
-  AVISO: El Ranking de mercado solo llenó 10 de 20 cupos; los 10 que faltaron se le prestaron al Ranking de avalúo fiscal.
+  AVISO: OPORTUNIDAD VS. MERCADO: solo 9 de 20 elegibles en total
+  AVISO: El Ranking de mercado solo llenó 9 de 20 cupos; los 11 que faltaron se le prestaron al Ranking de avalúo fiscal.
   AVISO: OPORTUNIDAD VS. AVALUO FISCAL - Provincia de Concepción: solo 1 de 2 cupos
-  AVISO: OPORTUNIDAD VS. AVALUO FISCAL - Región de Valparaíso: solo 1 de 2 cupos
-  AVISO: OPORTUNIDAD VS. AVALUO FISCAL: solo 5 de 30 elegibles en total
+  AVISO: OPORTUNIDAD VS. AVALUO FISCAL: solo 7 de 31 elegibles en total
   AVISO: Comodín: solo 0 de 10 cupos (no quedan más elegibles)
   AVISO: Cuota mínima de la TGR: solo se alcanzaron 0 de 10 (no hay más propiedades elegibles de la TGR esta semana).
   AVISO: Cuota de carpetas judiciales de la TGR: solo se alcanzaron 0 de 5 (no hay más propiedades de la TGR con tribunal + rol de causa esta semana).
-  Fuente TGR: OK (600 registros, 17:39)
-  Fuente MACAL: OK (149 fichas leídas, 0 con error, 17:41)
-  Fuente AVISOS: OK (540 avisos de 2 archivo(s): INFORME_02-11-2026_AL_03-11-2026.docx, RESUMEN_26-10-2026_AL_30-10-2026.docx)
-  Fuente PRECIO_MERCADO:ChilePropiedades: OK (17 nuevas, 1774 ya vistas, 0 descartadas)
-  Fuente PRECIO_MERCADO:TopPropiedades: OK (0 nuevas, 5 ya vistas, 0 descartadas)
+  AVISO: Top 3 de avisos nuevos: el/los archivo(s) nuevo(s) solo tenían 2 de 3 oportunidades elegibles.
+  Fuente TGR: OK (693 registros, 19:46)
+  Fuente MACAL: OK (148 fichas leídas, 0 con error, 19:48)
+  Fuente AVISOS: OK (679 avisos de 3 archivo(s): INFORME_02-11-2026_AL_03-11-2026.docx, INFORME_06-11-2026_AL_08-11-2026.docx, RESUMEN_26-10-2026_AL_30-10-2026.docx)
+  Fuente PRECIO_MERCADO:ChilePropiedades: OK (82 nuevas, 1705 ya vistas, 0 descartadas)
+  Fuente PRECIO_MERCADO:TopPropiedades: OK (0 nuevas, 1 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Procasa: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Doomos: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Inmoclick: OK (0 nuevas, 0 ya vistas, 0 descartadas)
@@ -633,8 +613,8 @@ LISTO. En el consolidado final (máx. 50): 15 propiedades | elegibles fiscal: 5 
   Fuente PRECIO_MERCADO:GrupoPremium: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:COPROCH: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Dosam: OK (0 nuevas, 1 ya vistas, 0 descartadas)
-  Fuente PRECIO_MERCADO:EngelVolkers: OK (7 nuevas, 18 ya vistas, 0 descartadas)
-  Fuente PRECIO_MERCADO:PropertyPartners: OK (0 nuevas, 744 ya vistas, 0 descartadas)
+  Fuente PRECIO_MERCADO:EngelVolkers: OK (9 nuevas, 13 ya vistas, 0 descartadas)
+  Fuente PRECIO_MERCADO:PropertyPartners: OK (0 nuevas, 754 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO: OK (511 combinaciones comuna/tipo con datos)
   Fuente PODER_JUDICIAL: OK
   Archivos en: /home/runner/work/remates-chile-dashboard/remates-chile-dashboard/salidas
