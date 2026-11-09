@@ -89,22 +89,40 @@ def main():
         print("  [ACUMULADO] No hay ninguna propiedad nueva desde esa fecha. No se genera ni se envía nada.")
         return
 
-    # OJO (pedido de Rodrigo, 2026-10-28, aclarado después del primer intento):
-    # NO se manda el pool completo (puede ser enorme, cientos de propiedades) -
-    # se cura a las MEJORES, igual que el reporte normal de cada semana: las
-    # 50 mejores por % de oportunidad van al Excel; de esas, las 30 mejores
-    # (las que encabezan la lista) van también al PDF - menos fichas con mapa
-    # significa un PDF bastante más liviano, para que nunca sea un problema
-    # de peso al enviarlo por correo.
-    MAX_EXCEL = 50
+    # OJO (pedido de Rodrigo/Álvaro, 09-11-2026): a diferencia del primer intento
+    # (2026-10-28), esta vez NO se cura a un top de 50 - el software de Álvaro
+    # necesita TODAS las elegibles nuevas, no solo las mejores ("una cosa es el
+    # ranking de las mejores para decidir, y otra que Álvaro necesita incluir
+    # todo lo nuevo, todo, en su software"). El PDF sí sigue acotado a las 30
+    # mejores (son fichas con mapa, uno por propiedad - mandar cientas sería un
+    # PDF enorme y poco práctico de todas formas), pero el Excel va completo.
     MAX_PDF = 30
-    acumulado = pool.sort_values("oportunidad_pct", ascending=False).head(MAX_EXCEL)
-    print(f"  [ACUMULADO] de esas, las {len(acumulado)} mejores por % de oportunidad van al Excel.")
+    acumulado = pool.sort_values("oportunidad_pct", ascending=False)
+    print(f"  [ACUMULADO] las {len(acumulado)} elegibles nuevas van COMPLETAS al Excel (sin tope).")
 
     import remates_v2
     import generar_pdf
 
-    acumulado = generar_pdf.geocodificar_top_nuevo(acumulado)  # coordenadas para las 50 (se usan en el Excel también)
+    acumulado = generar_pdf.geocodificar_top_nuevo(acumulado)  # coordenadas (se usan en el Excel también)
+
+    # ---- Hoja REVISION (pedido de Rodrigo, 09-11-2026): las propiedades que
+    # quedaron bloqueadas (derechos parciales/cuota, dirección no coincide, dato
+    # sospechoso, etc.) no deben perderse - deben quedar visibles en algún lado
+    # para que alguien las revise a mano, en vez de desaparecer sin dejar rastro.
+    # OJO/LIMITACIÓN conocida: a diferencia de las elegibles (que sí tienen
+    # historial de "primera vez vista" desde antes), todavía no existe ese
+    # historial para las NO elegibles anterior al 09-11-2026 - así que esta hoja
+    # trae TODAS las que hoy quedaron en revisión (no se puede filtrar de forma
+    # confiable "solo las nuevas desde el 5-11" para estas todavía; de aquí en
+    # adelante sí va a poder, gracias al historial nuevo que ya se empezó a
+    # registrar hoy).
+    try:
+        revision = pd.read_excel(EXCEL_HOY, sheet_name="REVISAR")
+        print(f"  [ACUMULADO] {len(revision)} propiedades quedan en la hoja REVISION (bloqueadas o con alerta, "
+              f"universo completo de hoy - no se puede acotar por fecha todavía para estas).")
+    except Exception as e:
+        revision = pd.DataFrame()
+        print(f"  [ACUMULADO] no pude leer la hoja REVISAR de hoy ({e}); la hoja REVISION queda vacía.")
 
     ruta_excel = SALIDAS / "REPORTE_ACUMULADO.xlsx"
     ruta_pdf = SALIDAS / "REPORTE_ACUMULADO.pdf"
@@ -112,7 +130,11 @@ def main():
         hoja = remates_v2.renombrar_para_mostrar(remates_v2.ordenar_columnas(acumulado))
         hoja.to_excel(w, sheet_name="ACUMULADO", index=False)
         remates_v2.dar_formato(w.sheets["ACUMULADO"])
-    print(f"  [ACUMULADO] Excel: {ruta_excel.name} ({len(acumulado)} filas)")
+        if not revision.empty:
+            hoja_rev = remates_v2.renombrar_para_mostrar(remates_v2.ordenar_columnas(revision))
+            hoja_rev.to_excel(w, sheet_name="REVISION", index=False)
+            remates_v2.dar_formato(w.sheets["REVISION"])
+    print(f"  [ACUMULADO] Excel: {ruta_excel.name} ({len(acumulado)} elegibles nuevas + {len(revision)} en REVISION)")
 
     acumulado_pdf = acumulado.head(MAX_PDF)
     try:
@@ -131,19 +153,23 @@ def main():
     omitir_pdf = ruta_pdf.exists() and (tamano_excel + tamano_pdf) > limite
 
     msg = EmailMessage()
-    msg["Subject"] = f"Remates Chile - reporte acumulado desde el {fecha_desde} (mejores {len(acumulado)} de {len(pool)} oportunidades)"
+    msg["Subject"] = (f"Remates Chile - reporte acumulado desde el {fecha_desde} "
+                       f"({len(acumulado)} elegibles nuevas + {len(revision)} en revisión)")
     msg["From"] = CORREO_DESDE
     msg["To"] = CORREO_PARA
     aviso_pdf = ("<p style='color:#A05A00'>El PDF quedó muy pesado para enviarlo por correo; "
                  "queda disponible para descargar en los resultados de esta corrida en GitHub Actions.</p>") if omitir_pdf else ""
     cuerpo = (
-        f"<h2>Reporte acumulado - lo mejor de lo nuevo desde el {fecha_desde}</h2>"
-        f"<p>Desde el {fecha_desde} hasta hoy ({dt.date.today().isoformat()}) aparecieron "
-        f"<b>{len(pool)}</b> propiedades como oportunidad nueva. Este reporte trae las "
-        f"<b>{len(acumulado)}</b> mejores por % de oportunidad (el mismo criterio del reporte "
-        f"semanal normal), con dirección y coordenadas de cada una.</p>"
+        f"<h2>Reporte acumulado - todo lo nuevo desde el {fecha_desde}</h2>"
+        f"<p>Desde el {fecha_desde} hasta hoy ({dt.date.today().isoformat()}) este reporte trae, en la hoja "
+        f"<b>ACUMULADO</b>, las <b>{len(acumulado)}</b> propiedades elegibles nuevas (TODAS, sin tope - no solo "
+        f"las mejores), con dirección y coordenadas de cada una. El PDF adjunto trae fichas con mapa solo de "
+        f"las mejores {min(len(acumulado), MAX_PDF)}, para no ser demasiado pesado.</p>"
+        f"<p>En la hoja <b>REVISION</b> van, aparte, <b>{len(revision)}</b> propiedades que quedaron bloqueadas o "
+        f"con alguna alerta (derechos parciales, dirección no coincide, dato sospechoso, etc.) - no son "
+        f"oportunidades confirmadas, pero quedan ahí para que alguien las revise a mano en vez de perderse.</p>"
         f"{aviso_pdf}"
-        f"<p style='color:#888;font-size:12px'>Correo generado automáticamente - reporte de una sola vez, pedido el 2026-10-28.</p>"
+        f"<p style='color:#888;font-size:12px'>Correo generado automáticamente - reporte de una sola vez, pedido el 2026-11-09.</p>"
     )
     msg.set_content("Tu cliente de correo no muestra HTML. Revisa el Excel adjunto.")
     msg.add_alternative(cuerpo, subtype="html")
