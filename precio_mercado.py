@@ -158,6 +158,74 @@ def registrar_avisos_procesados(carpeta_datos, rutas):
 
 
 # ------------------------------------------------------------------------------
+# NO REPETIR EN NINGUNA HOJA (TODAS/CANDIDATAS/REVISAR/TOP_CONSOLIDADO, no solo
+# TOP_NUEVO) lo que ya se entregó en un informe anterior sin cambios relevantes
+# - pedido de Álvaro, llamada 09-11-2026: este Excel alimenta un sistema propio
+# suyo, y una propiedad que sigue publicada igual (sin remate aún) corrida tras
+# corrida se estaba duplicando en su sistema cada vez que volvía a aparecer.
+# Usa su PROPIA tabla (universo_historico), separada de candidatas_historico,
+# para no tocar el mecanismo ya existente de TOP_NUEVO/reporte_acumulado.py.
+# ------------------------------------------------------------------------------
+
+def marcar_universo_visto(carpeta_datos, filas):
+    """'filas' es una lista de tuplas (clave, fecha_remate, minimo_pesos, fuente)
+    - UNA por cada propiedad de TODO el universo de hoy (no solo las elegibles).
+    Devuelve el conjunto de claves que son NUEVAS o que CAMBIARON algo relevante
+    desde la última vez que se vieron (fecha de remate, mínimo, o la fuente que
+    la reporta - p.ej. pasó de estar solo en un aviso de diario a estar
+    confirmada en el remate de la TGR); esas son las que deben volver a
+    aparecer en el informe de hoy. Las que ya se vieron exactamente igual que la
+    última vez NO quedan en el conjunto devuelto, así que el llamador las saca
+    de todas las hojas. Deja registrado el estado de hoy para la próxima
+    corrida."""
+    conexion, cursor = conectar_bd_mercado(carpeta_datos)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS universo_historico (
+            clave TEXT PRIMARY KEY,
+            fecha_remate TEXT,
+            minimo_pesos REAL,
+            fuente TEXT,
+            primera_vez TEXT,
+            ultima_vez TEXT
+        )
+    """)
+    conexion.commit()
+    hoy = dt.date.today().isoformat()
+    nuevos_o_cambiados = set()
+    for clave, fecha_remate, minimo_pesos, fuente in filas:
+        if not clave:
+            continue
+        cursor.execute(
+            "SELECT fecha_remate, minimo_pesos, fuente FROM universo_historico WHERE clave = ?", (clave,))
+        fila = cursor.fetchone()
+        if fila is None:
+            cambio = True
+        else:
+            fecha_antes, minimo_antes, fuente_antes = fila
+            cambio_fecha = (fecha_remate or None) != (fecha_antes or None)
+            if minimo_pesos is None or minimo_antes is None:
+                cambio_minimo = minimo_pesos != minimo_antes
+            else:
+                cambio_minimo = abs(float(minimo_antes) - float(minimo_pesos)) > 1
+            cambio_fuente = (fuente or None) != (fuente_antes or None)
+            cambio = cambio_fecha or cambio_minimo or cambio_fuente
+        if cambio:
+            nuevos_o_cambiados.add(clave)
+        cursor.execute("""
+            INSERT INTO universo_historico (clave, fecha_remate, minimo_pesos, fuente, primera_vez, ultima_vez)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(clave) DO UPDATE SET
+                fecha_remate=excluded.fecha_remate,
+                minimo_pesos=excluded.minimo_pesos,
+                fuente=excluded.fuente,
+                ultima_vez=excluded.ultima_vez
+        """, (clave, fecha_remate, minimo_pesos, fuente, hoy, hoy))
+    conexion.commit()
+    conexion.close()
+    return nuevos_o_cambiados
+
+
+# ------------------------------------------------------------------------------
 # PROPIEDADES "NUEVAS" EN EL TOP (para distinguir, en un reporte diario, qué
 # cambió hoy de lo que ya se vio antes) - pedido de Rodrigo el 2026-10-09
 # ------------------------------------------------------------------------------

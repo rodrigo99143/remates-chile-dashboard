@@ -2682,6 +2682,70 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
     df["fiscal_o_territorial"] = _tipo_deuda.map(
         lambda v: v.strip().capitalize() if isinstance(v, str) and v.strip() else None)
 
+    # ---- No repetir en NINGUNA hoja (TODAS/CANDIDATAS/REVISAR/TOP_CONSOLIDADO,
+    # no solo TOP_NUEVO) lo que ya se entregó en un informe anterior sin
+    # cambios relevantes (pedido de Álvaro, llamada 09-11-2026): este Excel
+    # alimenta un sistema propio suyo, y antes una propiedad que seguía
+    # publicada igual en la TGR o en MACAL (sin remate aún) volvía a aparecer
+    # corrida tras corrida en TODAS/CANDIDATAS/REVISAR (solo TOP_NUEVO filtraba
+    # por histórico) - eso la duplicaba en su sistema cada vez. Se compara
+    # TODO el universo (no solo las candidatas elegibles) contra su propio
+    # historial (universo_historico, separado de candidatas_historico para no
+    # tocar el mecanismo ya existente de TOP_NUEVO/reporte_acumulado.py). Se
+    # hace ACÁ, antes de calcular elegibilidad y antes de armar el Top 50, para
+    # que el Top 50 se elija directamente sobre el universo ya "limpio" y
+    # pueda llenar sus cupos con oportunidades de verdad nuevas o cambiadas,
+    # en vez de gastar cupos en repetidas que después se sacarían igual.
+    #
+    # "Igual que la vez anterior" = mismo rol (o misma dirección si no hay
+    # rol) + misma fecha de remate + mismo mínimo + misma fuente (TGR/MACAL/
+    # AVISO). Si cualquiera de esos cuatro cambia, se considera información
+    # nueva y SÍ debe volver a aparecer (pedido explícito de Rodrigo: un
+    # cambio de fecha, de mínimo, o que pase de aviso de diario a remate de la
+    # TGR confirmado, amerita avisar de nuevo).
+    #
+    # Ojo de seguridad: si una fila no tiene ROL completo NI dirección (no hay
+    # forma confiable de identificarla como "la misma" de una corrida a otra),
+    # nunca se excluye - se prefiere mostrarla de más a esconderla por error
+    # (mismo criterio ya usado para TOP_NUEVO más abajo).
+    def _clave_universo(f):
+        if pd.notna(f.get("rol_completo")) and f.get("rol_completo"):
+            return f["rol_completo"]
+        d = f.get("direccion_final")
+        return d if isinstance(d, str) and d.strip() else None
+
+    def _fila_universo(f):
+        clave = f["_clave_univ"]
+        if not clave:
+            return None
+        fecha = f["fecha_remate"].date().isoformat() if pd.notna(f["fecha_remate"]) else "sf"
+        minimo = float(f["minimo_pesos"]) if pd.notna(f.get("minimo_pesos")) else None
+        return (clave, fecha, minimo, f.get("fuente"))
+
+    df["_clave_univ"] = df.apply(_clave_universo, axis=1)
+    if PRECIO_MERCADO_DISPONIBLE and len(df) > 0:
+        try:
+            filas_univ = [t for t in df.apply(_fila_universo, axis=1) if t is not None]
+            nuevos_o_cambiados = precio_mercado.marcar_universo_visto(DATOS, filas_univ)
+            mascara = df["_clave_univ"].isna() | df["_clave_univ"].isin(nuevos_o_cambiados)
+            # Caso límite de seguridad: si TODO lo de hoy ya se había visto sin
+            # cambios, no se deja la tabla en 0 filas (el resto del cálculo más
+            # abajo no está pensado para operar sobre una tabla vacía, y
+            # entregar un informe completamente vacío tampoco sirve) - se
+            # muestra el universo completo igual esta vez, con aviso.
+            if mascara.any():
+                antes_univ = len(df)
+                df = df[mascara].reset_index(drop=True)
+                decir(f"  [HISTORICO] {antes_univ - len(df):,} propiedades ya vistas antes sin cambios se excluyen "
+                      f"de este informe (quedan {len(df):,} nuevas o con cambios).")
+            else:
+                decir("  [HISTORICO] todas las propiedades de esta corrida ya se habían visto antes sin cambios; "
+                      "para no entregar un informe vacío, esta vez se muestran igual.")
+        except Exception as e:
+            decir(f"  [HISTORICO] no pude comparar con informes anteriores ({e}); se muestra todo "
+                  f"(nunca se esconde nada por error).")
+    df = df.drop(columns=["_clave_univ"])
+
     # ---- Valor de referencia ----
     # Orden de preferencia: 1) valor de mercado EXACTO por ROL (datos/valores_mercado.csv,
     # si existe) > 2) estimado por comuna+tipo a partir de lo que recorrió precio_mercado.py
