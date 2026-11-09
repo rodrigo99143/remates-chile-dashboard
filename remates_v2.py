@@ -163,10 +163,18 @@ MINIMO_AVISOS_NUEVOS_EN_TOP = 3
 NOMBRE_ZONA = {"PROV:082": "Provincia de Concepción", "REG:RM": "Región Metropolitana",
                "REG:05": "Región de Valparaíso"}
 VALOR_MINIMO_REF = 20_000_000       # se descartan propiedades cuyo avalúo (referencia) sea menor, en pesos
-OPORTUNIDAD_MIN_PCT = 1.0           # solo entran al ranking oportunidades >= este % (0 = mínimo igual al avalúo)
+# OJO (pedido de Álvaro, llamada 09-11-2026): estas dos YA NO se usan para decidir si
+# una propiedad es elegible o no - se dejan solo como registro histórico. Antes:
+#   - OPORTUNIDAD_MIN_PCT: exigía que el mínimo del remate fuera al menos 1% más barato
+#     que el valor de referencia. Ahora NO se exige ningún mínimo - el % de oportunidad
+#     (incluso en 0% o negativo) queda igual visible en la columna correspondiente, para
+#     que se decida a mano caso por caso, en vez de descartarse automáticamente.
+#   - EXCLUIR_DESTINOS_TOP: estacionamientos/bodegas sueltos quedaban fuera. Ahora SÍ se
+#     incluyen como el resto de las propiedades.
+OPORTUNIDAD_MIN_PCT_HISTORICO = 1.0
 OPORTUNIDAD_MAX_PCT = 400.0         # sobre este % se considera dato dudoso y va a la hoja REVISAR
 SOLO_VIGENTES = True                # solo remates con fecha de hoy en adelante
-EXCLUIR_DESTINOS_TOP = {"Z", "L"}   # estacionamientos y bodegas sueltos no entran al top
+EXCLUIR_DESTINOS_TOP_HISTORICO = {"Z", "L"}
 EXIGIR_CRUCE_SII = True             # solo entran al top propiedades verificadas en el catastro SII
 INCLUIR_DATOS_DEUDOR = False        # True = agrega nombre y RUT del dueño (datos de la TGR)
 
@@ -2906,12 +2914,15 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
         for k, txt in BLOQUEANTES.items():
             if k in f["_alertas"]:
                 m.append(txt)
-        if f.get("destino_sii") in EXCLUIR_DESTINOS_TOP and f.get("n_roles", 0) <= 1:
-            m.append("estacionamiento/bodega suelto")
+        # Estacionamientos/bodegas sueltos: SÍ se incluyen (pedido de Álvaro, llamada
+        # 09-11-2026) - ver EXCLUIR_DESTINOS_TOP_HISTORICO más abajo.
         if pd.notna(f["valor_ref_pesos"]) and f["valor_ref_pesos"] < VALOR_MINIMO_REF:
             m.append("valor de referencia bajo el mínimo configurado")
-        if pd.notna(f["oportunidad_pct"]) and f["oportunidad_pct"] < OPORTUNIDAD_MIN_PCT:
-            m.append("oportunidad bajo el mínimo configurado")
+        # % de oportunidad mínimo: YA NO se exige (pedido de Álvaro, llamada 09-11-2026) -
+        # ver OPORTUNIDAD_MIN_PCT_HISTORICO más abajo. Antes se descartaba una propiedad
+        # si el mínimo del remate no era al menos 1% más barato que el valor de
+        # referencia; ahora eso queda visible en la columna oportunidad_pct (incluso en
+        # 0% o negativo) para que se decida a mano, en vez de ocultarse del todo.
         if EXIGIR_CRUCE_SII and not str(f.get("cruce_estado", "")).startswith("OK"):
             m.append("sin verificación en catastro SII")
         return "; ".join(m)
@@ -2930,12 +2941,12 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
         for k, txt in BLOQUEANTES.items():
             if k in f["_alertas"]:
                 m.append(txt)
-        if f.get("destino_sii") in EXCLUIR_DESTINOS_TOP and f.get("n_roles", 0) <= 1:
-            m.append("estacionamiento/bodega suelto")
+        # Mismos dos cambios que en motivo() más arriba (pedido de Álvaro, 09-11-2026):
+        # estacionamientos/bodegas sueltos ya no se excluyen, y ya no se exige un % de
+        # oportunidad mínimo - ver OPORTUNIDAD_MIN_PCT_HISTORICO y
+        # EXCLUIR_DESTINOS_TOP_HISTORICO más abajo.
         if pd.notna(valor_ref) and valor_ref < VALOR_MINIMO_REF:
             m.append("valor de referencia bajo el mínimo configurado")
-        if pd.notna(oportunidad_pct) and oportunidad_pct < OPORTUNIDAD_MIN_PCT:
-            m.append("oportunidad bajo el mínimo configurado")
         if EXIGIR_CRUCE_SII and not str(f.get("cruce_estado", "")).startswith("OK"):
             m.append("sin verificación en catastro SII")
         return "; ".join(m)
@@ -3890,7 +3901,12 @@ def prueba():
         r = calcular(t, True)
         comprobar("Conversión UF -> pesos (1200 UF x 40000)", abs(r.loc[r["id_fuente"] == "T3", "minimo_pesos"].iloc[0] - 48_000_000) < 1)
         comprobar("Derechos parciales no es elegible", not r.loc[r["id_fuente"] == "T1", "ELEGIBLE"].iloc[0])
-        comprobar("Mínimo caro (oportunidad negativa) no es elegible", not r.loc[r["id_fuente"] == "T2", "ELEGIBLE"].iloc[0])
+        # Pedido de Álvaro (llamada 09-11-2026): ya NO se exige un % de oportunidad
+        # mínimo - antes esta quedaba fuera por ser "muy cara" (oportunidad negativa);
+        # ahora debe seguir siendo elegible igual (el dato queda visible para decidir
+        # a mano, no se descarta solo).
+        comprobar("Mínimo caro (oportunidad negativa) SÍ es elegible (ya no se exige % mínimo)",
+                  r.loc[r["id_fuente"] == "T2", "ELEGIBLE"].iloc[0])
         r2, falt = seleccionar_top(r, n_top=8, cupos={"PROV:082": 2, "REG:RM": 2, "REG:05": 2})
         top = r2[r2["EN_TOP"]]
         comprobar("El top tiene 8 propiedades", len(top) == 8)
