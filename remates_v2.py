@@ -3345,6 +3345,12 @@ COLUMNAS_OCULTAS = {
 RENOMBRES_DISPLAY = {
     "avaluo_sii": "Avalúo fiscal",
     "fiscal_o_territorial": "Fiscal / Territorial",
+    # Pedido de Álvaro (planilla "definitiva" que mandó, 09-11-2026): estos 4
+    # nombres son los que él quiere ver en el Excel que alimenta su software.
+    "superficie_util_m2": "CONST.m2",
+    "superficie_total_m2": "Terreno m2",
+    "anio_construccion": "AÑO CONST.",
+    "hora_remate": "hora",
 }
 
 
@@ -3356,6 +3362,32 @@ def ordenar_columnas(df):
     primeras = [c for c in COLUMNAS_TOP if c in df.columns]
     resto = [c for c in df.columns if c not in primeras and c not in COLUMNAS_OCULTAS]
     return df[primeras + resto]
+
+
+# ---- Formato "definitivo" pedido por Álvaro (planilla que mandó el 09-11-2026) ----
+# Son las 20 columnas que él se quedó después de borrar todas las columnas internas
+# de trabajo (oportunidad_pct, confianza, alertas, motivo_no_elegible, región,
+# dormitorios/baños, url, fojas, cbr, etc.) - su Excel va a alimentar su propio
+# software, y esas columnas de diagnóstico interno no le sirven ahí, solo
+# ensucian el insumo. Confirmado con Rodrigo (09-11-2026): se aplica a TODAS las
+# hojas del archivo, con 2 excepciones puntuales para no perder utilidad de
+# revisión humana (ver "extra" en ordenar_columnas_alvaro): TOP_CONSOLIDADO y
+# TOP_NUEVO mantienen "oportunidad_pct" (si no, no se entendería el ranking) y
+# REVISAR mantiene "alertas"/"motivo_no_elegible" (si no, no se entendería por
+# qué una propiedad quedó ahí en vez de pasar como elegible).
+COLUMNAS_FORMATO_ALVARO = [
+    "fuente", "rol_completo", "direccion_final", "comuna_propiedad", "tipo_propiedad",
+    "superficie_util_m2", "superficie_total_m2", "anio_construccion",
+    "fecha_remate", "hora_remate", "modalidad", "tribunal", "rol_causa", "tipo_juicio",
+    "fiscal_o_territorial", "minimo_pesos", "avaluo_sii", "valor_ref_pesos",
+    "margen_pesos", "garantia_pesos",
+]
+
+
+def ordenar_columnas_alvaro(df, extra=()):
+    base = [c for c in COLUMNAS_FORMATO_ALVARO if c in df.columns]
+    extra = [c for c in extra if c in df.columns and c not in base]
+    return df[base + extra]
 
 
 def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
@@ -3499,17 +3531,37 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     df.drop(columns=["EN_TOP"]).to_csv(SALIDAS / "todas_las_propiedades.csv", index=False, encoding="utf-8-sig")
     renombrar_para_mostrar(ordenar_columnas(top)).to_csv(
         SALIDAS / "TOP_OPORTUNIDADES.csv", index=False, encoding="utf-8-sig")
+    # ---- "TODAS" se reemplaza por 3 hojas independientes por fuente (pedido de
+    # Álvaro, llamada 09-11-2026: "mejor segmentar, hasta mejor. TGR y Macal y
+    # avisos todos independientes... así se facilita la vista"). Dentro de cada
+    # una NO se reordena nada - queda en el mismo orden en que "df" ya las trae,
+    # que para AVISO es el orden real de aparición en el aviso (pedido también en
+    # esa llamada: "que el orden que entrega la planilla sea el mismo orden del
+    # aviso"), porque las filas se construyen leyendo el aviso de principio a fin. ----
+    todas_tgr = df[df["fuente"] == "TGR"]
+    todas_macal = df[df["fuente"] == "MACAL"]
+    todas_aviso = df[df["fuente"] == "AVISO"]
+
     ruta = SALIDAS / "OPORTUNIDADES.xlsx"
     with pd.ExcelWriter(ruta, engine="openpyxl") as w:
         # RESUMEN no pasa por renombrar_para_mostrar: es una tabla concepto/valor aparte,
         # no tiene columnas "avaluo_sii"/"fiscal_o_territorial" que renombrar.
-        hojas = [("TOP_CONSOLIDADO", renombrar_para_mostrar(ordenar_columnas(top))),
-                 ("TOP_NUEVO", renombrar_para_mostrar(ordenar_columnas(top_nuevo))),
-                 ("CANDIDATAS", renombrar_para_mostrar(ordenar_columnas(cand))),
-                 ("SEGUNDOS_AVISOS", renombrar_para_mostrar(ordenar_columnas(segundos_avisos))),
-                 ("TERCEROS_AVISOS", renombrar_para_mostrar(ordenar_columnas(terceros_avisos))),
-                 ("REVISAR", renombrar_para_mostrar(ordenar_columnas(rev))),
-                 ("TODAS", renombrar_para_mostrar(ordenar_columnas(df))), ("RESUMEN", resumen)]
+        # Las demás hojas usan el formato "definitivo" de Álvaro (ordenar_columnas_alvaro):
+        # sus 20 columnas siempre, más las 2 excepciones puntuales de cada hoja (ver
+        # comentario de COLUMNAS_FORMATO_ALVARO más arriba).
+        hojas = [("TOP_CONSOLIDADO", renombrar_para_mostrar(ordenar_columnas_alvaro(top, extra=["oportunidad_pct"]))),
+                 ("TOP_NUEVO", renombrar_para_mostrar(ordenar_columnas_alvaro(top_nuevo, extra=["oportunidad_pct"]))),
+                 # CANDIDATAS mantiene oportunidad_pct aunque no sea una de las excepciones
+                 # "de revisión humana" - reporte_acumulado.py vuelve a leer esta misma hoja
+                 # y necesita esa columna para ordenar el reporte acumulado por oportunidad.
+                 ("CANDIDATAS", renombrar_para_mostrar(ordenar_columnas_alvaro(cand, extra=["oportunidad_pct"]))),
+                 ("SEGUNDOS_AVISOS", renombrar_para_mostrar(ordenar_columnas_alvaro(segundos_avisos))),
+                 ("TERCEROS_AVISOS", renombrar_para_mostrar(ordenar_columnas_alvaro(terceros_avisos))),
+                 ("REVISAR", renombrar_para_mostrar(ordenar_columnas_alvaro(rev, extra=["alertas", "motivo_no_elegible"]))),
+                 ("TGR", renombrar_para_mostrar(ordenar_columnas_alvaro(todas_tgr))),
+                 ("MACAL", renombrar_para_mostrar(ordenar_columnas_alvaro(todas_macal))),
+                 ("AVISO", renombrar_para_mostrar(ordenar_columnas_alvaro(todas_aviso))),
+                 ("RESUMEN", resumen)]
         for nombre, d in hojas:
             d.to_excel(w, sheet_name=nombre, index=False)
             dar_formato(w.sheets[nombre])
@@ -3960,9 +4012,41 @@ def prueba():
             ruta = exportar(r2, None, True, {"PRUEBA": "OK"}, falt)
             import openpyxl
             hojas = openpyxl.load_workbook(ruta).sheetnames
-            comprobar("Excel con las 8 hojas esperadas (incl. SEGUNDOS/TERCEROS_AVISOS)",
+            # Pedido de Álvaro (llamada 09-11-2026): "TODAS" se reemplaza por 3 hojas
+            # independientes por fuente (TGR/MACAL/AVISO) y el set de columnas pasa al
+            # formato reducido de su planilla ("ordenar_columnas_alvaro").
+            comprobar("Excel con las 10 hojas esperadas (TODAS segmentada en TGR/MACAL/AVISO)",
                       hojas == ["TOP_CONSOLIDADO", "TOP_NUEVO", "CANDIDATAS", "SEGUNDOS_AVISOS",
-                                "TERCEROS_AVISOS", "REVISAR", "TODAS", "RESUMEN"])
+                                "TERCEROS_AVISOS", "REVISAR", "TGR", "MACAL", "AVISO", "RESUMEN"])
+            wb_chequeo = openpyxl.load_workbook(ruta)
+            encabezados_top = [c.value for c in wb_chequeo["TOP_CONSOLIDADO"][1]]
+            # El fixture sintético de esta prueba (solo MACAL, sin catastro real cargado) no
+            # llena TODAS las 20 columnas de Álvaro (p. ej. no hay "comuna_propiedad" ni
+            # "tribunal" en este caso particular) - así que la prueba no exige las 20 exactas,
+            # solo que: (a) las que SÍ vinieron respeten el orden de Álvaro, (b) termine en
+            # "oportunidad_pct" (la excepción de esta hoja) y (c) no haya colado ninguna
+            # columna interna de diagnóstico que Álvaro pidió sacar.
+            columnas_internas_que_no_deben_aparecer = {
+                "confianza", "confianza_mercado_m2", "alertas", "alertas_fuente", "razon_seleccion",
+                "nivel_mercado_m2", "n_publicaciones_mercado_m2", "motivo_no_elegible", "url",
+                "region", "destino_desc", "dormitorios", "banos", "fojas", "cbr", "n_remate",
+                "tipo_minimo", "oportunidad_fiscal_pct", "oportunidad_mercado_pct",
+                "fecha_primera_publicacion", "nuevo_hoy",
+            }
+            comprobar("TOP_CONSOLIDADO: respeta el orden de columnas de Álvaro",
+                      encabezados_top == [c for c in (["fuente", "rol_completo", "direccion_final",
+                                                        "comuna_propiedad", "tipo_propiedad", "CONST.m2",
+                                                        "Terreno m2", "AÑO CONST.", "fecha_remate", "hora",
+                                                        "modalidad", "tribunal", "rol_causa", "tipo_juicio",
+                                                        "Fiscal / Territorial", "minimo_pesos", "Avalúo fiscal",
+                                                        "valor_ref_pesos", "margen_pesos", "garantia_pesos"])
+                                          if c in encabezados_top] + ["oportunidad_pct"])
+            comprobar("TOP_CONSOLIDADO: ninguna columna interna de diagnóstico se coló",
+                      not (set(encabezados_top) & columnas_internas_que_no_deben_aparecer))
+            encabezados_revisar = [c.value for c in wb_chequeo["REVISAR"][1]]
+            comprobar("REVISAR: formato de Álvaro + excepción alertas/motivo_no_elegible",
+                      "alertas" in encabezados_revisar and "motivo_no_elegible" in encabezados_revisar
+                      and "oportunidad_pct" not in encabezados_revisar)
             comprobar("CSV del top guardado", (SALIDAS / "TOP_OPORTUNIDADES.csv").exists())
         finally:
             SALIDAS = salidas_original
