@@ -1,0 +1,10 @@
+  [INFORME_FIJO] leyendo INFORME_06-11-2026_AL_08-11-2026.docx ...
+  [INFORME_FIJO] 139 avisos leídos de INFORME_06-11-2026_AL_08-11-2026.docx.
+  Catastro ya preparado: catastro_2026_2.sqlite
+  Avisos: 139 leídos | con ROL: 46 (informado: 32, deducido por dirección: 14)
+  ROL deducido por dirección: 0 únicos | 0 ambiguos (no se asignan) | 0 sin coincidencia/lectura
+  Filas recibidas: 139 | propiedades únicas (misma propiedad y fecha): 61
+  [INFORME_FIJO] 61 avisos procesados | 32 con ROL de avalúo utilizable.
+  [INFORME_FIJO] 0 propiedades de TGR nuevas desde el 2026-11-09.
+  [INFORME_FIJO] Excel: REPORTE_INFORME_FIJO.xlsx
+  [INFORME_FIJO] Enviado a rbastias1991@gmail.com.
