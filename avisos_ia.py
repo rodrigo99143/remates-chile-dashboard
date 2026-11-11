@@ -46,6 +46,21 @@ import sqlite3
 # cambiar esta constante - no queda hardcodeado en ningún otro lado.
 MODELO_IA = "claude-haiku-5-5"
 
+# OJO (bug real, detectado el 11-11-2026, segunda corrida del día): la primera
+# corrida con este módulo falló SIEMPRE (ver más abajo, el bug de Haiku 5.5
+# "pensando" todo el presupuesto) - y ese resultado vacío/fallido se guardó
+# en la caché igual que un resultado bueno. Entonces, al corregir el bug y
+# correr de nuevo, el programa ni siquiera volvió a llamar a la IA para esos
+# 564 avisos: encontró la respuesta vacía YA cacheada de la corrida rota, y
+# se quedó con eso - "con ROL" salió exactamente igual (223) en las dos
+# corridas. Para que este arreglo (y cualquier arreglo futuro al prompt o al
+# modelo) invalide la caché vieja SIN tener que entrar a mano a borrar filas
+# de precio_mercado.db, cada resultado se guarda con esta versión - si no
+# coincide con la que está guardada, se trata como si no hubiera caché (se
+# vuelve a intentar). Subir este número cada vez que se cambie algo que
+# pueda hacer que una respuesta vieja ya no sea confiable.
+VERSION_CACHE = 2
+
 _cliente_cache = {}
 
 
@@ -91,6 +106,8 @@ def _leer_cache(cache_db_path, h):
         con.close()
         if fila:
             datos = json.loads(fila[0])
+            if datos.get("_version") != VERSION_CACHE:
+                return None  # caché de una versión anterior (posiblemente de un bug ya corregido) - se reintenta
             datos["roles"] = [tuple(r) for r in datos.get("roles", [])]  # JSON guarda listas, no tuplas
             return datos
     except Exception as e:
@@ -105,7 +122,7 @@ def _guardar_cache(cache_db_path, h, resultado):
         con = sqlite3.connect(cache_db_path)
         _tabla_cache(con)
         con.execute("INSERT OR REPLACE INTO cache_ia_avisos (hash, resultado) VALUES (?, ?)",
-                    (h, json.dumps(resultado, ensure_ascii=False)))
+                    (h, json.dumps({**resultado, "_version": VERSION_CACHE}, ensure_ascii=False)))
         con.commit()
         con.close()
     except Exception as e:
@@ -154,17 +171,19 @@ def rescatar(texto, cache_db_path=None):
     if cacheado is not None:
         return cacheado if cacheado.get("roles") else None
 
-    resultado = {"roles": [], "comuna": None, "confianza": None}
+    # OJO (este fue el bug real del 11-11-2026, segunda parte): antes, si la
+    # llamada a la IA fallaba por cualquier motivo técnico (el bug de
+    # "pensamiento" de más arriba, un corte de red, lo que sea), igual se
+    # guardaba un resultado vacío en la caché - como si la IA de verdad hubiera
+    # mirado el aviso y no hubiera encontrado nada. Eso "envenenaba" la caché
+    # para siempre: aunque se corrigiera el bug después, la próxima corrida
+    # encontraba ese resultado vacío YA guardado y ni siquiera volvía a llamar
+    # a la IA. Ahora: un fallo técnico (la llamada en sí falla) NO se guarda en
+    # la caché - se reintenta en la próxima corrida. Solo se cachea una
+    # respuesta que la IA de verdad llegó a dar (sea "encontré esto" o
+    # "de verdad no hay nada"), para no repetir el gasto en avisos que
+    # genuinamente no tienen ROL.
     try:
-        # OJO (bug real, detectado en la corrida del 11-11-2026): Haiku 5.5 piensa
-        # "adaptativamente" aunque no se le pida - sin esto, max_tokens=300 se
-        # gastaba TODO en el bloque de "pensamiento" y nunca llegaba a escribir la
-        # respuesta (content[0] era un ThinkingBlock sin .text, y las 564 llamadas
-        # de esa corrida fallaron todas por eso). Ahora: max_tokens más holgado
-        # para que le alcance para pensar poco Y responder, output_config con
-        # effort "low" para que piense lo mínimo posible (más rápido y barato), y
-        # se busca el bloque de tipo "text" por tipo, no por posición - un
-        # ThinkingBlock puede seguir apareciendo antes del texto.
         resp = cliente.messages.create(
             model=MODELO_IA,
             max_tokens=1024,
@@ -181,7 +200,9 @@ def rescatar(texto, cache_db_path=None):
                  if m is not None and p is not None]
         resultado = {"roles": roles, "comuna": datos.get("comuna"), "confianza": datos.get("confianza")}
     except Exception as e:
-        print(f"  [IA-AVISOS] no se pudo rescatar este aviso con IA ({e}); sigue sin ROL, como antes.")
+        print(f"  [IA-AVISOS] no se pudo rescatar este aviso con IA ({e}); sigue sin ROL, como antes "
+              f"(no se guarda en la caché - se vuelve a intentar en la próxima corrida).")
+        return None
 
     _guardar_cache(cache_db_path, h, resultado)
     return resultado if resultado["roles"] else None
