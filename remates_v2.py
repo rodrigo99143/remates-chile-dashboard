@@ -88,6 +88,16 @@ try:
 except ImportError:
     PRECIO_MERCADO_DISPONIBLE = False
 
+# ---- Rescate con IA para avisos sin ROL (debe estar en la misma carpeta) ----
+# Pedido de Rodrigo, 11-11-2026 - ver avisos_ia.py para el detalle. Si este
+# módulo faltara por algún motivo, el programa sigue igual que siempre, solo
+# que sin la posibilidad de rescatar avisos sin ROL.
+try:
+    import avisos_ia
+    AVISOS_IA_DISPONIBLE = True
+except ImportError:
+    AVISOS_IA_DISPONIBLE = False
+
 # ------------------------------------------------------------------------------
 # CONFIGURACIÓN  (aquí se cambian los criterios; no hace falta tocar nada más)
 # ------------------------------------------------------------------------------
@@ -2282,7 +2292,7 @@ def parsear_aviso(texto, cab=None):
     }
 
 
-def leer_avisos_docx(ruta):
+def leer_avisos_docx(ruta, cache_ia_path=None):
     import docx
     d = docx.Document(str(ruta))
     cab = None
@@ -2300,6 +2310,21 @@ def leer_avisos_docx(ruta):
             continue
         n += 1
         a = parsear_aviso(tx, cab)
+        # Rescate con IA (pedido de Rodrigo, 11-11-2026): el regex sigue siendo
+        # el método principal; esto SOLO se intenta si este aviso puntual se
+        # quedó sin ningún ROL. Sin ANTHROPIC_API_KEY configurada, avisos_ia
+        # no hace nada y el comportamiento queda idéntico al de siempre. Ver
+        # avisos_ia.py para el porqué y las validaciones que igual se aplican
+        # después (cruce contra el catastro) aunque el ROL venga de la IA.
+        if not a["roles"] and AVISOS_IA_DISPONIBLE:
+            rescate = avisos_ia.rescatar(tx, cache_db_path=cache_ia_path)
+            if rescate and rescate["roles"]:
+                a["roles"] = rescate["roles"]
+                a["alertas_aviso"] = a["alertas_aviso"] + ["RESCATADO_CON_IA"]
+                if rescate.get("comuna") and not a["candidatos"]:
+                    sii = NOMBRE2SII.get(normalizar(rescate["comuna"]))
+                    if sii:
+                        a["candidatos"] = [(sii, "IA")]
         a.update({"texto": tx, "archivo": Path(ruta).name, "n_aviso": n})
         filas.append(a)
     return filas
@@ -2319,10 +2344,10 @@ def buscar_docx_avisos():
     return sorted(unicas.values())
 
 
-def tabla_avisos(rutas):
+def tabla_avisos(rutas, cache_ia_path=None):
     filas = []
     for r in rutas:
-        for a in leer_avisos_docx(r):
+        for a in leer_avisos_docx(r, cache_ia_path=cache_ia_path):
             filas.append({
                 "fuente": "AVISO", "id_fuente": f"{a['archivo']}#{a['n_aviso']}", "archivo_aviso": a["archivo"], "url": None,
                 "fecha_remate": a["fecha_remate"], "modalidad": a["modalidad"], "tribunal": a["tribunal"],
@@ -3696,7 +3721,7 @@ def reunir_fuentes():
                 estado["AVISOS"] = f"SIN ARCHIVOS: deja los .docx en {BASE / AVISOS_CARPETA_NOMBRE}"
                 decir(f"  [AVISOS] no hay .docx en {BASE / AVISOS_CARPETA_NOMBRE}")
             else:
-                t = tabla_avisos(rutas)
+                t = tabla_avisos(rutas, cache_ia_path=DATOS / "precio_mercado.db")
                 tablas.append(t)
                 estado["AVISOS"] = f"OK ({len(t)} avisos de {len(rutas)} archivo(s): " + ", ".join(p.name for p in rutas) + ")"
                 decir(f"  [AVISOS] OK: {len(t)} avisos")

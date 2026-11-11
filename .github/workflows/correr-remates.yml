@@ -261,6 +261,12 @@ jobs:
           mkdir -p logs
           set -o pipefail
           python remates_v2.py 2>&1 | tee logs/ultima_corrida.log
+        env:
+          # Rescate puntual con IA para avisos sin ROL (pedido de Rodrigo,
+          # 11-11-2026) - ver avisos_ia.py. Si este secreto no existe (por
+          # ejemplo, en un fork), queda vacío y el programa sigue igual que
+          # siempre, sin rescate con IA.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: Armar y mandar el reporte acumulado (solo si se pidió una fecha)
         # Ver reporte_acumulado.py para el detalle. Reutiliza el Excel y la
