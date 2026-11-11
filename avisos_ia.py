@@ -156,12 +156,25 @@ def rescatar(texto, cache_db_path=None):
 
     resultado = {"roles": [], "comuna": None, "confianza": None}
     try:
+        # OJO (bug real, detectado en la corrida del 11-11-2026): Haiku 5.5 piensa
+        # "adaptativamente" aunque no se le pida - sin esto, max_tokens=300 se
+        # gastaba TODO en el bloque de "pensamiento" y nunca llegaba a escribir la
+        # respuesta (content[0] era un ThinkingBlock sin .text, y las 564 llamadas
+        # de esa corrida fallaron todas por eso). Ahora: max_tokens más holgado
+        # para que le alcance para pensar poco Y responder, output_config con
+        # effort "low" para que piense lo mínimo posible (más rápido y barato), y
+        # se busca el bloque de tipo "text" por tipo, no por posición - un
+        # ThinkingBlock puede seguir apareciendo antes del texto.
         resp = cliente.messages.create(
             model=MODELO_IA,
-            max_tokens=300,
+            max_tokens=1024,
+            output_config={"effort": "low"},
             messages=[{"role": "user", "content": PROMPT.format(texto=texto[:4000])}],
         )
-        bruto = resp.content[0].text.strip()
+        bruto = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()
+        if not bruto:
+            raise ValueError(f"la respuesta no tuvo bloque de texto (stop_reason={resp.stop_reason!r}, "
+                              f"tipos de bloque recibidos: {[getattr(b, 'type', None) for b in resp.content]!r})")
         bruto = re.sub(r"^```(json)?|```$", "", bruto, flags=re.MULTILINE).strip()
         datos = json.loads(bruto)
         roles = [(int(m), int(p)) for m, p in (datos.get("roles") or [])
