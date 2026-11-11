@@ -2623,7 +2623,7 @@ def estimar_valor_mercado_por_comuna_tipo(df, tabla_precio_mercado):
     return df
 
 
-def calcular(df, hay_catastro, tabla_precio_mercado=None):
+def calcular(df, hay_catastro, tabla_precio_mercado=None, aplicar_dedup=True):
     for c in ("minimo_valor", "minimo_unidad", "alertas_fuente", "ocupacion", "rol_origen", "minimo_nota",
               "verif_direccion_catastro", "estado_busqueda_direccion", "direccion_tgr", "fuente_sii", "tipo_sii",
               "destino_sii", "cruce_estado", "tipo_propiedad", "superficie_util_m2", "superficie_total_m2",
@@ -2695,12 +2695,43 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None):
     antes = len(df)
     df["_prio"] = df["fuente"].map(PRIORIDAD_FUENTE).fillna(9) + df["minimo_valor"].isna().astype(int) * 10
     df = df.sort_values(["_prio"]).reset_index(drop=True)
-    df["_clave"] = df.apply(
-        lambda f: f"{f['rol_completo']}|{f['fecha_remate'].date() if pd.notna(f['fecha_remate']) else 'sf'}"
-        if f["rol_completo"] else f"unico|{f.name}", axis=1)
-    df["tambien_en"] = df.groupby("_clave")["fuente"].transform(lambda s: ", ".join(sorted(set(s))))
-    df["n_demandas"] = df.groupby("_clave")["fuente"].transform("size")
-    df = df.drop_duplicates("_clave", keep="first").drop(columns=["_prio", "_clave"]).reset_index(drop=True)
+
+    def _clave_dedup(f):
+        # OJO (bug real, detectado 11-11-2026 con el informe de avisos del lunes
+        # 06 al 08-11): para un AVISO, el ROL (rol_completo) puede venir de un
+        # rescate por regex o IA que no quedó verificado contra el catastro - no
+        # es identidad suficiente para FUSIONAR dos avisos en una sola fila.
+        # Antes, varios departamentos DISTINTOS de un mismo edificio (misma causa,
+        # unidades 707/507/607/813/1907/1307) o varios avisos con un ROL mal leído
+        # terminaban colapsados en 1 sola fila, perdiendo los demás EN SILENCIO -
+        # de 139 avisos del informe, solo 61 llegaban a aparecer. Ahora: para un
+        # AVISO, el ROL solo se usa como identidad entre filas cuando la dirección
+        # del aviso quedó verificada contra el catastro (verif_direccion_catastro
+        # == "COINCIDE"); si no, cada aviso queda con su propia fila - más vale
+        # mostrar de más que perder una propiedad real por error. Esto no cambia
+        # nada para TGR/MACAL (su ROL viene siempre de un dato estructurado, no de
+        # texto libre).
+        rol = f["rol_completo"]
+        if not rol:
+            return f"unico|{f.name}"
+        if f["fuente"] == "AVISO" and f.get("verif_direccion_catastro") != "COINCIDE":
+            return f"unico|{f.name}"
+        fecha = f["fecha_remate"].date() if pd.notna(f["fecha_remate"]) else "sf"
+        return f"{rol}|{fecha}"
+
+    if aplicar_dedup:
+        df["_clave"] = df.apply(_clave_dedup, axis=1)
+        df["tambien_en"] = df.groupby("_clave")["fuente"].transform(lambda s: ", ".join(sorted(set(s))))
+        df["n_demandas"] = df.groupby("_clave")["fuente"].transform("size")
+        df = df.drop_duplicates("_clave", keep="first").drop(columns=["_prio", "_clave"]).reset_index(drop=True)
+    else:
+        # Pedido de Rodrigo (11-11-2026): para el reporte de "informe fijo sin
+        # histórico", tampoco se quiere esta deduplicación - se pidió ver TODOS
+        # los avisos de un informe puntual, uno por fila, sin que ninguno se
+        # fusione con otro aunque comparta ROL verificado.
+        df["tambien_en"] = df["fuente"]
+        df["n_demandas"] = 1
+        df = df.drop(columns=["_prio"]).reset_index(drop=True)
     decir(f"  Filas recibidas: {antes:,} | propiedades únicas (misma propiedad y fecha): {len(df):,}")
 
     df = aplicar_minimos(df)
@@ -3760,7 +3791,7 @@ def reunir_fuentes():
     return tablas, estado, tabla_precio_mercado, archivos_avisos_nuevos
 
 
-def procesar(tablas, db_path, tabla_precio_mercado=None):
+def procesar(tablas, db_path, tabla_precio_mercado=None, aplicar_dedup=True):
     hay_catastro = db_path is not None
     df = pd.concat([t for t in tablas if t is not None and not t.empty], ignore_index=True, sort=False)
     df = resolver_avisos(df, db_path)
@@ -3768,7 +3799,7 @@ def procesar(tablas, db_path, tabla_precio_mercado=None):
     df = resolver_roles_faltantes(df, db_path)
     if hay_catastro:
         df = cruzar_con_catastro(df, db_path)
-    df = calcular(df, hay_catastro, tabla_precio_mercado)
+    df = calcular(df, hay_catastro, tabla_precio_mercado, aplicar_dedup=aplicar_dedup)
     return df, hay_catastro
 
 

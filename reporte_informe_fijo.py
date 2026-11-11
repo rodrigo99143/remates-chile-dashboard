@@ -88,14 +88,42 @@ def main():
     estado_previo_precio_mercado = remates_v2.PRECIO_MERCADO_DISPONIBLE
     remates_v2.PRECIO_MERCADO_DISPONIBLE = False
     try:
-        df_avisos, _hay_catastro = remates_v2.procesar([tabla], db_path_catastro)
+        # aplicar_dedup=False (pedido de Rodrigo, 11-11-2026, tras encontrar que
+        # 78 de 139 avisos del informe del lunes desaparecían sin aviso): este
+        # reporte quiere ver TODOS los avisos del informe, uno por fila, SIN que
+        # la deduplicación (pensada para la corrida normal, donde sí interesa
+        # fusionar la misma propiedad vista por 2 fuentes) fusione ninguno.
+        df_avisos, _hay_catastro = remates_v2.procesar([tabla], db_path_catastro, aplicar_dedup=False)
     finally:
         remates_v2.PRECIO_MERCADO_DISPONIBLE = estado_previo_precio_mercado
+    n_leidos = len(tabla)
+    n_en_informe = len(df_avisos)
     con_rol = int((df_avisos["roles_lista"].apply(lambda r: bool(r))).sum())
-    print(f"  [INFORME_FIJO] {len(df_avisos)} avisos procesados | {con_rol} con ROL de avalúo utilizable.")
+    print(f"  [INFORME_FIJO] {n_leidos} avisos leídos del Word | {n_en_informe} en el Excel "
+          f"(deben coincidir - no se descarta nada en silencio) | {con_rol} con ROL de avalúo utilizable.")
+    if n_leidos != n_en_informe:
+        print(f"  [INFORME_FIJO] *** OJO: no coinciden ({n_leidos} leídos vs {n_en_informe} en el Excel) - "
+              f"revisar, esto no debería pasar con aplicar_dedup=False. ***")
 
     ruta_excel = SALIDAS / "REPORTE_INFORME_FIJO.xlsx"
     with pd.ExcelWriter(ruta_excel, engine="openpyxl") as w:
+        # ---- Resumen de control (pedido de Rodrigo, 11-11-2026): para que se
+        # pueda verificar de un vistazo que no se perdió nada, sin tener que
+        # contar filas a mano. ----
+        con_direccion = int(df_avisos["direccion_final"].notna().sum()) if "direccion_final" in df_avisos.columns else 0
+        resumen_control = pd.DataFrame({
+            "Control": [
+                "Avisos leídos del Word",
+                "Avisos en este Excel (deben ser el mismo número de arriba)",
+                "  - con ROL de avalúo utilizable (regex o IA)",
+                "  - con dirección final resuelta",
+                "  - sin ROL ni dirección (quedan igual, con el texto original a la vista en el aviso)",
+            ],
+            "Cantidad": [n_leidos, n_en_informe, con_rol, con_direccion, n_en_informe - max(con_rol, con_direccion)],
+        })
+        resumen_control.to_excel(w, sheet_name="RESUMEN_DE_CONTROL", index=False)
+        remates_v2.dar_formato(w.sheets["RESUMEN_DE_CONTROL"])
+
         hoja = remates_v2.renombrar_para_mostrar(
             remates_v2.ordenar_columnas_alvaro(df_avisos, extra=["oportunidad_pct", "alertas", "motivo_no_elegible"])
         )
