@@ -2721,9 +2721,44 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None, aplicar_dedup=True):
 
     if aplicar_dedup:
         df["_clave"] = df.apply(_clave_dedup, axis=1)
+        # OJO (segunda parte del mismo bug real, detectado 11-11-2026): el requisito
+        # de "COINCIDE" de arriba no basta. Dos AVISOS DISTINTOS (dos remates
+        # distintos, confirmado por Rodrigo: "no hay avisos repetidos, cada aviso es
+        # un remate o una propiedad distinta") pueden terminar compartiendo el MISMO
+        # rol_completo con la dirección "coincidiendo" igual, por dos motivos reales
+        # encontrados en el informe del lunes 06 al 08-11:
+        #   (a) varios departamentos distintos de un mismo edificio/causa (ej. causa
+        #       C-11447-2025: deptos 707/507/607/813/1907/1307) resuelven al ROL
+        #       "matriz" del condominio completo, que es el mismo para todas las
+        #       unidades;
+        #   (b) la dirección que se lee del texto del aviso es, por error, la del
+        #       TRIBUNAL (ej. "Huérfanos 1409", donde están casi todos los Juzgados
+        #       Civiles de Santiago) en vez de la de la propiedad, y esa dirección sí
+        #       coincide con algún predio real del catastro en esa comuna - así,
+        #       avisos de causas totalmente distintas quedaban fusionados en 1 sola
+        #       fila. Esto fue lo que hizo desaparecer la mayoría de los 78 avisos
+        #       perdidos (139 -> 61) de ese informe.
+        # La regla ahora es: dos filas de fuente "AVISO" NUNCA se fusionan entre sí,
+        # pase lo que pase con el ROL o la dirección - solo un AVISO puede fusionarse
+        # con una fila de TGR o MACAL (ahí sí interesa, es la misma propiedad vista
+        # por 2 fuentes distintas y confiables). Más vale mostrar de más que perder
+        # una propiedad real por error.
+        # "tambien_en"/"n_demandas" sí deben reflejar la fusión legítima entre
+        # fuentes distintas (ej. un AVISO que también apareció en la TGR) - eso
+        # se calcula con la clave normal, ANTES de separar los avisos entre sí.
         df["tambien_en"] = df.groupby("_clave")["fuente"].transform(lambda s: ", ".join(sorted(set(s))))
         df["n_demandas"] = df.groupby("_clave")["fuente"].transform("size")
-        df = df.drop_duplicates("_clave", keep="first").drop(columns=["_prio", "_clave"]).reset_index(drop=True)
+        # Pero para decidir qué filas sobreviven (drop_duplicates) se usa una
+        # clave aparte: si 2 o más AVISOS comparten la misma clave, cada uno
+        # conserva su propia fila (el TGR/MACAL que haya compartido esa clave se
+        # sigue fusionando con uno de ellos, por el orden de _prio).
+        es_aviso = df["fuente"] == "AVISO"
+        n_avisos_en_clave = df.groupby("_clave")["fuente"].transform(lambda s: (s == "AVISO").sum())
+        hay_que_separar = es_aviso & (n_avisos_en_clave > 1)
+        df["_clave_sobrevive"] = df["_clave"]
+        df.loc[hay_que_separar, "_clave_sobrevive"] = "unico_aviso|" + df.loc[hay_que_separar].index.astype(str)
+        df = df.drop_duplicates("_clave_sobrevive", keep="first").drop(
+            columns=["_prio", "_clave", "_clave_sobrevive"]).reset_index(drop=True)
     else:
         # Pedido de Rodrigo (11-11-2026): para el reporte de "informe fijo sin
         # histórico", tampoco se quiere esta deduplicación - se pidió ver TODOS
