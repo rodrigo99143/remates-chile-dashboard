@@ -14,7 +14,7 @@ Paso 1 de 4: catastro nacional del SII
   Leyendo BRORGA2441AL_NAC_2026_2 (93 MB)...
     11,718,011 líneas de construcción cargadas...    12,218,011 líneas de construcción cargadas...    12,695,895 líneas de construcción cargadas...
   Sumando superficie construida y buscando el año más antiguo por propiedad...
-  Base lista: 9,655,566 predios, 12,695,895 líneas de construcción, en 75 segundos.
+  Base lista: 9,655,566 predios, 12,695,895 líneas de construcción, en 76 segundos.
 
 Paso 2 de 4: barrido en vivo de las fuentes
 
@@ -23,575 +23,11 @@ Paso 2 de 4: barrido en vivo de las fuentes
   [TGR] OK: 702 registros
 
   [MACAL] barrido completo de macal.cl...
-  Macal: 120 fichas encontradas en el listado. Leyendo cada una...
-    25/120 fichas...    50/120 fichas...    75/120 fichas...    100/120 fichas...
-  [MACAL] OK: 120 propiedades
+  Macal: 121 fichas encontradas en el listado. Leyendo cada una...
+    25/121 fichas...    50/121 fichas...    75/121 fichas...    100/121 fichas...
+  [MACAL] OK: 121 propiedades
 
   [AVISOS] leyendo resúmenes .docx...
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
-  [IA-AVISOS] no se pudo rescatar este aviso con IA ('ThinkingBlock' object has no attribute 'text'); sigue sin ROL, como antes.
   [AVISOS] OK: 679 avisos
   [AVISOS] ningún archivo nuevo esta semana (ya se usaron todos en una corrida anterior) - no se fuerza el top 3 de avisos.
 
@@ -610,8 +46,8 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
     [DIAG]   -> de esos, con comuna reconocida: 32 (= 32 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/talcahuano/0
-    [DIAG]   HTML recibido: 161,761 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 183
+    [DIAG]   HTML recibido: 161,864 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 184
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
@@ -634,7 +70,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 38
     [DIAG]   -> de esos, con comuna reconocida: 38 (= 38 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/chiguayante/0
-    [DIAG]   HTML recibido: 160,406 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 160,271 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 182
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
@@ -658,11 +94,11 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
     [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/coronel/0
-    [DIAG]   HTML recibido: 159,769 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 160,139 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 182
-    [DIAG]   -> con precio Y m2 detectados: 43
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 43
-    [DIAG]   -> de esos, con comuna reconocida: 43 (= 43 avisos aprovechables)
+    [DIAG]   -> con precio Y m2 detectados: 44
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 44
+    [DIAG]   -> de esos, con comuna reconocida: 44 (= 44 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/coronel/0
     [DIAG]   HTML recibido: 58,116 caracteres | bloques article/li/div en la página: 146
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 71
@@ -808,7 +244,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 45
     [DIAG]   -> de esos, con comuna reconocida: 45 (= 45 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/quilpue/0
-    [DIAG]   HTML recibido: 152,756 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 153,884 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
     [DIAG]   -> con precio Y m2 detectados: 36
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
@@ -885,18 +321,18 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> con precio Y m2 detectados: 28
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 28
     [DIAG]   -> de esos, con comuna reconocida: 28 (= 28 avisos aprovechables)
-  [PRECIO_MERCADO: ChilePropiedades] OK: 66 nuevas, 1729 ya vistas, 0 descartadas
+  [PRECIO_MERCADO: ChilePropiedades] OK: 3 nuevas, 1793 ya vistas, 0 descartadas
   [PRECIO_MERCADO: TopPropiedades] barriendo...
     [DIAG] https://www.toppropiedades.cl/propiedades/venta
-    [DIAG]   HTML recibido: 285,056 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 75
+    [DIAG]   HTML recibido: 285,142 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 76
     [DIAG]   -> con precio Y m2 detectados: 2
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 2
     [DIAG]   -> de esos, con comuna reconocida: 2 (= 2 avisos aprovechables)
   [PRECIO_MERCADO: TopPropiedades] OK: 0 nuevas, 2 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Procasa] barriendo...
     [DIAG] https://www.procasa.cl/Todos_los_tipos/Venta/Todas_las_comunas
-    [DIAG]   HTML recibido: 97,617 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 97,654 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 127
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -907,18 +343,36 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]     #3: '+56928379070 info@procasa.cl'
   [PRECIO_MERCADO: Procasa] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Doomos] barriendo...
-    [DIAG] https://www.doomos.cl/venta-casas -> FALLÓ el pedido (navegador): TimeoutError: Page.goto: Timeout 60000ms exceeded.
-Call log:
-  - navigating to "https://www.doomos.cl/venta-casas", waiting until "networkidle"
-
-    [DIAG] https://www.doomos.cl/venta-departamentos -> FALLÓ el pedido (navegador): TimeoutError: Page.goto: Timeout 60000ms exceeded.
-Call log:
-  - navigating to "https://www.doomos.cl/venta-departamentos", waiting until "networkidle"
-
-    [DIAG] https://www.doomos.cl/venta-terrenos -> FALLÓ el pedido (navegador): TimeoutError: Page.goto: Timeout 60000ms exceeded.
-Call log:
-  - navigating to "https://www.doomos.cl/venta-terrenos", waiting until "networkidle"
-
+    [DIAG] https://www.doomos.cl/venta-casas
+    [DIAG]   HTML recibido: 4,265 caracteres | bloques article/li/div en la página: 12
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 7
+    [DIAG]   -> con precio Y m2 detectados: 0
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
+    [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
+    [DIAG]   EJEMPLOS de texto que NO se reconoció como precio+m2 (para ajustar la búsqueda):
+    [DIAG]     #1: 'Please enable cookies.'
+    [DIAG]     #2: 'Sorry, you have been blocked You are unable to access doomos.cl'
+    [DIAG]     #3: 'Why have I been blocked? This website is using a security service to protect itself from online attacks. The action you just performed triggered the security solution. There are several actions that c'
+    [DIAG] https://www.doomos.cl/venta-departamentos
+    [DIAG]   HTML recibido: 4,265 caracteres | bloques article/li/div en la página: 12
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 7
+    [DIAG]   -> con precio Y m2 detectados: 0
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
+    [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
+    [DIAG]   EJEMPLOS de texto que NO se reconoció como precio+m2 (para ajustar la búsqueda):
+    [DIAG]     #1: 'Please enable cookies.'
+    [DIAG]     #2: 'Sorry, you have been blocked You are unable to access doomos.cl'
+    [DIAG]     #3: 'Why have I been blocked? This website is using a security service to protect itself from online attacks. The action you just performed triggered the security solution. There are several actions that c'
+    [DIAG] https://www.doomos.cl/venta-terrenos
+    [DIAG]   HTML recibido: 4,265 caracteres | bloques article/li/div en la página: 12
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 7
+    [DIAG]   -> con precio Y m2 detectados: 0
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
+    [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
+    [DIAG]   EJEMPLOS de texto que NO se reconoció como precio+m2 (para ajustar la búsqueda):
+    [DIAG]     #1: 'Please enable cookies.'
+    [DIAG]     #2: 'Sorry, you have been blocked You are unable to access doomos.cl'
+    [DIAG]     #3: 'Why have I been blocked? This website is using a security service to protect itself from online attacks. The action you just performed triggered the security solution. There are several actions that c'
   [PRECIO_MERCADO: Doomos] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Inmoclick] barriendo...
     [DIAG] https://www.inmoclick.cl/casas-en-venta
@@ -932,7 +386,7 @@ Call log:
     [DIAG]     #2: 'Menu INGRESAR VENTA Casas Departamentos Lotes ALQUILERES Casas Departamentos Locales Temporarios INMOBILIARIAS Busca inmobiliarias en Mendoza Busca inmobiliarias en Neuquén Busca inmobiliarias en Salt'
     [DIAG]     #3: 'INGRESAR VENTA Casas Departamentos Lotes ALQUILERES Casas Departamentos Locales Temporarios INMOBILIARIAS Busca inmobiliarias en Mendoza Busca inmobiliarias en Neuquén Busca inmobiliarias en Salta Bus'
     [DIAG] https://www.inmoclick.cl/departamentos-en-venta
-    [DIAG]   HTML recibido: 499,823 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 498,249 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 68
     [DIAG]   -> con precio Y m2 detectados: 2
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 2
@@ -964,13 +418,8 @@ Call log:
     [DIAG]     #3: 'escribenos@prourbanogroup.com +56942004000 Select Language \u200b ▼'
   [PRECIO_MERCADO: ProUrbano] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Bernal] barriendo...
-    [DIAG] https://bernalpropiedades.cl/resultados-de-la-busqueda/?es_category%5B0%5D=10
-    [DIAG]   HTML recibido: 352,815 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 105
-    [DIAG]   -> con precio Y m2 detectados: 5
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 5
-    [DIAG]   -> de esos, con comuna reconocida: 5 (= 5 avisos aprovechables)
-  [PRECIO_MERCADO: Bernal] OK: 0 nuevas, 5 ya vistas, 0 descartadas
+    [DIAG] https://bernalpropiedades.cl/resultados-de-la-busqueda/?es_category%5B0%5D=10 -> FALLÓ el pedido: ConnectTimeout: HTTPSConnectionPool(host='bernalpropiedades.cl', port=443): Max retries exceeded with url: /resultados-de-la-busqueda/?es_category%5B0%5D=10 (Caused by ConnectTimeoutError(<HTTPSConnection(host='bernalpropiedades.cl', port=443) at 0x7c6261560590>, 'Connection to bernalpropiedades.cl timed out. (connect timeout=20)'))
+  [PRECIO_MERCADO: Bernal] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Paz] barriendo...
     [DIAG] https://www.paz.cl/proyectos
     [DIAG]   HTML recibido: 204,925 caracteres | bloques article/li/div en la página: 197
@@ -985,7 +434,7 @@ Call log:
   [PRECIO_MERCADO: Paz] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Siena] barriendo...
     [DIAG] https://www.siena.cl/casas/
-    [DIAG]   HTML recibido: 189,497 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 189,499 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 169
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -995,7 +444,7 @@ Call log:
     [DIAG]     #2: 'Menu PROYECTO ESPACIOS COMUNES CASAS ENTORNO FINANCIAMIENTO Cotiza ahora ➔'
     [DIAG]     #3: 'Menu PROYECTO ESPACIOS COMUNES CASAS ENTORNO FINANCIAMIENTO Cotiza ahora ➔'
     [DIAG] https://www.siena.cl/departamentos/
-    [DIAG]   HTML recibido: 60,983 caracteres | bloques article/li/div en la página: 143
+    [DIAG]   HTML recibido: 60,985 caracteres | bloques article/li/div en la página: 143
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 66
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -1090,40 +539,40 @@ Call log:
     [DIAG]   -> con precio Y m2 detectados: 11
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 9
     [DIAG]   -> de esos, con comuna reconocida: 9 (= 9 avisos aprovechables)
-  [PRECIO_MERCADO: EngelVolkers] OK: 11 nuevas, 10 ya vistas, 0 descartadas
+  [PRECIO_MERCADO: EngelVolkers] OK: 0 nuevas, 21 ya vistas, 0 descartadas
   [PRECIO_MERCADO: PropertyPartners] barriendo...
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-metropolitana-de-santiago
-    [DIAG]   HTML recibido: 406,332 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 406,341 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 216
     [DIAG]   -> con precio Y m2 detectados: 138
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 114
     [DIAG]   -> de esos, con comuna reconocida: 114 (= 114 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-metropolitana-de-santiago
-    [DIAG]   HTML recibido: 414,186 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 414,345 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 212
     [DIAG]   -> con precio Y m2 detectados: 138
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 132
     [DIAG]   -> de esos, con comuna reconocida: 132 (= 132 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-de-valparaiso
-    [DIAG]   HTML recibido: 417,684 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 417,793 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 209
     [DIAG]   -> con precio Y m2 detectados: 143
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 125
     [DIAG]   -> de esos, con comuna reconocida: 125 (= 125 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-de-valparaiso
-    [DIAG]   HTML recibido: 408,731 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 409,033 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 211
     [DIAG]   -> con precio Y m2 detectados: 118
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 102
     [DIAG]   -> de esos, con comuna reconocida: 102 (= 102 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-del-bio-bio
-    [DIAG]   HTML recibido: 409,331 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 409,312 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 213
     [DIAG]   -> con precio Y m2 detectados: 142
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 142
     [DIAG]   -> de esos, con comuna reconocida: 142 (= 142 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-del-bio-bio
-    [DIAG]   HTML recibido: 410,747 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 410,764 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 221
     [DIAG]   -> con precio Y m2 detectados: 144
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 126
@@ -1134,16 +583,15 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
   Avisos: 679 leídos | con ROL: 223 (informado: 102, deducido por dirección: 121)
   [MACAL] fichas con más de un rol de avalúo: 0 verificadas por dirección, 1 sin poder confirmar cuál corresponde (quedan marcadas para revisar a mano).
   ROL deducido por dirección: 0 únicos | 0 ambiguos (no se asignan) | 0 sin coincidencia/lectura
-  Filas recibidas: 1,501 | propiedades únicas (misma propiedad y fecha): 1,006
-  [HISTORICO] 941 propiedades ya vistas antes sin cambios se excluyen de este informe (quedan 65 nuevas o con cambios).
+  Filas recibidas: 1,502 | propiedades únicas (misma propiedad y fecha): 1,007
+  [HISTORICO] 963 propiedades ya vistas antes sin cambios se excluyen de este informe (quedan 44 nuevas o con cambios).
 /home/runner/work/remates-chile-dashboard/remates-chile-dashboard/remates_v2.py:2797: Pandas4Warning: 'ndarray' is not supported as a fill value for float64 dtype. In a future version, calling fillna with an incompatible value will raise. Explicitly cast to a common dtype before filling.
   valor_mercado_final = df["valor_mercado_pesos"].fillna(df["valor_mercado_estimado_m2_pesos"])
-    Cruce SII - OK: 43
-    Cruce SII - SIN ROL (no informado ni deducible): 21
-    Cruce SII - ROL NO ENCONTRADO EN CATASTRO: 1
+    Cruce SII - OK: 24
+    Cruce SII - SIN ROL (no informado ni deducible): 20
 
   [PODER_JUDICIAL] consultando el estado de la causa de cada propiedad del TOP...
-  [PODER_JUDICIAL] 35 causas del TOP con link + instrucción para buscar a mano (ya no se intenta entrar de forma automática - el sitio bloquea las consultas que vienen desde la nube).
+  [PODER_JUDICIAL] 20 causas del TOP con link + instrucción para buscar a mano (ya no se intenta entrar de forma automática - el sitio bloquea las consultas que vienen desde la nube).
 
 Paso 4 de 4: guardando archivos
   [PDF-MAPA] sin mapa para 'PJE PELANTARO ST 27' (PUNTA ARENAS): Nominatim no encontró resultados (consulta usada: 'PJE PELANTARO ST 27, PUNTA ARENAS, Chile')
@@ -1153,39 +601,27 @@ Paso 4 de 4: guardando archivos
   [PDF-MAPA] sin mapa para 'RUTA G- 86 3351 LT A 3' (SAN ANTONIO): Nominatim no encontró resultados (consulta usada: 'RUTA G- 86 3351, SAN ANTONIO, Chile')
   [PDF-MAPA] sin mapa para 'LOS AROMOS 751 PC 124' (SAN ANTONIO): Nominatim no encontró resultados (consulta usada: 'LOS AROMOS 751 PC 124, SAN ANTONIO, Chile')
   [PDF-MAPA] sin mapa para 'FDO STO DOMINGO SC A' (SANTO DOMINGO): Nominatim no encontró resultados (consulta usada: 'FDO STO DOMINGO SC A, SANTO DOMINGO, Chile')
-  [PDF-MAPA] sin mapa para 'ESTRECHO DE TODOS LO 861 LT 1 B' (PUNTA ARENAS): Nominatim no encontró resultados (consulta usada: 'ESTRECHO DE TODOS LO 861, PUNTA ARENAS, Chile')
-  [PDF-MAPA] sin mapa para 'AV LOS FLAMENCOS PC D- 5 A 19' (PUNTA ARENAS): Nominatim no encontró resultados (consulta usada: 'AV LOS FLAMENCOS PC D- 5, PUNTA ARENAS, Chile')
-  [PDF-MAPA] sin mapa para 'FDO. EL MILAGRO' (SAGRADA FAMILIA): Nominatim no encontró resultados (consulta usada: 'FDO. EL MILAGRO, SAGRADA FAMILIA, Chile')
-  [PDF-MAPA] sin mapa para 'GUAICUTEN S/N DE VILLA PRAT COMUNA SGRAD' (SAGRADA FAMILIA): Nominatim no encontró resultados (consulta usada: 'GUAICUTEN S/N DE VILLA PRAT COMUNA SGRAD, SAGRADA FAMILIA, Chile')
-  [PDF-MAPA] sin mapa para 'FDO TRAPICHE LT 2' (SAGRADA FAMILIA): Nominatim no encontró resultados (consulta usada: 'FDO TRAPICHE LT 2, SAGRADA FAMILIA, Chile')
-  [PDF-MAPA] sin mapa para 'EL CERRILLO' (SAGRADA FAMILIA): Nominatim no encontró resultados (consulta usada: 'EL CERRILLO, SAGRADA FAMILIA, Chile')
-  [PDF-MAPA] sin mapa para 'HJ LLAVERIA PORC. 2 EL DESCANSO' (SAGRADA FAMILIA): Nominatim no encontró resultados (consulta usada: 'HJ LLAVERIA PORC. 2 EL DESCANSO, SAGRADA FAMILIA, Chile')
-  [PDF-MAPA] sin mapa para 'AVDA.ESPERANZA S/N LT. 1' (SAGRADA FAMILIA): Nominatim no encontró resultados (consulta usada: 'AVDA.ESPERANZA S/N LT. 1, SAGRADA FAMILIA, Chile')
-  [PDF-MAPA] sin mapa para 'RESTO LT A FDO LA QUEBRADA S/N VILLA PRA' (SAGRADA FAMILIA): Nominatim no encontró resultados (consulta usada: 'RESTO LT A FDO LA QUEBRADA S/N VILLA PRA, SAGRADA FAMILIA, Chile')
-  [PDF-MAPA] sin mapa para 'LT C HJ 2 FDO STA TERESA' (SAGRADA FAMILIA): Nominatim no encontró resultados (consulta usada: 'LT C HJ 2 FDO STA TERESA, SAGRADA FAMILIA, Chile')
-  [PDF-MAPA] sin mapa para 'LT F PC 21 PP COLIN' (SAGRADA FAMILIA): Nominatim no encontró resultados (consulta usada: 'LT F PC 21 PP COLIN, SAGRADA FAMILIA, Chile')
-  [PDF-MAPA] sin mapa para 'LOS QUILLAYES PJE 1 ST 5' (SAGRADA FAMILIA): Nominatim no encontró resultados (consulta usada: 'LOS QUILLAYES PJE 1, SAGRADA FAMILIA, Chile')
 
-LISTO. En el consolidado final (máx. 50): 35 propiedades | elegibles fiscal: 35 | elegibles mercado: 0 de 65 analizadas
+LISTO. En el consolidado final (máx. 50): 20 propiedades | elegibles fiscal: 20 | elegibles mercado: 0 de 44 analizadas
   AVISO: OPORTUNIDAD VS. MERCADO - Provincia de Concepción: solo 0 de 2 cupos
   AVISO: OPORTUNIDAD VS. MERCADO - Región Metropolitana: solo 0 de 2 cupos
   AVISO: OPORTUNIDAD VS. MERCADO - Región de Valparaíso: solo 0 de 2 cupos
   AVISO: OPORTUNIDAD VS. MERCADO: solo 0 de 20 elegibles en total
   AVISO: El Ranking de mercado solo llenó 0 de 20 cupos; los 20 que faltaron se le prestaron al Ranking de avalúo fiscal.
-  AVISO: OPORTUNIDAD VS. AVALUO FISCAL - Provincia de Concepción: solo 1 de 2 cupos
+  AVISO: OPORTUNIDAD VS. AVALUO FISCAL - Provincia de Concepción: solo 0 de 2 cupos
   AVISO: OPORTUNIDAD VS. AVALUO FISCAL - Región Metropolitana: solo 0 de 2 cupos
-  AVISO: OPORTUNIDAD VS. AVALUO FISCAL: solo 35 de 40 elegibles en total
+  AVISO: OPORTUNIDAD VS. AVALUO FISCAL: solo 20 de 40 elegibles en total
   AVISO: Comodín: solo 0 de 10 cupos (no quedan más elegibles)
-  Fuente TGR: OK (702 registros, 17:40)
-  Fuente MACAL: OK (120 fichas leídas, 0 con error, 17:41)
+  Fuente TGR: OK (702 registros, 18:56)
+  Fuente MACAL: OK (121 fichas leídas, 0 con error, 18:58)
   Fuente AVISOS: OK (679 avisos de 3 archivo(s): INFORME_02-11-2026_AL_03-11-2026.docx, INFORME_06-11-2026_AL_08-11-2026.docx, RESUMEN_26-10-2026_AL_30-10-2026.docx)
-  Fuente PRECIO_MERCADO:ChilePropiedades: OK (66 nuevas, 1729 ya vistas, 0 descartadas)
+  Fuente PRECIO_MERCADO:ChilePropiedades: OK (3 nuevas, 1793 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:TopPropiedades: OK (0 nuevas, 2 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Procasa: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Doomos: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Inmoclick: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:ProUrbano: OK (0 nuevas, 0 ya vistas, 0 descartadas)
-  Fuente PRECIO_MERCADO:Bernal: OK (0 nuevas, 5 ya vistas, 0 descartadas)
+  Fuente PRECIO_MERCADO:Bernal: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Paz: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Siena: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Castro: OK (0 nuevas, 0 ya vistas, 0 descartadas)
@@ -1193,7 +629,7 @@ LISTO. En el consolidado final (máx. 50): 35 propiedades | elegibles fiscal: 35
   Fuente PRECIO_MERCADO:GrupoPremium: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:COPROCH: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Dosam: OK (0 nuevas, 1 ya vistas, 0 descartadas)
-  Fuente PRECIO_MERCADO:EngelVolkers: OK (11 nuevas, 10 ya vistas, 0 descartadas)
+  Fuente PRECIO_MERCADO:EngelVolkers: OK (0 nuevas, 21 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:PropertyPartners: OK (0 nuevas, 741 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO: OK (511 combinaciones comuna/tipo con datos)
   Fuente PODER_JUDICIAL: OK
