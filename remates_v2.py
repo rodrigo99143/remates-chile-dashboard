@@ -1237,7 +1237,13 @@ def valor_uf(fecha):
 TIPOS_VIA = {"CALLE", "CL", "AV", "AVDA", "AVENIDA", "PJE", "PSJE", "PSJ", "PASAJE", "CAMINO", "CAM",
              "RUTA", "DIAGONAL", "DIAG", "CALLEJON", "CJN", "PASEO", "POBL", "POBLACION", "PARCELA"}
 MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "EST"}     # departamento, bodega, etc.
-MARCAS_LOTE = {"LT", "LO", "MZ", "M", "ST", "SI", "CA", "CS", "SITIO", "LOTE", "PARCELA", "KM", "MC", "MZA"}  # descriptores de loteo
+# OJO (auditoría 12-11-2026, pedido de Rodrigo): el catastro del SII usa a veces
+# "L" (Lote) y "MA" (Manzana) como abreviatura SUELTA, ej. "TENERIFE 2233 L 71 MA
+# 7" - sin "L" y "MA" en este set, el código de más abajo no cortaba ahí y leía
+# mal la dirección completa (tomaba "7" como el número de la calle y "TENERIFE
+# 2233 L 71 MA" como si fuera el nombre), haciendo que una calle que SÍ estaba en
+# el catastro, con el número exacto del aviso, apareciera como "SIN COINCIDENCIA".
+MARCAS_LOTE = {"LT", "LO", "L", "MZ", "M", "MA", "ST", "SI", "CA", "CS", "SITIO", "LOTE", "PARCELA", "KM", "MC", "MZA"}  # descriptores de loteo
 ABREVIATURAS = {"GRAL": "GENERAL", "GRL": "GENERAL", "CDTE": "COMANDANTE", "PDTE": "PRESIDENTE", "CAP": "CAPITAN",
                 "TTE": "TENIENTE", "ALM": "ALMIRANTE", "DR": "DOCTOR", "STA": "SANTA", "STO": "SANTO", "SN": "SAN",
                 "SGTO": "SARGENTO", "MCAL": "MARISCAL", "CARD": "CARDENAL", "OBPO": "OBISPO", "AVDA": "AV",
