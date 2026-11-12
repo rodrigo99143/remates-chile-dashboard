@@ -1398,6 +1398,20 @@ def parsear_unidad(txt):
 def extraer_direccion_texto(texto):
     """Busca una calle y número de la PROPIEDAD en un texto libre (descarta la dirección del tribunal).
     Devuelve dict(nombre, numero, unidad) o None."""
+    # OJO (auditoría 12-11-2026, pedido urgente de Rodrigo): el formato "Publicación
+    # Martillero" (liquidaciones, concursal) trae SIEMPRE, antes de describir el
+    # inmueble real, la "Dirección del Remate" - que es la OFICINA del liquidador
+    # donde se transmite el remate (ej. "Avenida del Valle Sur 577 oficina 503,
+    # Huechuraba"), NO la ubicación de la propiedad. El inmueble real se describe
+    # recién después de la palabra "Detalle:". Sin este filtro, se capturaba la
+    # dirección de la oficina del liquidador como si fuera la de la propiedad -
+    # y como el liquidador es el MISMO para muchos avisos distintos, esa misma
+    # dirección equivocada terminaba repetida en propiedades de comunas totalmente
+    # distintas (Colina, San Joaquín, Quintero, Huasco...). "Detalle:" no aparece
+    # en ningún otro formato de aviso real (verificado sobre los 792 avisos
+    # reales), así que este recorte es seguro.
+    if "Detalle:" in texto:
+        texto = texto.split("Detalle:", 1)[1]
     for regex in (RE_VIA_CON_MARCA, RE_VIA_SIN_MARCA):
         for m in regex.finditer(texto):
             ctx = texto[max(0, m.start() - 110):m.start()]
