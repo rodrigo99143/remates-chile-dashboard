@@ -1,10 +1,28 @@
-  [INFORME_FIJO] leyendo INFORME_06-11-2026_AL_08-11-2026.docx ...
-  [INFORME_FIJO] 139 avisos leídos de INFORME_06-11-2026_AL_08-11-2026.docx.
+  [INFORME_FIJO] leyendo INFORME_06-11-2026_AL_08-11-2026.docx, INFORME_09-11-2026_AL_10-11-2026.docx ...
+  [INFORME_FIJO] 252 avisos leídos en total de 2 archivo(s).
+  [INFORME_FIJO] de esos 252, 252 son avisos con texto distinto entre sí (0 con el texto EXACTAMENTE igual a otro, osea el mismo aviso republicado).
   Catastro ya preparado: catastro_2026_2.sqlite
-  Avisos: 139 leídos | con ROL: 46 (informado: 32, deducido por dirección: 14)
+  Avisos: 252 leídos | con ROL: 110 (informado: 66, deducido por dirección: 44)
+  Avisos sin ROL (142) - motivo de por qué no se pudo deducir por dirección:
+     74 | SIN COINCIDENCIA
+     28 | NO SE PUDO LEER LA DIRECCION
+     17 | SIN COINCIDENCIA | COMUNA ASUMIDA DEL TRIBUNAL
+     10 | AMBIGUO (edificio: hay varias unidades)
+      6 | NO SE PUDO LEER LA DIRECCION | COMUNA ASUMIDA DEL TRIBUNAL
+      3 | SIN COMUNA CANDIDATA (no se pudo intentar)
+      2 | AMBIGUO (2 candidatos)
+      1 | AMBIGUO (6 candidatos)
+      1 | AMBIGUO (edificio: hay varias unidades) | COMUNA ASUMIDA DEL TRIBUNAL
+  Muestra de "SIN COINCIDENCIA" (la dirección del aviso contra lo que SÍ hay en el catastro para esa calle, en esa comuna - para ver si la calle existe con otro número, o si no existe del todo):
+    aviso: 'INGLATERRA 1144' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'INGLATERRA 1144' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'LOS CRISANTEMO 180' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'BUZO SOBENE 4650' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'QUINTA AVENIDA 1277' (comuna SII 13101) | catastro para esa calle: ['AVENIDA BRASIL 391 DP 303', 'AVENIDA BRASIL 875 DP 111', 'AVENIDA BRASIL 875 DP 112']
+    aviso: 'JAIME GUZMAN ERRAZURIZ 4080' (comuna SII 01201) | catastro para esa calle: ['ERRAZURIZ 25', 'ERRAZURIZ 21', 'ERRAZURIZ 27']
   ROL deducido por dirección: 0 únicos | 0 ambiguos (no se asignan) | 0 sin coincidencia/lectura
-  Filas recibidas: 139 | propiedades únicas (misma propiedad y fecha): 139
-  [INFORME_FIJO] 139 avisos leídos del Word | 139 en el Excel (deben coincidir - no se descarta nada en silencio) | 38 con ROL de avalúo utilizable.
+  Filas recibidas: 252 | propiedades únicas (misma propiedad y fecha): 252
+  [INFORME_FIJO] 252 avisos leídos del Word | 252 en el Excel (deben coincidir - no se descarta nada en silencio) | 76 con ROL de avalúo utilizable.
   [INFORME_FIJO] 0 propiedades de TGR nuevas desde el 2026-11-09.
   [INFORME_FIJO] Excel: REPORTE_INFORME_FIJO.xlsx
   [INFORME_FIJO] Enviado a rbastias1991@gmail.com.
