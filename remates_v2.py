@@ -2662,10 +2662,15 @@ def tabla_avisos(rutas, cache_ia_path=None):
     return df
 
 
+_MUESTRA_SIN_COINCIDENCIA = {"n": 0, "casos": []}
+
+
 def resolver_avisos(df, db_path):
     """Para cada aviso: elige la comuna y el ROL (explícito o deducido por dirección). Sin catastro: solo comuna."""
     if df.empty:
         return df
+    _MUESTRA_SIN_COINCIDENCIA["n"] = 0
+    _MUESTRA_SIN_COINCIDENCIA["casos"] = []
     for c in ("rol_origen", "rol_candidatos", "estado_busqueda_direccion", "verif_direccion_catastro",
               "avaluo_roles_total", "n_roles_encontrados"):
         if c not in df.columns:
@@ -2722,6 +2727,22 @@ def resolver_avisos(df, db_path):
                     df.at[i, "estado_busqueda_direccion"] = estado
                     if cs:
                         df.at[i, "rol_candidatos"] = "; ".join(f"{m}-{p} ({d})" for m, p, d, _, _ in cs)
+                    # OJO (auditoría 12-11-2026, pedido de Rodrigo): "SIN COINCIDENCIA" es,
+                    # con mucho, el motivo más frecuente de que un aviso con dirección se
+                    # quede sin ROL - pero por sí solo no dice SI la calle existe en el
+                    # catastro con otro número (número de la propiedad fuera del rango que
+                    # tiene el catastro para esa calle) o si la calle ni siquiera aparece
+                    # (nombre distinto/mal escrito). Se deja una muestra de hasta 6 casos en
+                    # el log con esa comparación, para poder distinguir ambos motivos reales.
+                    if estado == "SIN COINCIDENCIA" and _MUESTRA_SIN_COINCIDENCIA["n"] < 6:
+                        _MUESTRA_SIN_COINCIDENCIA["n"] += 1
+                        palabras = [p for p in dtx["nombre"].split() if len(p) >= 3 and not p.isdigit()]
+                        ancla = max(palabras, key=len) if palabras else dtx["nombre"]
+                        filas_calle = con.execute(
+                            "SELECT direccion FROM predios WHERE comuna=? AND REPLACE(direccion,'Ñ','N') LIKE ? "
+                            "LIMIT 3", (sii, f"%{ancla}%")).fetchall()
+                        _MUESTRA_SIN_COINCIDENCIA["casos"].append(
+                            (f"{dtx['nombre']} {dtx['numero']}", sii, [f[0] for f in filas_calle]))
             elif dtx is None:
                 df.at[i, "estado_busqueda_direccion"] = "NO SE PUDO LEER LA DIRECCION"
             elif not cands:
@@ -2764,6 +2785,13 @@ def resolver_avisos(df, db_path):
         decir(f"  Avisos sin ROL ({len(sin_rol)}) - motivo de por qué no se pudo deducir por dirección:")
         for motivo, n in conteo.items():
             decir(f"    {n:>3} | {motivo}")
+    if _MUESTRA_SIN_COINCIDENCIA["casos"]:
+        decir("  Muestra de \"SIN COINCIDENCIA\" (la dirección del aviso contra lo que SÍ hay en el "
+              "catastro para esa calle, en esa comuna - para ver si la calle existe con otro número, "
+              "o si no existe del todo):")
+        for direccion_aviso, comuna, filas_catastro in _MUESTRA_SIN_COINCIDENCIA["casos"]:
+            decir(f"    aviso: {direccion_aviso!r} (comuna SII {comuna}) "
+                  f"| catastro para esa calle: {filas_catastro or '(la calle no aparece del todo)'}")
     return df
 
 
