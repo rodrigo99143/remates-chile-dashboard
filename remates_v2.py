@@ -2710,7 +2710,7 @@ def resolver_avisos(df, db_path):
                 df.at[i, "n_roles_encontrados"] = enc
         if elegido is None:
             # sin ROL utilizable: intentar por dirección en cada comuna candidata
-            if con is not None and dtx:
+            if con is not None and dtx and cands:
                 for sii, origen in cands:
                     estado, cs = buscar_rol_por_direccion(con, sii, dtx)
                     if estado == "UNICO":
@@ -2724,6 +2724,13 @@ def resolver_avisos(df, db_path):
                         df.at[i, "rol_candidatos"] = "; ".join(f"{m}-{p} ({d})" for m, p, d, _, _ in cs)
             elif dtx is None:
                 df.at[i, "estado_busqueda_direccion"] = "NO SE PUDO LEER LA DIRECCION"
+            elif not cands:
+                # OJO (auditoría 12-11-2026, pedido de Rodrigo: "por qué muchos quedan con
+                # dirección pero sin rol"): si no se identificó NINGUNA comuna candidata
+                # para el aviso (ni por texto, ni por el tribunal), antes esto quedaba en
+                # blanco sin dejar rastro - parecía "no se encontró nada" cuando en
+                # realidad nunca se llegó a INTENTAR buscar el rol por falta de comuna.
+                df.at[i, "estado_busqueda_direccion"] = "SIN COMUNA CANDIDATA (no se pudo intentar)"
         if elegido is None and cands:
             sii, origen = cands[0]
             df.at[i, "comuna_sii"] = sii
@@ -2746,6 +2753,17 @@ def resolver_avisos(df, db_path):
     decir(f"  Avisos: {len(sub)} leídos | con ROL: {int(sub['manzana'].notna().sum())} "
           f"(informado: {int((sub['rol_origen'] == 'INFORMADO POR LA FUENTE (aviso)').sum())}, "
           f"deducido por dirección: {int((sub['rol_origen'] == 'DEDUCIDO POR DIRECCION (verificar)').sum())})")
+    # OJO (auditoría 12-11-2026, pedido de Rodrigo: "¿por qué tantos avisos quedan con
+    # dirección pero sin rol, si el programa debería cruzarlos contra el SII?"): antes
+    # no quedaba registro de POR QUÉ falló cada intento de deducir el rol por dirección
+    # - solo se sabía el resultado final (con/sin rol), no la causa. Este desglose lo
+    # deja explícito en el log de cada corrida real.
+    sin_rol = sub[sub["manzana"].isna()]
+    if len(sin_rol):
+        conteo = sin_rol["estado_busqueda_direccion"].fillna("(sin intentar: sin dirección ni comuna)").value_counts()
+        decir(f"  Avisos sin ROL ({len(sin_rol)}) - motivo de por qué no se pudo deducir por dirección:")
+        for motivo, n in conteo.items():
+            decir(f"    {n:>3} | {motivo}")
     return df
 
 
