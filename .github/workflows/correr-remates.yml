@@ -49,7 +49,8 @@ on:
       informe_fijo_sin_historial:
         description: >-
           Opcional, "de una sola vez" (pedido de Rodrigo, 2026-11-11): nombre
-          de un archivo de avisos (ej. "avisos/INFORME_06-11-2026_AL_08-11-2026.docx")
+          de un archivo de avisos (ej. "avisos/INFORME_06-11-2026_AL_08-11-2026.docx"),
+          o VARIOS separados por coma (ej. "avisos/A.docx,avisos/B.docx"),
           para armar y mandar, además de la corrida normal, un Excel aparte
           con TODOS sus avisos - completos o no - sin aplicar el filtro de
           "ya visto sin cambios". Útil para revisar de una vez un informe

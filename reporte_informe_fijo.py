@@ -20,6 +20,11 @@ histórico) - es sólo un reporte de lectura, aparte del Excel de todos los
 días.
 
 Uso: python reporte_informe_fijo.py avisos/INFORME_06-11-2026_AL_08-11-2026.docx 2026-11-09
+
+También acepta VARIOS informes a la vez, separados por coma (pedido de
+Rodrigo, 12-11-2026: "tomar el último aviso y el penúltimo, verificar si son
+el mismo o no, y armar un solo Excel con todos"):
+  python reporte_informe_fijo.py "avisos/A.docx,avisos/B.docx" 2026-11-09
 """
 import os
 import smtplib
@@ -56,21 +61,33 @@ def _clave_real(f):
 
 def main():
     if len(sys.argv) != 3:
-        print("Uso: python reporte_informe_fijo.py <archivo.docx> <fecha_tgr_desde AAAA-MM-DD>")
+        print("Uso: python reporte_informe_fijo.py <archivo.docx>[,<archivo2.docx>,...] <fecha_tgr_desde AAAA-MM-DD>")
         sys.exit(1)
-    nombre_docx = sys.argv[1]
+    nombres_docx = [n.strip() for n in sys.argv[1].split(",") if n.strip()]
     fecha_tgr_desde = sys.argv[2]
-    ruta_docx = Path(nombre_docx)
-    if not ruta_docx.is_absolute():
-        ruta_docx = BASE / ruta_docx
-    if not ruta_docx.exists():
-        print(f"  [INFORME_FIJO] no encuentro {ruta_docx}")
-        sys.exit(1)
+    rutas_docx = []
+    for nombre_docx in nombres_docx:
+        ruta_docx = Path(nombre_docx)
+        if not ruta_docx.is_absolute():
+            ruta_docx = BASE / ruta_docx
+        if not ruta_docx.exists():
+            print(f"  [INFORME_FIJO] no encuentro {ruta_docx}")
+            sys.exit(1)
+        rutas_docx.append(ruta_docx)
 
-    # ---- 1) TODOS los avisos de ESE informe, completos o no ----
-    print(f"  [INFORME_FIJO] leyendo {ruta_docx.name} ...")
-    tabla = remates_v2.tabla_avisos([ruta_docx], cache_ia_path=DB_MERCADO)
-    print(f"  [INFORME_FIJO] {len(tabla)} avisos leídos de {ruta_docx.name}.")
+    # ---- 1) TODOS los avisos de ESOS informes, completos o no ----
+    print(f"  [INFORME_FIJO] leyendo {', '.join(r.name for r in rutas_docx)} ...")
+    tabla = remates_v2.tabla_avisos(rutas_docx, cache_ia_path=DB_MERCADO)
+    print(f"  [INFORME_FIJO] {len(tabla)} avisos leídos en total de {len(rutas_docx)} archivo(s).")
+    # OJO (pedido de Rodrigo, 12-11-2026: "verifica si son el mismo informe o
+    # no"): con más de un archivo, se deja constancia explícita de si hay
+    # textos EXACTAMENTE idénticos repetidos entre ellos (serían el mismo
+    # aviso publicado dos veces) - para no dejarlo a la duda.
+    if len(rutas_docx) > 1 and "texto_aviso" in tabla.columns:
+        n_textos_unicos = tabla["texto_aviso"].nunique()
+        n_repetidos = len(tabla) - n_textos_unicos
+        print(f"  [INFORME_FIJO] de esos {len(tabla)}, {n_textos_unicos} son avisos con texto distinto entre sí "
+              f"({n_repetidos} con el texto EXACTAMENTE igual a otro, osea el mismo aviso republicado).")
 
     db_path_catastro = remates_v2.preparar_catastro()
     if db_path_catastro is None:
@@ -127,7 +144,7 @@ def main():
         hoja = remates_v2.renombrar_para_mostrar(
             remates_v2.ordenar_columnas_alvaro(df_avisos, extra=["oportunidad_pct", "alertas", "motivo_no_elegible"])
         )
-        nombre_hoja = ruta_docx.stem[:31] or "AVISOS"
+        nombre_hoja = ("AVISOS" if len(rutas_docx) > 1 else rutas_docx[0].stem)[:31] or "AVISOS"
         hoja.to_excel(w, sheet_name=nombre_hoja, index=False)
         remates_v2.dar_formato(w.sheets[nombre_hoja])
 
@@ -159,12 +176,13 @@ def main():
         return
 
     msg = EmailMessage()
-    msg["Subject"] = f"Remates Chile - informe fijo ({ruta_docx.name}) + TGR nuevo desde {fecha_tgr_desde}"
+    nombres_archivos = ", ".join(r.name for r in rutas_docx)
+    msg["Subject"] = f"Remates Chile - informe fijo ({nombres_archivos}) + TGR nuevo desde {fecha_tgr_desde}"
     msg["From"] = CORREO_DESDE
     msg["To"] = CORREO_PARA
     msg.set_content(
         f"Reporte especial de una sola vez.\n\n"
-        f"Hoja '{nombre_hoja[:31]}': los {len(df_avisos)} avisos de {ruta_docx.name}, completos o no "
+        f"Hoja '{nombre_hoja[:31]}': los {len(df_avisos)} avisos de {nombres_archivos}, completos o no "
         f"({con_rol} con ROL de avalúo utilizable).\n"
         f"Hoja 'TGR_NUEVO': {n_tgr_nuevo} propiedades de TGR nuevas desde el {fecha_tgr_desde}.\n"
     )
