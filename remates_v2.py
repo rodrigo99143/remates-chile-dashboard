@@ -1248,12 +1248,108 @@ NUM_PALABRAS = {"UNO": "1", "UN": "1", "DOS": "2", "TRES": "3", "CUATRO": "4", "
 PALABRAS_COMUNES = {"GENERAL", "DOCTOR", "PRESIDENTE", "SANTA", "SANTO", "SAN", "NORTE", "SUR", "ORIENTE", "PONIENTE",
                     "LOS", "LAS", "DEL", "DE", "LA", "EL", "AV", "PJE", "CALLE", "CAPITAN", "COMANDANTE", "ALMIRANTE"}
 
+# OJO (auditoría 12-11-2026, pedido urgente de Rodrigo): la mayoría de los avisos
+# judiciales redactan el número de la calle EN PALABRAS ("...calle General Mackenna
+# número mil quinientos cincuenta y cinco...", "...Avenida Américo Vespucio número
+# cuatro mil seiscientos cuarenta y uno...", "...con acceso por Avenida Santa Rosa
+# cinco mil setecientos cuarenta y uno..."), no en dígitos. Antes estas dos regex
+# solo reconocían el número si venía en dígitos (\d[\d.]*); como la gran mayoría de
+# los avisos NO lo trae así, la dirección quedaba en blanco aunque el aviso SÍ la
+# tuviera, texto plano, perfectamente legible.
+#
+# Para aceptar el número en palabras SIN arriesgar que el propio nombre de la calle
+# se confunda con un número (ej. "calle Trinidad Ramírez 01010" - "Ramírez" no debe
+# poder leerse como si fuera un número), el grupo de abajo solo acepta una racha de
+# palabras que están LITERALMENTE en el vocabulario numérico español (uno, dos,
+# ..., mil, ciento, quinientos, "y", etc.) - nunca una palabra cualquiera. Así,
+# "Ramírez" nunca puede calzar ahí (no está en ese vocabulario) y el motor de regex
+# retrocede hasta encontrar el verdadero número (en dígitos o en palabras,
+# cualquiera que venga). Esto permite reconocer el número en palabras incluso SIN
+# la palabra "número"/"Nº" por delante (ej. "...por Avenida Santa Rosa cinco mil
+# setecientos cuarenta y uno, comuna..."), que es el otro patrón real encontrado.
+_PALABRA_NUM_TOK = (r"(?:mil|ciento?s?|doscientos|doscientas|trescientos|trescientas|cuatrocientos|"
+                     r"cuatrocientas|quinientos|quinientas|seiscientos|seiscientas|setecientos|"
+                     r"setecientas|ochocientos|ochocientas|novecientos|novecientas|treinta|cuarenta|"
+                     r"cincuenta|sesenta|setenta|ochenta|noventa|cero|uno|un|una|dos|tres|cuatro|cinco|"
+                     r"seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|diecis[eé]is|"
+                     r"diecisiete|dieciocho|diecinueve|veinte|veintiun[o]?|veintid[oó]s|veintitr[eé]s|"
+                     r"veinticuatro|veinticinco|veintis[eé]is|veintisiete|veintiocho|veintinueve|y)")
+_GRUPO_NUMERO_VIA = (r"(\d[\d.]*|" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK + r"){0,6})")
 RE_VIA_CON_MARCA = re.compile(
     r"(?i)\b(calle|avenida|avda\.?|av\.?|pasaje|psje\.?|pje\.?|camino|diagonal|callej[oó]n|paseo)\s+"
-    r"([^,;]{1,55}?)\s*(?:N[º°o]\.?\s*|n[uú]mero\s+|#\s*)(\d[\d.]*)")
+    r"([^,;]{1,55}?)\s*,?\s*(?:N[º°o]\.?\s*|n[uú]mero\s+|#\s*)" + _GRUPO_NUMERO_VIA)
+# OJO (auditoría 12-11-2026): sin la palabra "número"/"Nº" por delante, es solo
+# "calle NOMBRE <algo>" - pero como _GRUPO_NUMERO_VIA ya está restringido al
+# vocabulario numérico (ver arriba), no hay ambigüedad real: una palabra del
+# nombre de la calle que no sea número no puede calzar ahí.
 RE_VIA_SIN_MARCA = re.compile(
     r"(?i)\b(calle|avenida|avda\.?|av\.?|pasaje|psje\.?|pje\.?|camino|diagonal|callej[oó]n|paseo)\s+"
-    r"([^,;\d]{1,55}?)\s+(\d[\d.]*)\b")
+    r"([^,;\d]{1,55}?)\s+" + _GRUPO_NUMERO_VIA + r"\b")
+# Palabras numéricas españolas (hasta 999.999) para "traducir" un número de calle
+# escrito en palabras a un entero - ver a_numero_chileno_o_palabras() más abajo.
+_UNIDADES_PALABRA = {"cero": 0, "uno": 1, "un": 1, "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5,
+                      "seis": 6, "siete": 7, "ocho": 8, "nueve": 9, "diez": 10, "once": 11, "doce": 12,
+                      "trece": 13, "catorce": 14, "quince": 15, "dieciseis": 16, "diecisiete": 17,
+                      "dieciocho": 18, "diecinueve": 19, "veinte": 20, "veintiuno": 21, "veintiun": 21,
+                      "veintidos": 22, "veintitres": 23, "veinticuatro": 24, "veinticinco": 25,
+                      "veintiseis": 26, "veintisiete": 27, "veintiocho": 28, "veintinueve": 29}
+_DECENAS_PALABRA = {"treinta": 30, "cuarenta": 40, "cincuenta": 50, "sesenta": 60, "setenta": 70,
+                     "ochenta": 80, "noventa": 90}
+_CENTENAS_PALABRA = {"cien": 100, "ciento": 100, "doscientos": 200, "doscientas": 200, "trescientos": 300,
+                      "trescientas": 300, "cuatrocientos": 400, "cuatrocientas": 400, "quinientos": 500,
+                      "quinientas": 500, "seiscientos": 600, "seiscientas": 600, "setecientos": 700,
+                      "setecientas": 700, "ochocientos": 800, "ochocientas": 800, "novecientos": 900,
+                      "novecientas": 900}
+
+
+def _parsear_centena_palabras(toks, i):
+    """Desde toks[i], lee [centena] [decena [y unidad] | unidad] (0-999). Devuelve (valor, i_siguiente)."""
+    valor = 0
+    if i < len(toks) and toks[i] in _CENTENAS_PALABRA:
+        valor += _CENTENAS_PALABRA[toks[i]]
+        i += 1
+    if i < len(toks) and toks[i] in _DECENAS_PALABRA:
+        valor += _DECENAS_PALABRA[toks[i]]
+        i += 1
+        if i + 1 < len(toks) and toks[i] == "y" and toks[i + 1] in _UNIDADES_PALABRA and _UNIDADES_PALABRA[toks[i + 1]] <= 9:
+            valor += _UNIDADES_PALABRA[toks[i + 1]]
+            i += 2
+    elif i < len(toks) and toks[i] in _UNIDADES_PALABRA:
+        valor += _UNIDADES_PALABRA[toks[i]]
+        i += 1
+    return valor, i
+
+
+def _numero_desde_palabras(texto):
+    """'cuatro mil seiscientos cuarenta y uno' -> 4641. Lee solo el PREFIJO reconocible
+    del texto (se detiene en la primera palabra que no es parte de un número: así
+    "...cuarenta y uno guión A" entrega 41, no falla por el "guión A" que sigue).
+    Devuelve None si ni la primera palabra es un número reconocido."""
+    toks = normalizar(texto).lower().replace("-", " ").split()
+    i = 0
+    total = 0
+    consumido = 0
+    val_miles, j = _parsear_centena_palabras(toks, 0)
+    if j < len(toks) and toks[j] == "mil":
+        total += (val_miles if val_miles else 1) * 1000
+        i = j + 1
+        consumido = i
+    val_resto, k = _parsear_centena_palabras(toks, i)
+    if k > i:
+        total += val_resto
+        consumido = k
+    if consumido == 0:
+        return None
+    return total
+
+
+def a_numero_chileno_o_palabras(s):
+    """Como a_numero_chileno(), pero si no son dígitos intenta leerlo como número
+    escrito en palabras ("mil quinientos cincuenta y cinco" -> 1555)."""
+    v = a_numero_chileno(s)
+    if v is not None:
+        return v
+    return _numero_desde_palabras(s)
 RE_UNIDAD = re.compile(r"(?i)\b(?:departamento|depto\.?|dpto\.?|dp\.?)\s*(?:n[º°o.]*\s*|n[uú]mero\s+)?"
                        r"((?:[A-Za-z]\s?-\s?)?\d{1,5}(?:\s?-\s?[A-Za-z]\b|[A-Za-z]\b)?)")
 PALABRAS_PROPIEDAD = re.compile(r"(?i)inmueble|propiedad|departamento|depto|casa|sitio|lote|vivienda|"
@@ -1310,7 +1406,7 @@ def extraer_direccion_texto(texto):
                 ult = t.end()
             if ult is not None and not PALABRAS_PROPIEDAD.search(ctx[ult:]):
                 continue            # es la dirección del tribunal, no de la propiedad
-            numero = a_numero_chileno(m.group(3))
+            numero = a_numero_chileno_o_palabras(m.group(3))
             nombre = clave_calle(m.group(2))
             if numero is None or not nombre:
                 continue
