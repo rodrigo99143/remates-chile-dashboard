@@ -186,7 +186,11 @@ OPORTUNIDAD_MAX_PCT = 400.0         # sobre este % se considera dato dudoso y va
 SOLO_VIGENTES = True                # solo remates con fecha de hoy en adelante
 EXCLUIR_DESTINOS_TOP_HISTORICO = {"Z", "L"}
 EXIGIR_CRUCE_SII = True             # solo entran al top propiedades verificadas en el catastro SII
-INCLUIR_DATOS_DEUDOR = False        # True = agrega nombre y RUT del dueño (datos de la TGR)
+INCLUIR_RUT_DEUDOR = False           # True = agrega también el RUT del dueño (datos de la TGR); el
+                                     # nombre (columna "demandado_propietario") se agrega siempre -
+                                     # Álvaro lo pidió como dato obligatorio en cualquier aviso
+                                     # (WhatsApp, 12-11-2026: "muestra el nombre del demandado o
+                                     # propietario", "son datos obligatorios en cualquier aviso").
 
 # ---- Macal ----
 MACAL_BASE = "https://macal.cl"
@@ -766,9 +770,9 @@ def construir_tabla_tgr(payload):
             # probado para los avisos de diario, sobre el mismo texto libre "datosSubasta"
             # que entrega la TGR (antes solo se guardaba, nunca se leía para esto).
             "n_remate": extraer_n_remate(r.get("datosSubasta") or ""),
+            "demandado_propietario": r.get("nombreDuegno"),
         }
-        if INCLUIR_DATOS_DEUDOR:
-            fila["nombre_dueno"] = r.get("nombreDuegno")
+        if INCLUIR_RUT_DEUDOR:
             fila["rut_dueno"] = r.get("rutDuegno")
         filas.append(fila)
     df = pd.DataFrame(filas)
@@ -2256,6 +2260,65 @@ def candidatos_comuna(texto):
     return cands
 
 
+# ---- Nombre del demandado/propietario (pedido de Álvaro por WhatsApp, 12-11-2026:
+# "muestra el nombre del demandado o propietario!!!", "de los avisos se está omitiendo
+# mucha información... son datos obligatorios en cualquier aviso") ----
+# Tres formatos reales distintos encontrados en los avisos de diario, probados de más
+# a menos confiable:
+#   1) "Publicación Martillero" (liquidaciones): trae un campo "Deudor: NOMBRE." limpio,
+#      separado del resto - el más confiable de los tres.
+#   2) "...inscrito/a a nombre de[l ejecutado] don/doña NOMBRE COMPLETO..." - el dueño
+#      inscrito en el Conservador de Bienes Raíces, normalmente el nombre completo.
+#   3) "caratulado(s)/autos ejecutivos caratulados/expediente: DEMANDANTE con DEMANDADO"
+#      (a veces sin comillas, a veces con "/" en vez de "con") - solo el apellido o
+#      razón social del demandado, sin el nombre completo.
+# Con un texto de prueba de los 4 informes reales (792 avisos), esto encuentra el
+# demandado/propietario en el 62% de los avisos - el resto simplemente no lo menciona
+# en un formato reconocible (texto mal redactado, OCR, etc.), y queda en blanco en vez
+# de adivinar.
+RE_DEUDOR_MARTILLERO = re.compile(r"(?i)\bDeudor\s*:\s*([^.]{3,90}?)\.\s*Deudor\s*Rut")
+RE_NOMBRE_INSCRITO = re.compile(
+    r"(?i)inscrit[oa]\s+a\s+nombre\s+(?:del?\s+)?(?:ejecutad[oa]\s+)?"
+    r"(?:don|do[nñ]a)?\s*"
+    r"([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ a-záéíóúñ'.\-]{4,70}?)"
+    r"\s*(?:,|\.\s|a\s+f(?:oja|s)|a\s+fs\b|fs\.|bajo\s+el\s+n|del\s+registro|rol\b|$)"
+)
+RE_ANCLA_CARATULADO = re.compile(
+    r"(?i)(?:autos\s+(?:ejecutivos\s+)?caratulados|caratulad[oa]s?(?:\s+en\s+autos)?|expediente)\s*[:;,]?\s*"
+    r"[“\"“]?([^”\"”.;\n]{4,100})"
+)
+
+
+def _separar_demandado_de_caratulado(frag):
+    """De un fragmento 'DEMANDANTE con DEMANDADO' o 'DEMANDANTE/DEMANDADO', se queda
+    con la parte del DEMANDADO (la segunda) - el demandante casi siempre es el banco o
+    acreedor, que ya se puede inferir de la sección del informe (BCI, BBVA, etc.)."""
+    frag = frag.strip(" .\"“”,")
+    partes = re.split(r"(?i)\s+con\s+|\s*/\s*", frag, maxsplit=1)
+    if len(partes) == 2 and partes[1].strip():
+        demandado = partes[1].strip(" .\"“”,")
+        demandado = re.split(r"(?i)\s*,?\s*rol\b", demandado)[0].strip(" .,")
+        return demandado or None
+    return None
+
+
+def extraer_demandado(texto):
+    """Nombre del demandado/propietario de un aviso, o None si no viene en un
+    formato reconocible (no se adivina)."""
+    m = RE_DEUDOR_MARTILLERO.search(texto)
+    if m:
+        return m.group(1).strip(" .,")
+    m = RE_NOMBRE_INSCRITO.search(texto)
+    if m:
+        return m.group(1).strip(" .,")
+    m = RE_ANCLA_CARATULADO.search(texto)
+    if m:
+        demandado = _separar_demandado_de_caratulado(m.group(1))
+        if demandado:
+            return demandado
+    return None
+
+
 def parsear_aviso(texto, cab=None):
     tn = normalizar(texto)
     fecha, nota_fecha = extraer_fecha_hora(tn, cab)
@@ -2289,6 +2352,7 @@ def parsear_aviso(texto, cab=None):
         "fojas": fojas, "fojas_numero": numero, "fojas_anio": anio, "cbr": cbr,
         "minimo_valor": val, "minimo_unidad": uni, "roles": roles,
         "candidatos": candidatos_comuna(texto), "alertas_aviso": alertas,
+        "demandado_propietario": extraer_demandado(texto),
     }
 
 
@@ -2359,6 +2423,7 @@ def tabla_avisos(rutas, cache_ia_path=None):
                 "direccion_texto_busqueda": a["texto"], "texto_aviso": a["texto"],
                 "roles_texto": ", ".join(f"{x}-{y}" for x, y in a["roles"]), "n_roles": len(a["roles"]),
                 "manzana": None, "predio": None, "comuna_sii": None, "comuna_estado": "NO RECONOCIDA",
+                "demandado_propietario": a.get("demandado_propietario"),
             })
     df = pd.DataFrame(filas)
     if not df.empty:
@@ -2627,7 +2692,8 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None, aplicar_dedup=True):
     for c in ("minimo_valor", "minimo_unidad", "alertas_fuente", "ocupacion", "rol_origen", "minimo_nota",
               "verif_direccion_catastro", "estado_busqueda_direccion", "direccion_tgr", "fuente_sii", "tipo_sii",
               "destino_sii", "cruce_estado", "tipo_propiedad", "superficie_util_m2", "superficie_total_m2",
-              "superficie_terreno_sii", "superficie_construida_sii", "anio_construccion_sii"):
+              "superficie_terreno_sii", "superficie_construida_sii", "anio_construccion_sii",
+              "demandado_propietario"):
         if c not in df.columns:
             df[c] = None
     df["minimo_valor"] = pd.to_numeric(df["minimo_valor"], errors="coerce")
@@ -3470,6 +3536,9 @@ COLUMNAS_FORMATO_ALVARO = [
     "fuente", "rol_completo", "direccion_final", "comuna_propiedad", "tipo_propiedad",
     "superficie_util_m2", "superficie_total_m2", "anio_construccion",
     "fecha_remate", "hora_remate", "modalidad", "tribunal", "rol_causa", "tipo_juicio",
+    # Pedido de Álvaro (WhatsApp, 12-11-2026): "muestra el nombre del demandado o
+    # propietario!!!" - dato obligatorio en cualquier aviso, antes no se mostraba.
+    "demandado_propietario",
     "fiscal_o_territorial", "minimo_pesos", "avaluo_sii", "valor_ref_pesos",
     "margen_pesos", "garantia_pesos",
 ]
@@ -4129,6 +4198,7 @@ def prueba():
                                                         "comuna_propiedad", "tipo_propiedad", "CONST.m2",
                                                         "Terreno m2", "AÑO CONST.", "fecha_remate", "hora",
                                                         "modalidad", "tribunal", "rol_causa", "tipo_juicio",
+                                                        "demandado_propietario",
                                                         "Fiscal / Territorial", "minimo_pesos", "Avalúo fiscal",
                                                         "valor_ref_pesos", "margen_pesos", "garantia_pesos"])
                                           if c in encabezados_top] + ["oportunidad_pct"])
