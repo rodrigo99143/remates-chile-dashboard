@@ -1356,8 +1356,11 @@ def a_numero_chileno_o_palabras(s):
     if v is not None:
         return v
     return _numero_desde_palabras(s)
-RE_UNIDAD = re.compile(r"(?i)\b(?:departamento|depto\.?|dpto\.?|dp\.?)\s*(?:n[º°o.]*\s*|n[uú]mero\s+)?"
-                       r"((?:[A-Za-z]\s?-\s?)?\d{1,5}(?:\s?-\s?[A-Za-z]\b|[A-Za-z]\b)?)")
+# OJO (llamada Álvaro 12-11-2026): "departamentoS 1704" (plural) también es una
+# variante real, no solo "departamento" singular.
+RE_UNIDAD = re.compile(r"(?i)\b(?:departamentos?|deptos?\.?|dptos?\.?|dp\.?)\s*(?:n[º°o.]*\s*|n[uú]mero\s+)?"
+                       r"((?:[A-Za-z]\s?-\s?)?(?:\d{1,5}|" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK +
+                       r"){0,6})(?:\s?-\s?[A-Za-z]\b|[A-Za-z]\b)?)")
 PALABRAS_PROPIEDAD = re.compile(r"(?i)inmueble|propiedad|departamento|depto|casa|sitio|lote|vivienda|"
                                 r"bien ra[ií]z|parcela|local comercial|unidad")
 PALABRAS_TRIBUNAL = re.compile(r"(?i)juzgado|tribunal|secretar[ií]a|domicilio")
@@ -1388,17 +1391,53 @@ def nombres_compatibles(a, b):
                                   for x, y in zip(ta, tb)):
         return True
     corto, largo = (ta, tb) if len(ta) <= len(tb) else (tb, ta)
-    return len(corto) >= 2 and all(w in largo for w in corto)
+    if len(corto) >= 2 and all(w in largo for w in corto):
+        return True
+    # OJO (llamada Álvaro 12-11-2026, caso real "Jaime Guzmán Errázuriz" / catastro SII
+    # que solo trae "Errázuriz"): el catastro a veces trunca nombres de calle largos,
+    # dejando solo la ÚLTIMA palabra. Se permite ese caso puntual - una sola palabra,
+    # larga y distintiva (>=7 letras), que coincida con la última palabra del nombre
+    # completo (así es como trunca realmente el SII, no una palabra cualquiera al azar) -
+    # para no abrir la puerta a falsos positivos con palabras cortas o genéricas.
+    if len(corto) == 1 and len(corto[0]) >= 7 and largo and corto[0] == largo[-1]:
+        return True
+    return False
 
 
 def parsear_unidad(txt):
-    """'1207-C' / 'C-403' / '101 -A' -> ('1207','C') ; sin letra -> ('803','')"""
+    """'1207-C' / 'C-403' / '101 -A' -> ('1207','C') ; sin letra -> ('803','') ;
+    'dos mil setecientos trece' -> ('2713', '')"""
     nums = [x.lstrip("0") for x in re.findall(r"\d+", txt or "")]
     nums = [x for x in nums if x]
     if not nums:
-        return None
+        # OJO (llamada Álvaro 12-11-2026, casos Inglaterra/San Isidro): el número de
+        # departamento también puede venir ÍNTEGRAMENTE en palabras ("departamento
+        # número dos mil setecientos trece"), sin ningún dígito - se intenta convertir
+        # la frase completa con el mismo traductor ya usado para el número de calle.
+        v = _numero_desde_palabras(txt or "")
+        if v is None:
+            return None
+        return (str(v), "")
     letras = "".join(re.findall(r"[A-Za-z]", txt or "")).upper()
     return (nums[0], letras[:2])
+
+
+def extraer_ubicacion_cruda(texto):
+    """Cuando extraer_direccion_texto() no logra reconocer una dirección con calle y
+    número (ej. parcelas/lotes rurales como "Lote 21 de la subdivisión de la Parcela
+    15 del Proyecto de Parcelación..."), se guarda igual un fragmento crudo de cómo el
+    aviso describe la ubicación, en vez de dejar la celda completamente vacía. Pedido
+    explícito de Álvaro (llamada 12-11-2026, caso San Fernando): "no llegar al rol,
+    pero sí como copiar y pegar eso"."""
+    if "Detalle:" in texto:
+        texto = texto.split("Detalle:", 1)[1]
+    m = PALABRAS_PROPIEDAD.search(texto)
+    if not m:
+        return None
+    inicio = texto.rfind(".", 0, m.start())
+    inicio = inicio + 1 if inicio != -1 else max(0, m.start() - 40)
+    fragmento = re.sub(r"\s+", " ", texto[inicio:m.start() + 220]).strip(" .,")
+    return fragmento[:220] or None
 
 
 def extraer_direccion_texto(texto):
@@ -1430,7 +1469,14 @@ def extraer_direccion_texto(texto):
             nombre = clave_calle(m.group(2))
             if numero is None or not nombre:
                 continue
-            u = RE_UNIDAD.search(texto[m.end():m.end() + 80]) or RE_UNIDAD.search(texto[max(0, m.start() - 70):m.end() + 80])
+            # OJO (llamada Álvaro 12-11-2026): el número de depto no siempre viene
+            # DESPUÉS de la calle - a veces el aviso describe primero el inmueble
+            # ("consistente en departamento 1704 del piso 17 de la Torre B...") y
+            # recién más adelante da la dirección de acceso ("...ubicado en la calle
+            # Juan de Barro 3885"). Se amplía la ventana "hacia atrás" (70->220) para
+            # cubrir ese orden real, sin tocar la ventana "hacia adelante" (la más
+            # común) que se sigue intentando primero.
+            u = RE_UNIDAD.search(texto[m.end():m.end() + 80]) or RE_UNIDAD.search(texto[max(0, m.start() - 220):m.end() + 80])
             unidad = parsear_unidad(u.group(1)) if u else None
             return {"nombre": nombre, "numero": int(numero), "unidad": unidad}
     return None
@@ -2196,8 +2242,15 @@ def tabla_macal(fichas):
 NOMBRES_COMUNA_NORM = sorted({n for _, n, _ in COMUNAS}, key=len, reverse=True)
 _ALT_COMUNAS = "|".join(re.escape(n) for n in NOMBRES_COMUNA_NORM)
 RE_MARCA_COMUNA = re.compile(
+    # OJO (llamada Álvaro 12-11-2026, caso "Los Crisantemos"): hay avisos que escriben
+    # "Comuna Maipú" (SIN la preposición "de") - antes esto no calzaba con ninguna
+    # variante y el programa terminaba asumiendo la comuna del tribunal, que puede ser
+    # (y en este caso era) una comuna totalmente distinta a la real de la propiedad.
+    # Se agrega "COMUNA" suelto (sin "DE") como alternativa adicional - es seguro porque
+    # el nombre que sigue solo puede calzar contra la lista cerrada de comunas reales
+    # (_ALT_COMUNAS), así que no genera falsos positivos nuevos.
     r"(?:COMUNA(?: Y CIUDAD| DE LA CIUDAD)? DE|CIUDAD Y COMUNA DE|UBICAD[OA]S? EN(?: LA)?(?: CIUDAD| COMUNA)?(?: DE)?|"
-    r"SITO EN|SITA EN|EN ESTA CIUDAD DE|, DE)\s+(" + _ALT_COMUNAS + r")\b")
+    r"SITO EN|SITA EN|EN ESTA CIUDAD DE|, DE|COMUNA)\s+(" + _ALT_COMUNAS + r")\b")
 RE_CBR = re.compile(r"(?:CONSERVADOR(?: DE BIENES RAICES)?|CBR) DE\s+(" + _ALT_COMUNAS + r")\b")
 RE_ROL_AVALUO = re.compile(
     r"\bROLE?S?\s+(?:DE\s+)?(?:AVALUOS?\s+)?(?:FISCAL(?:ES)?\s+)?(?:N\s*|NUMERO\s*|NRO\.?\s*|NO\s+)?[:\s]*"
@@ -2576,7 +2629,16 @@ def parsear_aviso(texto, cab=None):
     # OJO (auditoría 12-11-2026): se agrega ":?" después de "rol"/"causa" - formatos
     # como "Rol: C-1006-2024" (con dos puntos) antes no calzaban y la causa quedaba
     # sin rol_causa, aunque el aviso sí lo traía escrito de forma perfectamente clara.
-    mrc = re.search(r"(?i)\b(?:rol|causa)\s*:?\s*(?:n[º°o.]*\s*)?([A-Z]{1,2})\s*[-–]\s*([\d.]+)\s*[-–]\s*(\d{4})", texto)
+    # OJO (llamada Álvaro 12-11-2026, pedido explícito y reiterado: "si no tengo el rol
+    # del juicio completo, no me sirve de nada"): se agrega "expediente" como sinónimo de
+    # "rol"/"causa" - variante real ("Demás antecedentes en expediente C-11725-2023...")
+    # que antes dejaba rol_causa vacío aunque el aviso sí lo traía clarísimo. Además
+    # (caso Cerrillos que mencionó Álvaro): a veces entre la palabra y el código se
+    # intercala el tipo de juicio ("expediente Juicio Ejecutivo C-601-2023") - se
+    # permite hasta 3 palabras cortas de relleno entre medio (no greedy, para no
+    # saltar a un código muy lejano que no tenga relación).
+    mrc = re.search(r"(?i)\b(?:rol|causa|expediente)\b(?:\s+[a-záéíóúñ]{2,15}){0,3}?\s*:?\s*(?:n[º°o.]*\s*)?"
+                    r"([A-Z]{1,2})\s*[-–]\s*([\d.]+)\s*[-–]\s*(\d{4})", texto)
     rol_causa = f"{mrc.group(1).upper()}-{mrc.group(2).replace('.', '')}-{mrc.group(3)}" if mrc else None
     alertas = []
     # Pedido de Álvaro (llamada 13-10-2026): "cuando diga derechos, cualquier remate... fuera,
@@ -2692,7 +2754,7 @@ def resolver_avisos(df, db_path):
     _MUESTRA_SIN_COINCIDENCIA["n"] = 0
     _MUESTRA_SIN_COINCIDENCIA["casos"] = []
     for c in ("rol_origen", "rol_candidatos", "estado_busqueda_direccion", "verif_direccion_catastro",
-              "avaluo_roles_total", "n_roles_encontrados"):
+              "avaluo_roles_total", "n_roles_encontrados", "ubicacion_texto_crudo"):
         if c not in df.columns:
             df[c] = None
     con = sqlite3.connect(db_path) if db_path else None
@@ -2752,9 +2814,13 @@ def resolver_avisos(df, db_path):
                     # quede sin ROL - pero por sí solo no dice SI la calle existe en el
                     # catastro con otro número (número de la propiedad fuera del rango que
                     # tiene el catastro para esa calle) o si la calle ni siquiera aparece
-                    # (nombre distinto/mal escrito). Se deja una muestra de hasta 6 casos en
-                    # el log con esa comparación, para poder distinguir ambos motivos reales.
-                    if estado == "SIN COINCIDENCIA" and _MUESTRA_SIN_COINCIDENCIA["n"] < 6:
+                    # (nombre distinto/mal escrito). Se deja una muestra en el log con esa
+                    # comparación, para poder distinguir ambos motivos reales. Ampliado de
+                    # 6 a 60 (pedido de Álvaro/Rodrigo 12-11-2026): con solo 6 no alcanzaba
+                    # para medir, a escala, cuánto de este bloque es realmente recuperable
+                    # (nombres truncados/abreviados en el catastro) vs. un límite real del
+                    # catastro del SII (calle que de verdad no está catastrada).
+                    if estado == "SIN COINCIDENCIA" and _MUESTRA_SIN_COINCIDENCIA["n"] < 60:
                         _MUESTRA_SIN_COINCIDENCIA["n"] += 1
                         palabras = [p for p in dtx["nombre"].split() if len(p) >= 3 and not p.isdigit()]
                         ancla = max(palabras, key=len) if palabras else dtx["nombre"]
@@ -2784,6 +2850,11 @@ def resolver_avisos(df, db_path):
             df.at[i, "comuna_propiedad"] = SII2NOMBRE.get(sii_final)
         if dtx:
             df.at[i, "direccion_tgr"] = f"{dtx['nombre']} {dtx['numero']}" + (f" (unidad {dtx['unidad'][0]}{dtx['unidad'][1]})" if dtx["unidad"] else "")
+        else:
+            # Pedido de Álvaro (llamada 12-11-2026, caso San Fernando): si no se pudo
+            # reconocer una dirección estructurada (calle+número), igual dejar a la
+            # vista cómo el aviso describe la ubicación, en vez de una celda vacía.
+            df.at[i, "ubicacion_texto_crudo"] = extraer_ubicacion_cruda(f["texto_aviso"])
         df.at[i, "rol_formato"] = (f"{df.at[i, 'manzana']}-{df.at[i, 'predio']}"
                                    if pd.notna(df.at[i, "manzana"]) else None)
     if con is not None:
@@ -3351,6 +3422,16 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None, aplicar_dedup=True):
         if base.startswith("MERCADO (estimado por m2") and "MEDIA" in base \
                 and not (al & {"ROL_DEDUCIDO_POR_DIRECCION", "UF_APROXIMADA"}):
             return "MEDIA"
+        # OJO (llamada Álvaro 12-11-2026, pedido REITERADO: "le pedí que nunca fuera
+        # espejo la estimación del valor de la propiedad con el avalúo fiscal"): antes,
+        # cuando el valor de referencia terminaba siendo puro avalúo fiscal (sin ningún
+        # valor de mercado real) pero no coincidía con otra alerta puntual, la confianza
+        # quedaba en "MEDIA" - como si fuera casi tan confiable como un valor de mercado
+        # de verdad. Se fuerza "BAJA" SIEMPRE que el origen sea solo avalúo fiscal, sin
+        # excepción, para que nunca quede "escondido" como si fuera una estimación de
+        # mercado validada.
+        if base == "AVALUO FISCAL SII":
+            return "BAJA"
         if f["tipo_minimo"].startswith("ESTIMADO") or al & {"ROL_DEDUCIDO_POR_DIRECCION", "RURAL_O_AGRICOLA",
                                                               "UF_APROXIMADA", "COMUNA_ASUMIDA_DEL_TRIBUNAL",
                                                               "MACAL_ROLES_SIN_CONFIRMAR"}:
@@ -3805,6 +3886,7 @@ RENOMBRES_DISPLAY = {
     "superficie_total_m2": "Terreno m2",
     "anio_construccion": "AÑO CONST.",
     "hora_remate": "hora",
+    "ubicacion_texto_crudo": "Ubicación (texto del aviso, sin dirección estructurada)",
 }
 
 
@@ -3830,7 +3912,12 @@ def ordenar_columnas(df):
 # REVISAR mantiene "alertas"/"motivo_no_elegible" (si no, no se entendería por
 # qué una propiedad quedó ahí en vez de pasar como elegible).
 COLUMNAS_FORMATO_ALVARO = [
-    "fuente", "rol_completo", "direccion_final", "comuna_propiedad", "tipo_propiedad",
+    "fuente", "rol_completo", "direccion_final",
+    # Pedido de Álvaro (llamada 12-11-2026, caso San Fernando - parcela rural sin
+    # calle ni número): cuando no se pudo armar una dirección estructurada, mostrar
+    # igual la descripción cruda de la ubicación tal como aparece en el aviso, en vez
+    # de dejar la fila sin ningún rastro de dónde queda la propiedad.
+    "ubicacion_texto_crudo", "comuna_propiedad", "tipo_propiedad",
     "superficie_util_m2", "superficie_total_m2", "anio_construccion",
     "fecha_remate", "hora_remate", "modalidad", "tribunal", "rol_causa", "tipo_juicio",
     # Pedido de Álvaro (WhatsApp, 12-11-2026): "muestra el nombre del demandado o
@@ -4518,8 +4605,12 @@ def prueba():
         # mínimo de la TGR ya NO se estima con el factor 2/3 - es el valor REAL publicado
         # en el aviso (el campo que la TGR llama "tasacion" por error de nomenclatura).
         comprobar("TGR: mínimo = tasación publicada (sin factor)", abs(rt.loc[0, "minimo_pesos"] - 130e6) < 1)
-        comprobar("TGR: tipo de mínimo dice REAL y confianza MEDIA",
-                  rt.loc[0, "tipo_minimo"].startswith("REAL") and rt.loc[0, "confianza"] == "MEDIA")
+        # OJO (llamada Álvaro 12-11-2026): este caso de prueba no tiene ningún valor de
+        # mercado (solo avalúo fiscal), así que ahora DEBE quedar en confianza "BAJA" -
+        # antes quedaba en "MEDIA", que era justo el "espejo" del avalúo que Álvaro pidió
+        # evitar (ver confianza()). El mínimo sigue siendo REAL, eso no cambia.
+        comprobar("TGR: tipo de mínimo dice REAL y confianza BAJA (solo avalúo, sin mercado)",
+                  rt.loc[0, "tipo_minimo"].startswith("REAL") and rt.loc[0, "confianza"] == "BAJA")
     finally:
         valor_uf = original_uf
 
