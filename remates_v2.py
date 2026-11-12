@@ -2278,15 +2278,127 @@ def candidatos_comuna(texto):
 # de adivinar.
 RE_DEUDOR_MARTILLERO = re.compile(r"(?i)\bDeudor\s*:\s*([^.]{3,90}?)\.\s*Deudor\s*Rut")
 RE_NOMBRE_INSCRITO = re.compile(
-    r"(?i)inscrit[oa]\s+a\s+nombre\s+(?:del?\s+)?(?:ejecutad[oa]\s+)?"
+    # OJO (auditoría 12-11-2026): "inscrito a nombre DEL DEMANDADO DE AUTOS, don Fulano"
+    # es una variante real que no traía la palabra "ejecutado" (la única que ya se
+    # saltaba) - sin esto, "demandado de autos" se colaba como si fuera el nombre.
+    # "inscrito ACTUALMENTE a nombre..." también es real (antes se perdía porque el
+    # regex esperaba "inscrito a nombre" pegado, sin ninguna palabra en medio).
+    r"(?i)inscrit[oa]\s+(?:actualmente\s+)?a\s+nombre\s+(?:del?\s+)?"
+    r"(?:ejecutad[oa]|demandad[oa](?:\s+de\s+autos)?)?\s*,?\s*"
     r"(?:don|do[nñ]a)?\s*"
     r"([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ a-záéíóúñ'.\-]{4,70}?)"
     r"\s*(?:,|\.\s|a\s+f(?:oja|s)|a\s+fs\b|fs\.|bajo\s+el\s+n|del\s+registro|rol\b|$)"
 )
-RE_ANCLA_CARATULADO = re.compile(
-    r"(?i)(?:autos\s+(?:ejecutivos\s+)?caratulados|caratulad[oa]s?(?:\s+en\s+autos)?|expediente)\s*[:;,]?\s*"
-    r"[“\"“]?([^”\"”.;\n]{4,100})"
+# OJO (auditoría 12-11-2026): variante real distinta a "inscrito a nombre de...":
+# "De propiedad NOMBRE." / "Inmueble de propiedad de la demandada doña NOMBRE" /
+# "derechos propiedad demandado NOMBRE" - mismo dato (el dueño/demandado), otra
+# forma de redactarlo.
+RE_DE_PROPIEDAD = re.compile(
+    # OJO (auditoría 12-11-2026): "Registro DE PROPIEDAD del Conservador de Bienes
+    # Raíces..." es una frase que aparece en PRÁCTICAMENTE TODOS los avisos (nada que
+    # ver con el demandado) y antes calzaba igual con esta regex, capturando
+    # "Conservador de Bienes Raíces de tal comuna" como si fuera el nombre del
+    # demandado. Se agrega esta exclusión explícita justo después de "de propiedad".
+    # Variante real adicional: "...documentos anexos del Registro de Propiedad DEL
+    # AÑO mil novecientos ochenta y dos" - mismo problema (es el "Registro de
+    # Propiedad" del conservador, no el demandado), pero aquí lo que sigue es "del
+    # año ..." en vez de "del conservador/registro". Se agrega "año" a la exclusión
+    # y, en forma más general y robusta, un lookbehind que impide calzar del todo
+    # cuando lo que precede a "de propiedad" es la palabra "registro" (fijo en
+    # ancho, como exige Python para lookbehind).
+    r"(?i)(?<!registro\s)\bde\s+propiedad\s+(?!del?\s+(?:conservador|registro|a[ñn]o)\b)"
+    r"(?:de\s+la\s+|del\s+)?(?:demandad[oa]|ejecutad[oa])?\s*,?\s*"
+    r"(?:don|do[nñ]a)?\s*"
+    r"([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ a-záéíóúñ'.\-]{4,70}?)"
+    r"\s*(?:,|\.\s|\s+en\s+el\s+registro|\s+inscrit[oa]|\s+a\s+f(?:oja|s)|$)"
 )
+# OJO (auditoría 12-11-2026): el caratulado a veces aparece ENTRE COMILLAS sin que la
+# palabra "caratulado" aparezca cerca (ej. RIT/RUC de Cobranza Laboral: '"FERNANDEZ
+# CON JADUE"'). Como anda entre comillas, el riesgo de falso positivo es bajo - un
+# texto libre rara vez pone textualmente "ALGUIEN con ALGUIEN" entre comillas por
+# otro motivo.
+RE_CARATULADO_ENTRE_COMILLAS = re.compile(r"[“\"]([^”\"]*\s+con\s+[^”\"]+)[”\"]", re.IGNORECASE)
+# OJO (auditoría 12-11-2026): el punto "." es el límite natural de frase para cortar
+# el caratulado, pero las razones sociales chilenas lo usan todo el tiempo dentro del
+# propio nombre ("S.A.", "Ltda.", "E.I.R.L.", "S.p.A."). Antes de buscar el caratulado,
+# esas abreviaturas se "protegen" cambiando su punto por "§" (un carácter que nunca
+# aparece en un aviso real), así el corte en "." de más abajo no parte el nombre de la
+# empresa a la mitad; al final se revierte "§" por "." en el resultado.
+_RE_ABREVIATURAS = re.compile(r"\b(S\.A|S\.p\.A|E\.I\.R\.L|Ltda|Cía|Soc|Hnos)\.", re.IGNORECASE)
+
+
+def _proteger_abreviaturas(texto):
+    return _RE_ABREVIATURAS.sub(lambda m: m.group(0).replace(".", "§"), texto)
+
+
+RE_ANCLA_CARATULADO = re.compile(
+    r"(?i)(?:autos\s+(?:ejecutivos\s+)?caratulados|caratulad[oa]s?(?:\s+en\s+autos)?|expediente\s*[:;])\s*[:;,]?\s*"
+    r"[“\"“]?([^”\"”.;\n]{4,120})"
+)
+# Marcas de que lo capturado se pasó de la raya y agarró parte del resto del aviso
+# (el rol de la causa, la modalidad del remate, un link de Zoom, el pie de firma del
+# tribunal) en vez de terminar justo en el nombre del demandado. Se usan en dos
+# momentos: primero para CORTAR ahí mismo (se usa lo que viene antes), y si aun así
+# el resultado final sigue viéndose mal, para DESCARTARLO del todo (ver más abajo).
+_RE_CONTINUACION = re.compile(
+    r"(?i)\s*,?\s*(?:rol\b|n[º°]\s*c-|subastar[áa]|rematar[áa]|se\s+rematar|se\s+ha\s|se\s+dispuso|"
+    r"ha\s+ordenado|el\s+d[ií]a\b|con\s+fecha\b|a\s+las\s+\d|juicio\b|ejecutivo\b|extracto\b)"
+)
+# Si, aun después de cortar con lo de arriba, el nombre sigue teniendo pinta de
+# basura (un link, un correo, un teléfono, el pie de firma), se descarta entero en
+# vez de entregar un nombre a medias o con basura pegada.
+_BASURA_DEMANDADO = re.compile(
+    r"(?i)http|www\.|\.cl\b|\.com\b|@|zoom|secretari|tribunal|pjud|consulta\s+unificada|"
+    r"id\s+de\s+reuni[oó]n|c[oó]digo\s+de\s+acceso|oficina\s+judicial|whatsapp|\+?56\s*9|"
+    r"conservador|registro\s+de\s+propiedad|cuaderno\s+de\s+apremio|bienes\s+ra[ií]ces"
+)
+# OJO (auditoría 12-11-2026): "inscrito a nombre DEL EJECUTADO a Fojas..." (sin decir
+# el nombre de nuevo, porque ya salió antes en el caratulado) hacía que la propia
+# palabra "ejecutado"/"demandado" quedara capturada COMO SI fuera el nombre - no es
+# un nombre, es el rol de la persona en el juicio. Se descarta y, en ese caso,
+# extraer_demandado() sigue probando el método siguiente (el caratulado), que para
+# estos avisos normalmente sí trae el apellido real.
+_RE_SOLO_ROL_GENERICO = re.compile(
+    r"(?i)^(?:de\s+)?(?:la\s+|el\s+|los\s+|las\s+)?(?:parte\s+)?"
+    r"(?:ejecutad[oa]s?|demandad[oa]s?|propietari[oa]s?)"
+    r"(?:\s*,?\s*de\s+autos|\s+solidari[oa]s?)?$"
+)
+
+
+# Limpieza cosmética: "la ejecutada doña Gloria X" -> "Gloria X" (el rol ya se sabe
+# por la columna "fuente"/"tipo_juicio" - no hace falta repetirlo en el nombre), y
+# "Fulano e" -> "Fulano" (conjunción "e"/"y" que quedó pegada porque el aviso seguía
+# con "... e Inscrito a fojas..." justo después del nombre).
+_RE_PREFIJO_ROL = re.compile(
+    r"(?i)^(?:de\s+)?(?:el\s+|la\s+|los\s+|las\s+)?(?:parte\s+)?"
+    r"(?:ejecutad[oa]s?|demandad[oa]s?|propietari[oa]s?)\s*,?\s*(?:de\s+autos\s*,?\s*)?"
+    r"(?:don|do[nñ]a)?\s*"
+)
+# OJO (auditoría 12-11-2026): variante real donde "de autos" queda pegado al
+# principio del nombre SIN que haya una palabra de rol justo antes (p.ej. porque la
+# palabra de rol ya fue consumida más arriba en el propio regex de extracción, y lo
+# que queda capturado es literalmente "de autos JORGE LEONARDO ROJAS BRIONES"). Es
+# un prefijo independiente del de arriba, por eso se limpia por separado.
+_RE_PREFIJO_DE_AUTOS = re.compile(r"(?i)^de\s+autos\s*,?\s*(?:don|do[nñ]a)?\s*")
+_RE_SUFIJO_CONJUNCION = re.compile(r"(?i)\s+[eéy]$")
+
+
+def _validar_y_limpiar(nombre):
+    """Punto único de limpieza/validación para CUALQUIER método de extracción: recorta
+    prefijos de rol ("la ejecutada doña ") y conjunciones sueltas al final, y rechaza
+    (devuelve None) cualquier cosa que no tenga pinta real de nombre de persona o
+    empresa - mejor no decir nada que entregar basura."""
+    if not nombre:
+        return None
+    nombre = nombre.strip(" .\"“”,")
+    nombre = _RE_PREFIJO_ROL.sub("", nombre).strip(" .,") or nombre
+    nombre = _RE_PREFIJO_DE_AUTOS.sub("", nombre).strip(" .,") or nombre
+    nombre = _RE_SUFIJO_CONJUNCION.sub("", nombre).strip(" .,")
+    if not nombre or not (2 <= len(nombre) <= 90):
+        return None
+    if _RE_SOLO_ROL_GENERICO.match(nombre) or _BASURA_DEMANDADO.search(nombre):
+        return None
+    return nombre
 
 
 def _separar_demandado_de_caratulado(frag):
@@ -2297,25 +2409,45 @@ def _separar_demandado_de_caratulado(frag):
     partes = re.split(r"(?i)\s+con\s+|\s*/\s*", frag, maxsplit=1)
     if len(partes) == 2 and partes[1].strip():
         demandado = partes[1].strip(" .\"“”,")
-        demandado = re.split(r"(?i)\s*,?\s*rol\b", demandado)[0].strip(" .,")
+        demandado = _RE_CONTINUACION.split(demandado)[0].strip(" .,")
         return demandado or None
     return None
 
 
 def extraer_demandado(texto):
     """Nombre del demandado/propietario de un aviso, o None si no viene en un
-    formato reconocible (no se adivina)."""
+    formato reconocible (no se adivina). Nunca entrega basura: si el resultado
+    tiene pinta de haber agarrado parte de otra cosa (un link, la modalidad del
+    remate, el pie de firma del tribunal), prefiere no decir nada."""
     m = RE_DEUDOR_MARTILLERO.search(texto)
     if m:
-        return m.group(1).strip(" .,")
+        r = _validar_y_limpiar(m.group(1))
+        if r:
+            return r
     m = RE_NOMBRE_INSCRITO.search(texto)
     if m:
-        return m.group(1).strip(" .,")
-    m = RE_ANCLA_CARATULADO.search(texto)
+        r = _validar_y_limpiar(m.group(1))
+        if r:
+            return r
+    m = RE_DE_PROPIEDAD.search(texto)
+    if m:
+        r = _validar_y_limpiar(m.group(1))
+        if r:
+            return r
+    m = RE_ANCLA_CARATULADO.search(_proteger_abreviaturas(texto))
     if m:
         demandado = _separar_demandado_de_caratulado(m.group(1))
         if demandado:
-            return demandado
+            r = _validar_y_limpiar(demandado.replace("§", "."))
+            if r:
+                return r
+    m = RE_CARATULADO_ENTRE_COMILLAS.search(texto)
+    if m:
+        demandado = _separar_demandado_de_caratulado(m.group(1))
+        if demandado:
+            r = _validar_y_limpiar(demandado)
+            if r:
+                return r
     return None
 
 
@@ -2325,7 +2457,10 @@ def parsear_aviso(texto, cab=None):
     val, uni, n_min = extraer_minimo(texto)
     roles = extraer_roles(tn)
     fojas, numero, anio, cbr = extraer_fojas(texto)
-    mrc = re.search(r"(?i)\b(?:rol|causa)\s*(?:n[º°o.]*\s*)?([A-Z]{1,2})\s*[-–]\s*([\d.]+)\s*[-–]\s*(\d{4})", texto)
+    # OJO (auditoría 12-11-2026): se agrega ":?" después de "rol"/"causa" - formatos
+    # como "Rol: C-1006-2024" (con dos puntos) antes no calzaban y la causa quedaba
+    # sin rol_causa, aunque el aviso sí lo traía escrito de forma perfectamente clara.
+    mrc = re.search(r"(?i)\b(?:rol|causa)\s*:?\s*(?:n[º°o.]*\s*)?([A-Z]{1,2})\s*[-–]\s*([\d.]+)\s*[-–]\s*(\d{4})", texto)
     rol_causa = f"{mrc.group(1).upper()}-{mrc.group(2).replace('.', '')}-{mrc.group(3)}" if mrc else None
     alertas = []
     # Pedido de Álvaro (llamada 13-10-2026): "cuando diga derechos, cualquier remate... fuera,
