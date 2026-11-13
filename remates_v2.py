@@ -2745,6 +2745,28 @@ def tabla_avisos(rutas, cache_ia_path=None):
 
 
 _MUESTRA_SIN_COINCIDENCIA = {"n": 0, "casos": []}
+# OJO (auditoría 12-11-2026, pedido de Rodrigo - siguiente bloque a investigar después de
+# arreglar el bug de sobrescritura de comuna): "AMBIGUO" significa que la calle SÍ se
+# encontró en el catastro (a diferencia de "SIN COINCIDENCIA"), pero hay más de un predio
+# que calza - ya sea porque el edificio tiene varias unidades y no se pudo leer el depto
+# del aviso, o porque hay varios números/predios distintos que calzan. Es, en teoría, el
+# bloque MÁS recuperable de todos (la dirección SÍ está, solo falta desambiguar), así que
+# se deja una muestra para ver, con el texto real del aviso, por qué no se pudo desambiguar.
+_MUESTRA_AMBIGUO = {"n": 0, "casos": []}
+# OJO (Rodrigo 12-11-2026, 21:21: "esto es un total y completo desastre... basura
+# empaquetada en un Excel", mirando la pestaña AVISO): la pestaña AVISO del Excel NO
+# muestra todos los avisos del día - por diseño (pedido de Álvaro), el filtro histórico
+# "ya visto sin cambios" (ver calcular()) saca de ahí cualquier aviso que ya se mostró
+# antes sin cambios, para no repetir. El problema es que eso es una trampa visual: los
+# avisos que SÍ se resuelven bien (con rol y dirección) desaparecen de la pestaña después
+# de aparecer una vez, mientras que los que NUNCA se resuelven (sin rol y sin dirección)
+# vuelven a aparecer TODOS los días, porque no tienen una clave estable para marcarlos
+# como "ya vistos" (ver advertencia en calcular()). Entonces la pestaña AVISO, día a día,
+# se ve cada vez peor, aunque la cobertura REAL sobre el total de avisos leídos esté
+# mejorando. Para no seguir generando esa impresión falsa, se guarda aquí la cobertura
+# real sobre TODOS los avisos de la corrida (antes del filtro histórico) y se deja
+# explícita en la pestaña RESUMEN de cada Excel, sin depender de qué quedó en AVISO.
+_COBERTURA_REAL_AVISOS = {}
 
 
 def resolver_avisos(df, db_path):
@@ -2753,6 +2775,8 @@ def resolver_avisos(df, db_path):
         return df
     _MUESTRA_SIN_COINCIDENCIA["n"] = 0
     _MUESTRA_SIN_COINCIDENCIA["casos"] = []
+    _MUESTRA_AMBIGUO["n"] = 0
+    _MUESTRA_AMBIGUO["casos"] = []
     for c in ("rol_origen", "rol_candidatos", "estado_busqueda_direccion", "verif_direccion_catastro",
               "avaluo_roles_total", "n_roles_encontrados", "ubicacion_texto_crudo"):
         if c not in df.columns:
@@ -2842,6 +2866,15 @@ def resolver_avisos(df, db_path):
                             "LIMIT 3", (sii, f"%{ancla}%")).fetchall()
                         _MUESTRA_SIN_COINCIDENCIA["casos"].append(
                             (f"{dtx['nombre']} {dtx['numero']}", sii, [f[0] for f in filas_calle]))
+                    # Muestra de "AMBIGUO": la calle SÍ se encontró, pero no se pudo elegir
+                    # un único predio - se guarda el texto real del aviso completo para ver
+                    # si el depto/unidad estaba ahí y el programa no lo leyó, o si de verdad
+                    # el aviso no lo informa (en cuyo caso no es recuperable sin más datos).
+                    if estado.startswith("AMBIGUO") and _MUESTRA_AMBIGUO["n"] < 40:
+                        _MUESTRA_AMBIGUO["n"] += 1
+                        _MUESTRA_AMBIGUO["casos"].append(
+                            (f"{dtx['nombre']} {dtx['numero']}" + (f" (unidad leída: {dtx['unidad']})" if dtx.get("unidad") else " (sin unidad leída)"),
+                             sii, estado, [f"{d} (avalúo {av})" for _, _, d, av, _ in cs]))
                 if mejor is not None:
                     _, _, estado, cs = mejor
                     df.at[i, "estado_busqueda_direccion"] = estado
@@ -2883,6 +2916,17 @@ def resolver_avisos(df, db_path):
     decir(f"  Avisos: {len(sub)} leídos | con ROL: {int(sub['manzana'].notna().sum())} "
           f"(informado: {int((sub['rol_origen'] == 'INFORMADO POR LA FUENTE (aviso)').sum())}, "
           f"deducido por dirección: {int((sub['rol_origen'] == 'DEDUCIDO POR DIRECCION (verificar)').sum())})")
+    # Cobertura REAL sobre TODOS los avisos de la corrida, calculada AQUÍ (antes del
+    # filtro histórico "ya visto sin cambios" en calcular()) para que la pestaña RESUMEN
+    # del Excel no quede a merced de ese filtro (ver nota en _COBERTURA_REAL_AVISOS).
+    _COBERTURA_REAL_AVISOS.clear()
+    if len(sub):
+        con_rol = int(sub["manzana"].notna().sum())
+        con_dir = int(sub["direccion_tgr"].notna().sum())
+        con_ambos = int((sub["manzana"].notna() & sub["direccion_tgr"].notna()).sum())
+        _COBERTURA_REAL_AVISOS.update({
+            "total": len(sub), "con_rol": con_rol, "con_direccion": con_dir, "con_ambos": con_ambos,
+        })
     # OJO (auditoría 12-11-2026, pedido de Rodrigo: "¿por qué tantos avisos quedan con
     # dirección pero sin rol, si el programa debería cruzarlos contra el SII?"): antes
     # no quedaba registro de POR QUÉ falló cada intento de deducir el rol por dirección
@@ -2901,6 +2945,12 @@ def resolver_avisos(df, db_path):
         for direccion_aviso, comuna, filas_catastro in _MUESTRA_SIN_COINCIDENCIA["casos"]:
             decir(f"    aviso: {direccion_aviso!r} (comuna SII {comuna}) "
                   f"| catastro para esa calle: {filas_catastro or '(la calle no aparece del todo)'}")
+    if _MUESTRA_AMBIGUO["casos"]:
+        decir("  Muestra de \"AMBIGUO\" (la calle SÍ está en el catastro, pero hay más de un "
+              "predio que calza - para ver si el depto/unidad estaba en el aviso y no se leyó):")
+        for direccion_aviso, comuna, estado, candidatos in _MUESTRA_AMBIGUO["casos"]:
+            decir(f"    aviso: {direccion_aviso!r} (comuna SII {comuna}) [{estado}] "
+                  f"| candidatos en catastro: {candidatos}")
     return df
 
 
@@ -3978,6 +4028,21 @@ def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
         filas.append((f"Fuente {f}", e))
     for fu, n in df["fuente"].value_counts().items():
         filas.append((f"Filas de {fu}", int(n)))
+    # OJO (Rodrigo 12-11-2026, 21:21, viendo la pestaña AVISO cada vez más vacía de
+    # resultados buenos día a día: "esto es un total y completo desastre"): la pestaña
+    # AVISO NO es representativa de la cobertura real, porque el filtro histórico "ya
+    # visto sin cambios" saca de ahí los avisos que SÍ se resolvieron bien (ya se
+    # mostraron una vez) y deja sobre-representados los que nunca se resuelven (vuelven
+    # a aparecer todos los días). Esta línea muestra la cobertura sobre TODOS los avisos
+    # de la corrida de hoy, sin ese filtro, para que se pueda juzgar el progreso real.
+    if _COBERTURA_REAL_AVISOS:
+        cra = _COBERTURA_REAL_AVISOS
+        tot = cra["total"] or 1
+        filas.append(("COBERTURA REAL DE AVISOS (todos los de hoy, sin el filtro de "
+                       "'ya visto sin cambios' que aplica solo a la pestaña AVISO)",
+                       f"{cra['total']} avisos | con ROL: {cra['con_rol']} ({cra['con_rol']/tot*100:.1f}%) | "
+                       f"con dirección: {cra['con_direccion']} ({cra['con_direccion']/tot*100:.1f}%) | "
+                       f"con AMBOS (rol y dirección): {cra['con_ambos']} ({cra['con_ambos']/tot*100:.1f}%)"))
     for estado, n in df["cruce_estado"].value_counts().items():
         filas.append((f"Cruce SII: {estado}", int(n)))
     for k, n in df["confianza"].value_counts().items():
