@@ -1603,6 +1603,15 @@ def buscar_rol_por_direccion(con, comuna_sii, dir_tx):
     filas = con.execute(
         "SELECT manzana, predio, direccion, avaluo, destino FROM predios "
         "WHERE comuna=? AND REPLACE(direccion,'Ñ','N') LIKE ?", (comuna_sii, f"%{ancla}%")).fetchall()
+    # OJO (auditoría 12-11-2026, muestra real de "AMBIGUO"): el catastro del SII a veces
+    # trae la MISMA fila (idéntica manzana y predio - el verdadero identificador único de
+    # un predio) repetida más de una vez. Antes esto se contaba como "2 candidatos" (o
+    # más) y se dejaba sin ROL aunque en realidad hubiera una sola propiedad real - caso
+    # real: "AMERICO VESPUCIO 484" mostraba el mismo "AV. A. VESPUCIO 0484 DP 101" dos
+    # veces. Se deduplica por (manzana, predio) ANTES de decidir si es ambiguo, porque dos
+    # filas con la misma manzana y predio son, por definición, el mismo predio - nunca dos
+    # propiedades distintas.
+    filas = list({(man, pre): (man, pre, d, av, dest) for man, pre, d, av, dest in filas}.values())
     cands = []
     for man, pre, d, av, dest in filas:
         if pre >= 90000 or dest == "K":
