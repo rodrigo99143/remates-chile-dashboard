@@ -1592,6 +1592,19 @@ def parsear_dir_catastro(direccion):
     if not nums:
         return None
     nombre = clave_calle(" ".join(cabeza))
+    # OJO (12-11-2026, caso real "GUSTAVO CABELLO OLGUIN 944" - diagnóstico detallado de
+    # "SIN COINCIDENCIA" lo expuso): cuando el catastro escribe dos números seguidos SIN
+    # ninguna marca de unidad ("DP"/"BX"/etc) por delante, hasta ahora esto SIEMPRE se leía
+    # como un RANGO de numeración de la calle (ej. "SANTA ISABEL 171 199" = frontis que va
+    # del 171 al 199) - correcto cuando el segundo número es MAYOR (171 < 199, un rango
+    # ascendente real). Pero "P GUSTAVO CABELLO 944 103" no es un rango: es calle 944,
+    # depto 103, sin la palabra "DP" escrita - y como un rango real nunca baja (no existe
+    # "del 944 al 103"), un segundo número MENOR es la señal de que en realidad es
+    # calle+unidad sin marca, no un rango. Se trata así SOLO en ese caso (nums[0] > nums[1]
+    # y no hay ya una marca de unidad de otra fuente) - un rango ascendente real nunca se ve
+    # afectado.
+    if unidad is None and len(nums) == 2 and nums[0] > nums[1]:
+        return nombre, nums[0], nums[0], ({str(nums[1])}, "")
     return nombre, nums[0], nums[-1], unidad
 
 
