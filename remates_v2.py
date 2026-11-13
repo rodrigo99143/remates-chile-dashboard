@@ -1237,6 +1237,38 @@ def valor_uf(fecha):
 TIPOS_VIA = {"CALLE", "CL", "AV", "AVDA", "AVENIDA", "PJE", "PSJE", "PSJ", "PASAJE", "CAMINO", "CAM",
              "RUTA", "DIAGONAL", "DIAG", "CALLEJON", "CJN", "PASEO", "POBL", "POBLACION", "PARCELA"}
 MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "EST"}     # departamento, bodega, etc.
+# OJO (12-11-2026, pedido explícito de Rodrigo tras comentario de Álvaro: "las
+# publicaciones exigen rol y dirección... la ambigüedad se puede discernir al menos
+# por un humano - hay que buscar la forma de automatizarlo"): muestra real de
+# "AMBIGUO" mostró varios casos donde el catastro tiene, para el MISMO número de
+# unidad, filas de TIPOS distintos (depto, bodega, estacionamiento/box, oficina,
+# local) - ej. "COLOMBIA 7000 Nº41": 'DP 41' (depto), 'EST 41' (estacionamiento) y
+# 'BD 41' (bodega), las tres con avalúos distintos. Un humano que lee "departamento
+# N°41" en el aviso jamás dudaría entre esas tres filas - sabe que busca la fila
+# marcada como departamento, no la bodega ni el estacionamiento. El código hasta
+# ahora descartaba justo ese dato (qué palabra usó el aviso: "departamento" vs
+# "bodega" vs "estacionamiento"...) en vez de aprovecharlo. Este mapeo agrupa las
+# marcas del catastro por TIPO para poder cruzarlas contra el tipo que el aviso
+# menciona explícitamente.
+TIPO_DE_MARCA_UNIDAD = {
+    "DP": "DEPTO", "DPTO": "DEPTO", "DEPTO": "DEPTO",
+    "BD": "BODEGA", "BO": "BODEGA",
+    "BX": "ESTACIONAMIENTO", "ES": "ESTACIONAMIENTO", "EST": "ESTACIONAMIENTO",
+    "OF": "OFICINA",
+    "LC": "LOCAL",
+}
+# Mismo mapeo, pero desde la PALABRA que puede aparecer en el texto libre del aviso
+# ("departamento", "bodega", "estacionamiento", "box", "oficina", "local") hacia el
+# mismo TIPO - para poder comparar lo que dice el aviso contra lo que trae el catastro.
+TIPO_DE_PALABRA_UNIDAD = {
+    "departamento": "DEPTO", "departamentos": "DEPTO", "depto": "DEPTO", "deptos": "DEPTO",
+    "dpto": "DEPTO", "dptos": "DEPTO", "dp": "DEPTO",
+    "bodega": "BODEGA", "bodegas": "BODEGA", "bod": "BODEGA",
+    "estacionamiento": "ESTACIONAMIENTO", "estacionamientos": "ESTACIONAMIENTO",
+    "box": "ESTACIONAMIENTO", "boxes": "ESTACIONAMIENTO",
+    "oficina": "OFICINA", "oficinas": "OFICINA",
+    "local": "LOCAL", "locales": "LOCAL",
+}
 # OJO (auditoría 12-11-2026, pedido de Rodrigo): el catastro del SII usa a veces
 # "L" (Lote) y "MA" (Manzana) como abreviatura SUELTA, ej. "TENERIFE 2233 L 71 MA
 # 7" - sin "L" y "MA" en este set, el código de más abajo no cortaba ahí y leía
@@ -1381,8 +1413,16 @@ def a_numero_chileno_o_palabras(s):
     return _numero_desde_palabras(s)
 # OJO (llamada Álvaro 12-11-2026): "departamentoS 1704" (plural) también es una
 # variante real, no solo "departamento" singular.
-RE_UNIDAD = re.compile(r"(?i)\b(?:departamentos?|deptos?\.?|dptos?\.?|dp\.?)\s*(?:n[º°o.]*\s*|n[uú]mero\s+)?"
-                       r"((?:[A-Za-z]\s?-\s?)?(?:\d{1,5}|" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK +
+# OJO (12-11-2026, misma auditoría de TIPO_DE_MARCA_UNIDAD): antes esta regex SOLO
+# reconocía "departamento/depto/dpto/dp" - si el aviso decía "bodega Nº41" o
+# "estacionamiento Nº8", ese dato se perdía por completo (ni siquiera quedaba
+# guardado para comparar contra el catastro). Se agregan bodega/estacionamiento/
+# box/oficina/local como alternativas, y se nombra el grupo que las captura
+# ("tipo") para poder distinguir cuál palabra fue la que calzó.
+RE_UNIDAD = re.compile(r"(?i)\b(?P<tipo>departamentos?|deptos?\.?|dptos?\.?|dp\.?|"
+                       r"bodegas?|bod\.?|estacionamientos?|boxe?s?|oficinas?|locales?)"
+                       r"\s*(?:n[º°o.]*\s*|n[uú]mero\s+)?"
+                       r"(?P<num>(?:[A-Za-z]\s?-\s?)?(?:\d{1,5}|" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK +
                        r"){0,6})(?:\s?-\s?[A-Za-z]\b|[A-Za-z]\b)?)")
 PALABRAS_PROPIEDAD = re.compile(r"(?i)inmueble|propiedad|departamento|depto|casa|sitio|lote|vivienda|"
                                 r"bien ra[ií]z|parcela|local comercial|unidad")
@@ -1552,7 +1592,12 @@ def extraer_direccion_texto(texto):
             # cubrir ese orden real, sin tocar la ventana "hacia adelante" (la más
             # común) que se sigue intentando primero.
             u = RE_UNIDAD.search(texto[m.end():m.end() + 80]) or RE_UNIDAD.search(texto[max(0, m.start() - 220):m.end() + 80])
-            unidad = parsear_unidad(u.group(1)) if u else None
+            unidad = None
+            if u:
+                num_letras = parsear_unidad(u.group("num"))
+                if num_letras:
+                    tipo = TIPO_DE_PALABRA_UNIDAD.get(u.group("tipo").lower().rstrip("."))
+                    unidad = (num_letras[0], num_letras[1], tipo)
             return {"nombre": nombre, "numero": int(numero), "unidad": unidad}
     return None
 
@@ -1577,7 +1622,12 @@ def parsear_dir_catastro(direccion):
             nums = [x.lstrip("0") for x in re.findall(r"\d+", resto)]
             nums = [x for x in nums if x]
             letras = "".join(re.findall(r"\b([A-Z])\b", resto))
-            unidad = (set(nums), letras[:2]) if nums else (set(), letras[:2])
+            # OJO (12-11-2026, desambiguación de AMBIGUO por tipo de unidad): se guarda
+            # también el TIPO de marca (depto/bodega/estacionamiento/oficina/local) que
+            # trajo el catastro para esta fila, para poder comparar contra el tipo que
+            # el aviso menciona explícitamente (ver TIPO_DE_MARCA_UNIDAD).
+            tipo = TIPO_DE_MARCA_UNIDAD.get(t)
+            unidad = (set(nums), letras[:2], tipo) if nums else (set(), letras[:2], tipo)
             break
     for i, t in enumerate(toks[:corte]):
         if t in MARCAS_LOTE and i > 1 and any(x.isdigit() for x in toks[:i]):
@@ -1616,7 +1666,7 @@ def parsear_dir_catastro(direccion):
     # y no hay ya una marca de unidad de otra fuente) - un rango ascendente real nunca se ve
     # afectado.
     if unidad is None and len(nums) == 2 and nums[0] > nums[1]:
-        return nombre, nums[0], nums[0], ({str(nums[1])}, "")
+        return nombre, nums[0], nums[0], ({str(nums[1])}, "", None)
     return nombre, nums[0], nums[-1], unidad
 
 
@@ -1655,8 +1705,25 @@ def buscar_rol_por_direccion(con, comuna_sii, dir_tx):
     if exactos:
         cands = exactos             # si hay calles de nombre idéntico, se prefieren a las "parecidas"
     if dir_tx.get("unidad"):
-        d, letras = dir_tx["unidad"]
+        d, letras, tipo = dir_tx["unidad"]
         cands = [c for c in cands if c[5] is not None and d in c[5][0] and (not letras or letras == c[5][1])]
+        # OJO (12-11-2026, pedido de Rodrigo tras comentario de Álvaro - ver
+        # TIPO_DE_MARCA_UNIDAD más arriba): si el aviso dice explícitamente "departamento
+        # Nº41" y el catastro trae, para ese mismo número, una fila de depto Y una de
+        # bodega Y una de estacionamiento (cada una con su propio avalúo), un humano no
+        # dudaría: se queda con la fila marcada como depto. Esto SOLO descarta candidatos
+        # cuyo tipo de marca es CONOCIDO y DISTINTO al que dice el aviso - un candidato
+        # cuyo tipo no se pudo determinar (tipo=None, ej. "calle+depto sin marca DP") NUNCA
+        # se descarta por esto, porque no hay evidencia de que esté mal, solo que no se
+        # sabe. Y si NINGÚN candidato tiene el tipo que el aviso menciona (ej. el aviso
+        # dice "departamento" pero el catastro solo tiene bodega/estacionamiento para ese
+        # número - señal de que el depto real tiene otro número que esta búsqueda no
+        # encontró), no se fuerza nada: se deja la lista como estaba, para no reemplazar
+        # una ambigüedad real por una elección adivinada.
+        if tipo:
+            con_tipo = [c for c in cands if c[5][2] is None or c[5][2] == tipo]
+            if con_tipo:
+                cands = con_tipo
     else:
         sin_unidad = [c for c in cands if c[5] is None]
         if sin_unidad or not cands:
@@ -2969,8 +3036,12 @@ def resolver_avisos(df, db_path):
         if dtx is None and not roles and AVISOS_IA_DISPONIBLE:
             rescate_dir = avisos_ia.rescatar_direccion(f["texto_aviso"], cache_db_path=DATOS / "precio_mercado.db")
             if rescate_dir:
+                _num_letras_ia = parsear_unidad(rescate_dir["unidad"]) if rescate_dir.get("unidad") else None
                 dtx = {"nombre": clave_calle(rescate_dir["nombre"]), "numero": rescate_dir["numero"],
-                       "unidad": parsear_unidad(rescate_dir["unidad"]) if rescate_dir.get("unidad") else None}
+                       # tipo=None: la IA solo extrae número/letra de la unidad, no el tipo
+                       # (depto/bodega/...) - se mantiene la misma forma de 3-tupla que usa
+                       # el resto del código (ver TIPO_DE_MARCA_UNIDAD) sin inventar un tipo.
+                       "unidad": (_num_letras_ia[0], _num_letras_ia[1], None) if _num_letras_ia else None}
                 df.at[i, "alertas_fuente"] = "; ".join(
                     x for x in [str(df.at[i, "alertas_fuente"] or "").strip("; "), "DIRECCION_RESCATADA_CON_IA"] if x)
                 if not cands and rescate_dir.get("comuna"):
@@ -4976,6 +5047,37 @@ def prueba():
     finally:
         valor_uf = original_uf
 
+    # --- Desambiguación de AMBIGUO por TIPO de unidad (pedido de Rodrigo 12-11-2026
+    # tras comentario de Álvaro: "la ambigüedad se puede discernir al menos por un
+    # humano... hay que buscar la forma de automatizarlo") - catastro sintético en
+    # memoria, no depende de tener el archivo real del SII. ---
+    con_tipo = sqlite3.connect(":memory:")
+    con_tipo.execute("CREATE TABLE predios (manzana INTEGER, predio INTEGER, direccion TEXT, "
+                      "avaluo INTEGER, destino TEXT, comuna TEXT)")
+    con_tipo.executemany("INSERT INTO predios VALUES (?,?,?,?,?,?)", [
+        # Caso real "COLOMBIA 7000 Nº41": depto, estacionamiento y bodega comparten el
+        # mismo número pero son predios distintos (avalúos distintos) - el aviso dice
+        # "departamento 41", así que debe elegir la fila DP, nunca EST ni BD.
+        (1, 101, "COLOMBIA 7000 DP 41", 68571827, "H", "15128"),
+        (1, 102, "COLOMBIA 7000 EST 41", 5332453, "H", "15128"),
+        (1, 103, "COLOMBIA 7000 BD 41", 889497, "H", "15128"),
+        # Caso real "GENERAL JOSE ARTIGAS 3121 depto 8": el catastro solo tiene bodega y
+        # box para ese número, NINGUNO de tipo depto - no hay con qué confirmar cuál es
+        # el departamento real, así que debe seguir AMBIGUO (no se adivina ni se fuerza).
+        (2, 201, "AV G J ARTIGAS 3121 BD 8", 1195062, "H", "15105"),
+        (2, 202, "AV G J ARTIGAS 3121 BX 8", 7350661, "H", "15105"),
+    ])
+    con_tipo.commit()
+    e, c = buscar_rol_por_direccion(con_tipo, "15128",
+                                     extraer_direccion_texto("en calle Colombia número 7000, departamento 41, La Florida."))
+    comprobar("Tipo de unidad: 'departamento 41' elige la fila DP (no EST ni BD)",
+              e == "UNICO" and c[0][3] == 68571827)
+    e, c = buscar_rol_por_direccion(con_tipo, "15105",
+                                     extraer_direccion_texto("calle General José Artigas número 3121, departamento 8, Ñuñoa."))
+    comprobar("Tipo de unidad: sin ninguna fila de tipo depto, sigue AMBIGUO (no se adivina)",
+              e == "AMBIGUO (2 candidatos)" and len(c) == 2)
+    con_tipo.close()
+
     # --- Pruebas con el catastro real (si está) ---
     hallados = buscar_archivos_catastro()
     db_path = preparar_catastro() if hallados else None
@@ -4984,7 +5086,7 @@ def prueba():
         con = sqlite3.connect(db_path)
         n = con.execute("SELECT COUNT(*) FROM predios").fetchone()[0]
         comprobar(f"El catastro tiene muchos predios ({n:,})", n > 1_000_000)
-        e, c = buscar_rol_por_direccion(con, "16110", {"nombre": "TRINIDAD RAMIREZ", "numero": 1010, "unidad": ("1207", "C")})
+        e, c = buscar_rol_por_direccion(con, "16110", {"nombre": "TRINIDAD RAMIREZ", "numero": 1010, "unidad": ("1207", "C", None)})
         comprobar(f"Dirección -> ROL: Trinidad Ramírez 1010 depto 1207 ({e})", e == "UNICO" and (c[0][0], c[0][1]) == (3046, 690))
         e, c = buscar_rol_por_direccion(con, "07201", {"nombre": "9 SUR", "numero": 3486, "unidad": None})
         decir(f"    (Talca calle 9 Sur 3486 -> {e} {[(x[0], x[1]) for x in c]})")
