@@ -3016,7 +3016,8 @@ def resolver_avisos(df, db_path):
     if AVISOS_IA_DISPONIBLE:
         avisos_ia.reiniciar_estadisticas_direccion()
     for c in ("rol_origen", "rol_candidatos", "estado_busqueda_direccion", "verif_direccion_catastro",
-              "avaluo_roles_total", "n_roles_encontrados", "ubicacion_texto_crudo"):
+              "avaluo_roles_total", "n_roles_encontrados", "ubicacion_texto_crudo",
+              "motivo_exclusion_denominador"):
         if c not in df.columns:
             df[c] = None
     con = sqlite3.connect(db_path) if db_path else None
@@ -3168,8 +3169,25 @@ def resolver_avisos(df, db_path):
                     df.at[i, "estado_busqueda_direccion"] = estado
                     if cs:
                         df.at[i, "rol_candidatos"] = "; ".join(f"{m}-{p} ({d})" for m, p, d, _, _ in cs)
+                    # Pedido de Rodrigo (12-11-2026, respuesta sobre el denominador del 90%):
+                    # "contarlos, pero hacer dos métricas distintas, con y sin. Hay que ver
+                    # bien qué pasa en cada uno y llevárselos a Álvaro". Un AMBIGUO donde el
+                    # aviso SÍ dio un número de unidad pero el catastro trae varios candidatos
+                    # para ese número es un caso potencialmente arreglable (ambigüedad real
+                    # de datos). Un AMBIGUO donde el aviso NO dio ningún número de unidad -
+                    # el edificio entero queda como "candidato" porque no hay forma de saber
+                    # cuál departamento/sitio es - es estructuralmente distinto: no es un bug
+                    # del parser, es que el aviso mismo nunca informó ese dato. Se marca por
+                    # separado para la segunda métrica y para la lista que revisa Álvaro.
+                    if estado.startswith("AMBIGUO") and not dtx.get("unidad"):
+                        df.at[i, "motivo_exclusion_denominador"] = (
+                            "AMBIGUO SIN NÚMERO DE UNIDAD EN EL AVISO (el edificio/condominio tiene "
+                            "varias unidades y el aviso no informa cuál)")
             elif dtx is None:
                 df.at[i, "estado_busqueda_direccion"] = "NO SE PUDO LEER LA DIRECCION"
+                df.at[i, "motivo_exclusion_denominador"] = (
+                    "SIN CALLE Y NÚMERO EN EL TEXTO DEL AVISO (probable parcela/lote rural u otro "
+                    "formato de ubicación que no es dirección urbana)")
                 # Muestra de "NO SE PUDO LEER LA DIRECCION" (pedido de Rodrigo 12-11-2026,
                 # 21:33 - "necesito velocidad... pero además de velocidad necesito
                 # eficacia"): este bloque (94 de 343 avisos sin rol) nunca se había
@@ -3229,6 +3247,22 @@ def resolver_avisos(df, db_path):
         _COBERTURA_REAL_AVISOS.update({
             "total": len(sub), "con_rol": con_rol, "con_direccion": con_dir, "con_ambos": con_ambos,
         })
+        # Segunda métrica (pedido explícito de Rodrigo 12-11-2026: "contarlos, pero
+        # hacer dos métricas distintas, con y sin"): excluye del denominador los avisos
+        # marcados en motivo_exclusion_denominador - parcelas/lotes rurales sin calle+
+        # número, y edificios/condominios AMBIGUOS donde el aviso nunca informó el
+        # número de unidad. Ninguno de los dos es un problema del programa: es
+        # información que el aviso mismo no trae. La métrica "estricta" mide el
+        # desempeño sobre avisos que SÍ son del tipo resoluble por dirección.
+        sub_estricto = sub[sub["motivo_exclusion_denominador"].isna()]
+        if len(sub_estricto):
+            _COBERTURA_REAL_AVISOS.update({
+                "total_estricto": len(sub_estricto),
+                "con_rol_estricto": int(sub_estricto["manzana"].notna().sum()),
+                "con_direccion_estricto": int(sub_estricto["direccion_tgr"].notna().sum()),
+                "con_ambos_estricto": int((sub_estricto["manzana"].notna() & sub_estricto["direccion_tgr"].notna()).sum()),
+                "n_excluidos": len(sub) - len(sub_estricto),
+            })
     # OJO (auditoría 12-11-2026, pedido de Rodrigo: "¿por qué tantos avisos quedan con
     # dirección pero sin rol, si el programa debería cruzarlos contra el SII?"): antes
     # no quedaba registro de POR QUÉ falló cada intento de deducir el rol por dirección
@@ -4361,6 +4395,21 @@ def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
                        f"{cra['total']} avisos | con ROL: {cra['con_rol']} ({cra['con_rol']/tot*100:.1f}%) | "
                        f"con dirección: {cra['con_direccion']} ({cra['con_direccion']/tot*100:.1f}%) | "
                        f"con AMBOS (rol y dirección): {cra['con_ambos']} ({cra['con_ambos']/tot*100:.1f}%)"))
+        # Segunda métrica, pedida explícitamente por Rodrigo (12-11-2026): "contarlos,
+        # pero hacer dos métricas distintas, con y sin" - excluye del denominador los
+        # avisos que no son del tipo resoluble por dirección (parcelas/lotes rurales sin
+        # calle+número, y edificios/condominios AMBIGUOS donde el aviso nunca informó el
+        # número de unidad). Ver hoja REVISAR_SIN_DATO_SUFICIENTE para el detalle de
+        # CADA caso excluido - Álvaro debe revisarlos uno por uno antes de decidir si
+        # esta exclusión se adopta como la métrica oficial.
+        if "total_estricto" in cra:
+            cre = cra["total_estricto"] or 1
+            filas.append(("COBERTURA ESTRICTA (excluye avisos donde el aviso mismo nunca dio el dato "
+                           "necesario - ver hoja REVISAR_SIN_DATO_SUFICIENTE)",
+                           f"{cra['total_estricto']} avisos de {cra['total']} ({cra['n_excluidos']} excluidos) | "
+                           f"con ROL: {cra['con_rol_estricto']} ({cra['con_rol_estricto']/cre*100:.1f}%) | "
+                           f"con dirección: {cra['con_direccion_estricto']} ({cra['con_direccion_estricto']/cre*100:.1f}%) | "
+                           f"con AMBOS: {cra['con_ambos_estricto']} ({cra['con_ambos_estricto']/cre*100:.1f}%)"))
     # OJO (12-11-2026, pedido de Rodrigo): antes no había forma de saber, mirando
     # el Excel, si el rescate con IA de avisos sin ROL (avisos_ia.py) hizo algo
     # esta corrida o no - un rescate exitoso no dejaba ningún rastro. Esta línea
@@ -4518,6 +4567,20 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     todas_macal = df[df["fuente"] == "MACAL"]
     todas_aviso = df[df["fuente"] == "AVISO"]
 
+    # OJO (12-11-2026, pedido explícito de Rodrigo: "hay que ver bien qué pasa en cada
+    # uno de ellos y llevárselos a Álvaro"): lista aparte, con el detalle de CADA aviso
+    # que quedó excluido de la métrica "estricta" (ver resumen_texto/_COBERTURA_REAL_
+    # AVISOS) - parcelas/lotes rurales sin calle+número, y edificios/condominios
+    # AMBIGUOS donde el aviso nunca informó el número de unidad. No sigue el formato
+    # de columnas de Álvaro (es una hoja de trabajo interna, no una de las que él
+    # revisa semana a semana) - trae justo lo necesario para que él juzgue caso por
+    # caso si esta exclusión tiene sentido.
+    cols_revision = [c for c in ("id_fuente", "comuna_propiedad", "direccion_tgr", "ubicacion_texto_crudo",
+                                  "estado_busqueda_direccion", "motivo_exclusion_denominador", "rol_candidatos",
+                                  "fecha_remate") if c in todas_aviso.columns]
+    revisar_sin_dato = todas_aviso[todas_aviso["motivo_exclusion_denominador"].notna()][cols_revision] \
+        if "motivo_exclusion_denominador" in todas_aviso.columns else pd.DataFrame(columns=cols_revision)
+
     ruta = SALIDAS / "OPORTUNIDADES.xlsx"
     with pd.ExcelWriter(ruta, engine="openpyxl") as w:
         # RESUMEN no pasa por renombrar_para_mostrar: es una tabla concepto/valor aparte,
@@ -4537,6 +4600,7 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
                  ("TGR", renombrar_para_mostrar(ordenar_columnas_alvaro(todas_tgr))),
                  ("MACAL", renombrar_para_mostrar(ordenar_columnas_alvaro(todas_macal))),
                  ("AVISO", renombrar_para_mostrar(ordenar_columnas_alvaro(todas_aviso))),
+                 ("REVISAR_SIN_DATO_SUFICIENTE", revisar_sin_dato),
                  ("RESUMEN", resumen)]
         for nombre, d in hojas:
             d.to_excel(w, sheet_name=nombre, index=False)
@@ -4992,9 +5056,11 @@ def prueba():
             # Pedido de Álvaro (llamada 09-11-2026): "TODAS" se reemplaza por 3 hojas
             # independientes por fuente (TGR/MACAL/AVISO) y el set de columnas pasa al
             # formato reducido de su planilla ("ordenar_columnas_alvaro").
-            comprobar("Excel con las 10 hojas esperadas (TODAS segmentada en TGR/MACAL/AVISO)",
+            comprobar("Excel con las 11 hojas esperadas (TODAS segmentada en TGR/MACAL/AVISO, + "
+                      "REVISAR_SIN_DATO_SUFICIENTE para Álvaro)",
                       hojas == ["TOP_CONSOLIDADO", "TOP_NUEVO", "CANDIDATAS", "SEGUNDOS_AVISOS",
-                                "TERCEROS_AVISOS", "REVISAR", "TGR", "MACAL", "AVISO", "RESUMEN"])
+                                "TERCEROS_AVISOS", "REVISAR", "TGR", "MACAL", "AVISO",
+                                "REVISAR_SIN_DATO_SUFICIENTE", "RESUMEN"])
             wb_chequeo = openpyxl.load_workbook(ruta)
             encabezados_top = [c.value for c in wb_chequeo["TOP_CONSOLIDADO"][1]]
             # El fixture sintético de esta prueba (solo MACAL, sin catastro real cargado) no
@@ -5077,6 +5143,31 @@ def prueba():
     comprobar("Tipo de unidad: sin ninguna fila de tipo depto, sigue AMBIGUO (no se adivina)",
               e == "AMBIGUO (2 candidatos)" and len(c) == 2)
     con_tipo.close()
+
+    # --- Métrica "estricta" del 90% (pedido de Rodrigo 12-11-2026: "contarlos, pero
+    # hacer dos métricas distintas, con y sin") - un aviso rural (sin calle+número)
+    # debe marcarse para la segunda métrica y restarse del denominador estricto,
+    # sin dejar de contarse en la métrica normal. ---
+    df_dual = pd.DataFrame([
+        {"fuente": "AVISO", "id_fuente": "dual#1", "texto_aviso":
+            "Se remata el Lote 21 de la subdivisión de la Parcela 15 del Proyecto de "
+            "Parcelación El Boldo, comuna de Rengo.",
+         "candidatos_comuna": [("06303", "TEXTO")], "roles_lista": [],
+         "manzana": float("nan"), "predio": float("nan"), "comuna_sii": None, "alertas_fuente": None,
+         "direccion_tgr": None},
+        {"fuente": "AVISO", "id_fuente": "dual#2", "texto_aviso":
+            "Inmueble ubicado en calle Colombia número 7000, departamento 41, comuna de La Florida.",
+         "candidatos_comuna": [("15128", "TEXTO")], "roles_lista": [],
+         "manzana": float("nan"), "predio": float("nan"), "comuna_sii": None, "alertas_fuente": None,
+         "direccion_tgr": None},
+    ])
+    r_dual = resolver_avisos(df_dual.copy(), None)
+    comprobar("Métrica 90%: aviso rural (sin calle+número) queda marcado para la exclusión",
+              r_dual.loc[0, "motivo_exclusion_denominador"] is not None
+              and r_dual.loc[1, "motivo_exclusion_denominador"] is None)
+    comprobar("Métrica 90%: la cobertura 'estricta' resta el excluido del denominador, sin tocar la normal",
+              _COBERTURA_REAL_AVISOS.get("total") == 2 and _COBERTURA_REAL_AVISOS.get("total_estricto") == 1
+              and _COBERTURA_REAL_AVISOS.get("n_excluidos") == 1)
 
     # --- Pruebas con el catastro real (si está) ---
     hallados = buscar_archivos_catastro()
