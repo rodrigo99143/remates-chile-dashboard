@@ -1366,9 +1366,33 @@ PALABRAS_PROPIEDAD = re.compile(r"(?i)inmueble|propiedad|departamento|depto|casa
 PALABRAS_TRIBUNAL = re.compile(r"(?i)juzgado|tribunal|secretar[ií]a|domicilio")
 
 
+# OJO (auditoría 12-11-2026, pedido de Rodrigo: "qué crees tú que debiera ocurrir
+# para acercarnos al 90%"): probé una comparación por similitud de texto genérica como
+# alternativa a seguir agregando reglas una por una, pero medida contra pares reales de
+# la muestra de hoy, NO es segura: el caso real que SÍ es la misma calle ("EL PERAL" vs
+# "LOS PERALES", similitud 0.74) queda DENTRO del rango de varios casos que son calles
+# distintas de verdad ("CORONEL SOUPER" vs "CORONEL BUERAS", similitud 0.79 - MÁS alta
+# que el caso real) - no hay un umbral que los separe sin crear falsos positivos (asignar
+# un ROL equivocado es peor que no asignar ninguno). Se descarta esa vía. En su lugar,
+# el caso real sí se explica EN PARTE con un ajuste puntual y seguro: los artículos
+# genéricos (el/la/los/las/del/de) no distinguen una calle de otra, y el catastro y los
+# avisos no siempre coinciden en cuál usar ("EL VALLE" = "DEL VALLE") - se ignoran SOLO
+# al comparar en nombres_compatibles() (nunca en clave_calle(), que también genera el
+# texto que se MUESTRA al usuario en el Excel - ahí "Pasaje El Sauco" debe seguir
+# diciendo "El Sauco", no "Sauco": se detectó con una prueba que ya existía, que
+# confirmó justo esto). OJO: esto NO alcanza a resolver el caso "EL PERAL" vs "LOS
+# PERALES" completo - ahí además cambia el plural con "-ES" (no solo "-S", que es lo
+# único que ya simplifica clave_calle), y agregar esa regla a ciegas arriesga falsos
+# positivos con apellidos reales que terminan en "-ES" (Cortés, Valdés, Reyes...) - se
+# deja sin resolver a propósito en vez de adivinar.
+ARTICULOS = {"EL", "LA", "LOS", "LAS", "DEL", "DE"}
+
+
 def clave_calle(nombre):
     """Normaliza el nombre de una calle: sin tipo (PJE, AV...), abreviaturas expandidas,
-    números en palabras como dígitos y plurales simplificados (Garrochas = Garrocha)."""
+    números en palabras como dígitos y plurales simplificados (Garrochas = Garrocha).
+    OJO: conserva artículos (el/la/los/las/del/de) porque este texto también se muestra
+    al usuario - ver nombres_compatibles() para la comparación que sí los ignora."""
     toks = normalizar(nombre).replace(".", " ").split()
     while toks and toks[0] in TIPOS_VIA:
         toks = toks[1:]
@@ -1384,6 +1408,16 @@ def clave_calle(nombre):
 
 def nombres_compatibles(a, b):
     """Igual, o iguales salvo iniciales ('C GOYENECHEA' = 'CANDELARIA GOYENECHEA'), o uno contenido en el otro (>=2 palabras)."""
+    if a == b:
+        return True
+    # Artículos genéricos (el/la/los/las/del/de): no distinguen una calle de otra, y el
+    # catastro y los avisos no siempre coinciden en cuál usar ("EL VALLE" vs "DEL VALLE").
+    # Se ignoran SOLO aquí, para la comparación - nunca en clave_calle(), que también
+    # genera el texto que se muestra al usuario (ahí "El Sauco" debe seguir diciendo
+    # "El Sauco", no "Sauco").
+    sa = [t for t in a.split() if t not in ARTICULOS] or a.split()
+    sb = [t for t in b.split() if t not in ARTICULOS] or b.split()
+    a, b = " ".join(sa), " ".join(sb)
     if a == b:
         return True
     ta, tb = a.split(), b.split()
