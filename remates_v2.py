@@ -2798,6 +2798,19 @@ def resolver_avisos(df, db_path):
         if elegido is None:
             # sin ROL utilizable: intentar por dirección en cada comuna candidata
             if con is not None and dtx and cands:
+                # OJO (llamada Álvaro 12-11-2026, caso Inglaterra): antes, cuando ninguna
+                # comuna candidata daba "UNICO", se guardaba el resultado de la ÚLTIMA
+                # comuna probada - normalmente la de origen menos confiable (CBR/TRIBUNAL),
+                # que suele dar "SIN COINCIDENCIA" sin más. Eso TAPABA un resultado más
+                # informativo de una comuna anterior más confiable (origen TEXTO): el caso
+                # Inglaterra sí encontraba el edificio en la comuna correcta (Independencia,
+                # vía TEXTO) pero quedaba registrado como "SIN COINCIDENCIA" de Santiago
+                # (vía CBR, la comuna del Conservador, no la de la propiedad), porque
+                # Santiago se probaba después y pisaba el resultado anterior. Ahora se
+                # recuerda el MEJOR resultado de todos los intentos (cualquier estado
+                # informativo le gana a "SIN COINCIDENCIA", que es el menos útil de todos)
+                # en vez de quedarse con el último probado sin más.
+                mejor = None  # (sii, origen, estado, cs)
                 for sii, origen in cands:
                     estado, cs = buscar_rol_por_direccion(con, sii, dtx)
                     if estado == "UNICO":
@@ -2805,10 +2818,10 @@ def resolver_avisos(df, db_path):
                         df.at[i, "rol_origen"] = "DEDUCIDO POR DIRECCION (verificar)"
                         df.at[i, "estado_busqueda_direccion"] = "UNICO"
                         elegido = (sii, origen, None)
+                        mejor = None
                         break
-                    df.at[i, "estado_busqueda_direccion"] = estado
-                    if cs:
-                        df.at[i, "rol_candidatos"] = "; ".join(f"{m}-{p} ({d})" for m, p, d, _, _ in cs)
+                    if mejor is None or (mejor[2] == "SIN COINCIDENCIA" and estado != "SIN COINCIDENCIA"):
+                        mejor = (sii, origen, estado, cs)
                     # OJO (auditoría 12-11-2026, pedido de Rodrigo): "SIN COINCIDENCIA" es,
                     # con mucho, el motivo más frecuente de que un aviso con dirección se
                     # quede sin ROL - pero por sí solo no dice SI la calle existe en el
@@ -2829,6 +2842,11 @@ def resolver_avisos(df, db_path):
                             "LIMIT 3", (sii, f"%{ancla}%")).fetchall()
                         _MUESTRA_SIN_COINCIDENCIA["casos"].append(
                             (f"{dtx['nombre']} {dtx['numero']}", sii, [f[0] for f in filas_calle]))
+                if mejor is not None:
+                    _, _, estado, cs = mejor
+                    df.at[i, "estado_busqueda_direccion"] = estado
+                    if cs:
+                        df.at[i, "rol_candidatos"] = "; ".join(f"{m}-{p} ({d})" for m, p, d, _, _ in cs)
             elif dtx is None:
                 df.at[i, "estado_busqueda_direccion"] = "NO SE PUDO LEER LA DIRECCION"
             elif not cands:
