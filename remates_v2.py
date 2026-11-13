@@ -2668,6 +2668,22 @@ def candidatos_comuna(texto):
             if re.search(r"\b" + re.escape(n) + r"\b", normalizar(trib)):
                 agregar(n, "TRIBUNAL")
                 break
+    # OJO (13-11-2026, revisión a fondo de "SIN COINCIDENCIA" con el catastro real completo,
+    # pedido de Rodrigo): el SII guarda la comuna de Santiago repartida en 3 códigos propios
+    # DENTRO de la misma lista oficial de 347 comunas que ya usa este programa - "SANTIAGO"
+    # (13101), "SANTIAGO OESTE" (13134) y "SANTIAGO SUR" (13135) - no son comunas distintas
+    # (verificado: ninguna otra comuna de Chile tiene este patrón de repartirse en varios
+    # códigos SII), son subdivisiones catastrales internas de la MISMA comuna/municipio.
+    # Cuando un aviso dice "comuna de Santiago" (o cualquier otra señal que resuelva a
+    # 13101), hoy solo se prueba 13101 y, si el catastro tiene esa propiedad archivada bajo
+    # 13134/13135, queda "SIN COINCIDENCIA" aunque la dirección y la comuna real estén
+    # perfectamente bien dichas en el aviso - no es un caso ambiguo (no se agrega si el
+    # aviso YA menciona otra comuna distinta de Santiago), por eso es seguro agregarlos
+    # siempre como respaldo de menor prioridad, nunca como primera opción.
+    if any(sii == "13101" for sii, _ in cands):
+        for sii_extra in ("13134", "13135"):
+            if sii_extra not in [c for c, _ in cands]:
+                cands.append((sii_extra, "SANTIAGO_SUBCODIGO_SII"))
     return cands
 
 
@@ -5007,6 +5023,24 @@ def prueba():
     comprobar("Aviso partición detectado",
               extraer_tipo_juicio("ante el juez partidor se rematará") == "PARTICIONAL")
     comprobar("Un rol de causa sin letra no se confunde con rol de avalúo", extraer_roles("ROL 2583-2023 DEL JUZGADO") == [])
+
+    # Caso real (13-11-2026, mismo bulto "SIN COINCIDENCIA" - pedido de Rodrigo de revisar si
+    # la comuna mal asignada es un problema real): el SII reparte Santiago en 3 códigos
+    # propios (13101 Santiago, 13134 Santiago Oeste, 13135 Santiago Sur) - NO son comunas
+    # distintas, son subdivisiones catastrales de la MISMA comuna. Verificado contra el
+    # catastro real completo: "Cueto 1207, comuna de Santiago" está archivado en el SII bajo
+    # 13134, no bajo 13101 - antes del arreglo quedaba "SIN COINCIDENCIA" aunque el aviso
+    # decía la comuna real correctamente.
+    cands_santiago = candidatos_comuna(normalizar(
+        "Se rematará el departamento ubicado en calle Cueto número mil doscientos siete, "
+        "Comuna de Santiago, Región Metropolitana."))
+    comprobar("'Comuna de Santiago' agrega también los sub-códigos SII Santiago Oeste y Santiago Sur como respaldo",
+              [c for c, _ in cands_santiago] == ["13101", "13134", "13135"])
+    cands_otra_comuna = candidatos_comuna(normalizar(
+        "Se rematará el departamento ubicado en calle Pedro de Valdivia número 100, "
+        "Comuna de Providencia, Región Metropolitana."))
+    comprobar("Una comuna que NO es Santiago no agrega los sub-códigos de Santiago",
+              "13134" not in [c for c, _ in cands_otra_comuna] and "13135" not in [c for c, _ in cands_otra_comuna])
 
     # Casos reales (13-11-2026, revisión a fondo de "SIN COINCIDENCIA" con el catastro real
     # completo, pedido explícito de Rodrigo): el catastro SII a veces junta las iniciales de
