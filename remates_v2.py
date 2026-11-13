@@ -1586,6 +1586,18 @@ def parsear_dir_catastro(direccion):
     cabeza = toks[:corte]
     while len(cabeza) > 1 and len(cabeza[-1]) == 1 and cabeza[-1].isalpha() and cabeza[-2].isdigit():
         cabeza = cabeza[:-1]            # '1141 A' -> '1141'
+    # OJO (12-11-2026, muestra real de "SIN COINCIDENCIA" con el diagnóstico detallado):
+    # casos reales como "COQUIMBO 157 CHGTE" o "SANTA LUCIA 199 PLAZA NEPTUNO" - el
+    # catastro agrega una palabra descriptiva DESPUÉS del número (abreviatura de
+    # "chalet", el nombre del loteo, etc.), que no es ni una marca de unidad conocida
+    # (MARCAS_UNIDAD) ni una marca de lote conocida (MARCAS_LOTE) - así que antes, como
+    # el ÚLTIMO token no era un dígito, el programa se rendía por completo (devolvía
+    # None) aunque el número SÍ estuviera ahí, solo que no al final. Se quitan esas
+    # palabras finales sueltas, mientras quede al menos un número más atrás en el texto
+    # (si no hay NINGÚN dígito en toda la dirección, es un nombre de calle puramente en
+    # palabras y de verdad no hay número que leer - no se toca ese caso).
+    while len(cabeza) > 1 and not cabeza[-1].isdigit() and any(t.isdigit() for t in cabeza):
+        cabeza = cabeza[:-1]
     nums = []
     while cabeza and cabeza[-1].isdigit() and len(nums) < 2:
         nums.insert(0, int(cabeza.pop()))
