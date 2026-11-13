@@ -113,9 +113,14 @@ def _cliente():
     return c
 
 
-def _tabla_cache(con):
-    con.execute("""
-        CREATE TABLE IF NOT EXISTS cache_ia_avisos (
+def _tabla_cache(con, tabla="cache_ia_avisos"):
+    # OJO (12-11-2026): se agregó el parámetro "tabla" para poder reutilizar toda esta
+    # maquinaria de caché (misma base de datos precio_mercado.db) para el rescate de
+    # DIRECCIONES (ver rescatar_direccion() más abajo), en una tabla separada
+    # (cache_ia_direccion) - para no mezclar nunca un resultado de "roles" con uno de
+    # "dirección" aunque compartan el mismo hash de texto.
+    con.execute(f"""
+        CREATE TABLE IF NOT EXISTS {tabla} (
             hash TEXT PRIMARY KEY,
             resultado TEXT,
             fecha TEXT DEFAULT CURRENT_TIMESTAMP
@@ -127,13 +132,13 @@ def _hash_texto(texto):
     return hashlib.sha256(texto.encode("utf-8")).hexdigest()
 
 
-def _leer_cache(cache_db_path, h):
+def _leer_cache(cache_db_path, h, tabla="cache_ia_avisos"):
     if not cache_db_path:
         return None
     try:
         con = sqlite3.connect(cache_db_path)
-        _tabla_cache(con)
-        fila = con.execute("SELECT resultado FROM cache_ia_avisos WHERE hash=?", (h,)).fetchone()
+        _tabla_cache(con, tabla)
+        fila = con.execute(f"SELECT resultado FROM {tabla} WHERE hash=?", (h,)).fetchone()
         con.close()
         if fila:
             datos = json.loads(fila[0])
@@ -146,13 +151,13 @@ def _leer_cache(cache_db_path, h):
     return None
 
 
-def _guardar_cache(cache_db_path, h, resultado):
+def _guardar_cache(cache_db_path, h, resultado, tabla="cache_ia_avisos"):
     if not cache_db_path:
         return
     try:
         con = sqlite3.connect(cache_db_path)
-        _tabla_cache(con)
-        con.execute("INSERT OR REPLACE INTO cache_ia_avisos (hash, resultado) VALUES (?, ?)",
+        _tabla_cache(con, tabla)
+        con.execute(f"INSERT OR REPLACE INTO {tabla} (hash, resultado) VALUES (?, ?)",
                     (h, json.dumps({**resultado, "_version": VERSION_CACHE}, ensure_ascii=False)))
         con.commit()
         con.close()
@@ -247,3 +252,132 @@ def rescatar(texto, cache_db_path=None):
     else:
         ESTADISTICAS["nuevo_vacio"] += 1
     return resultado if resultado["roles"] else None
+
+
+# =====================================================================================
+# Rescate puntual con IA para la DIRECCIÓN (12-11-2026, pedido de Rodrigo: "necesito
+# velocidad, pero además de velocidad necesito eficacia" - extensión del mismo sistema
+# ya pagado y ya probado arriba, esta vez para el problema de esta noche: avisos donde
+# el regex de direcciones (extraer_direccion_texto en remates_v2.py) no reconoce
+# ninguna calle+número, aunque el aviso SÍ la describa en redacción libre que el regex
+# todavía no cubre. Misma filosofía exacta que rescatar() de más arriba:
+#   - El regex sigue siendo el método principal; esto SOLO se llama cuando
+#     extraer_direccion_texto() devolvió None para ese aviso.
+#   - Sin ANTHROPIC_API_KEY, no hace nada - cero costo, cero cambio de comportamiento.
+#   - El resultado NO se usa directo: se arma como si fuera el resultado del regex
+#     (dict nombre/numero/unidad) y pasa por EXACTAMENTE las mismas validaciones
+#     contra el catastro (buscar_rol_por_direccion) que ya existían - si la IA lee mal
+#     la calle o el número, el cruce contra el catastro lo detecta igual (SIN
+#     COINCIDENCIA), nunca se inventa un ROL a partir de una dirección inventada.
+#   - Se cachea aparte (tabla cache_ia_direccion, misma base de datos) para no mezclar
+#     nunca un resultado de "dirección" con uno de "roles".
+#   - Todo aviso rescatado así queda marcado "DIRECCION_RESCATADA_CON_IA", igual de
+#     visible que "RESCATADO_CON_IA".
+# =====================================================================================
+ESTADISTICAS_DIRECCION = {
+    "sin_cliente": 0, "cache_con_direccion": 0, "cache_vacio": 0,
+    "nuevo_con_direccion": 0, "nuevo_vacio": 0, "fallido": 0,
+}
+
+
+def resumen_estadisticas_direccion():
+    return dict(ESTADISTICAS_DIRECCION)
+
+
+def reiniciar_estadisticas_direccion():
+    for k in ESTADISTICAS_DIRECCION:
+        ESTADISTICAS_DIRECCION[k] = 0
+
+
+PROMPT_DIRECCION = """Este es un aviso de remate judicial chileno publicado en un \
+diario. El extractor automático del programa (basado en expresiones regulares) no \
+encontró ninguna dirección (calle + número) de LA PROPIEDAD que se remata en este \
+texto - puede ser porque de verdad no la trae (parcela/lote rural sin numeración de \
+calle, por ejemplo), o porque está redactada de una forma que el extractor \
+automático todavía no reconoce.
+
+OJO MUY IMPORTANTE: NO uses la dirección de un Tribunal, Notaría, oficina de un \
+martillero o liquidador, ni la dirección donde se realiza la subasta o audiencia - \
+esas NO son la dirección de la propiedad. Solo interesa dónde está UBICADO el \
+inmueble que se remata.
+
+Lee el siguiente texto y responde SOLO con un JSON (sin texto adicional, sin bloque \
+de markdown) con esta forma exacta:
+{{"calle": "NOMBRE DE LA CALLE o null", "numero": numero_entero o null, \
+"depto_o_unidad": "texto tal cual aparece o null", "comuna": "NOMBRE COMUNA o null", \
+"confianza": "ALTA|MEDIA|BAJA"}}
+
+- "calle": el nombre de la vía (sin "calle"/"avenida"/"pasaje" por delante), tal como \
+aparece escrito en el aviso. null si el inmueble no tiene dirección de calle (ej. una \
+parcela o lote rural identificado solo por número de lote/hijuela, sin numeración de \
+calle real).
+- "numero": el número de la calle (entero). null si no hay.
+- "depto_o_unidad": número de departamento/oficina/bodega/local si el aviso lo da, \
+tal cual aparece escrito (ej. "1704", "D", "piso 17 depto 304"). null si no aplica o \
+no se informa.
+- "comuna": la comuna de Chile donde está UBICADA la propiedad (no la comuna del \
+tribunal, salvo que sea la misma). null si no se puede determinar con razonable \
+certeza.
+- "confianza": tu propia evaluación de qué tan segura es tu lectura de la dirección.
+
+Texto del aviso:
+---
+{texto}
+---"""
+
+
+def rescatar_direccion(texto, cache_db_path=None):
+    """Intenta rescatar calle+número (y comuna, y unidad) de un aviso cuyo regex de
+    direcciones no encontró nada. Devuelve dict(nombre, numero, unidad, comuna) o None
+    - en cualquier caso donde no hay nada aprovechable (sin key, sin calle real, falla
+    técnica), el aviso sigue su camino normal exactamente como si esta función no
+    existiera."""
+    cliente = _cliente()
+    if cliente is None:
+        ESTADISTICAS_DIRECCION["sin_cliente"] += 1
+        return None
+
+    h = _hash_texto(texto)
+    cacheado = _leer_cache(cache_db_path, h, tabla="cache_ia_direccion")
+    if cacheado is not None:
+        if cacheado.get("nombre"):
+            ESTADISTICAS_DIRECCION["cache_con_direccion"] += 1
+        else:
+            ESTADISTICAS_DIRECCION["cache_vacio"] += 1
+        return cacheado if cacheado.get("nombre") else None
+
+    try:
+        resp = cliente.messages.create(
+            model=MODELO_IA,
+            max_tokens=1024,
+            output_config={"effort": "low"},
+            messages=[{"role": "user", "content": PROMPT_DIRECCION.format(texto=texto[:4000])}],
+        )
+        bruto = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()
+        if not bruto:
+            raise ValueError(f"la respuesta no tuvo bloque de texto (stop_reason={resp.stop_reason!r}, "
+                              f"tipos de bloque recibidos: {[getattr(b, 'type', None) for b in resp.content]!r})")
+        bruto = re.sub(r"^```(json)?|```$", "", bruto, flags=re.MULTILINE).strip()
+        datos = json.loads(bruto)
+        calle = datos.get("calle")
+        numero = datos.get("numero")
+        nombre = str(calle).strip().upper() if calle else None
+        numero_ok = int(numero) if isinstance(numero, (int, float, str)) and str(numero).strip().lstrip("-").isdigit() else None
+        if not nombre or numero_ok is None:
+            nombre, numero_ok = None, None   # sin los dos datos mínimos, no sirve de nada (igual que el regex)
+        unidad_txt = datos.get("depto_o_unidad")
+        resultado = {"nombre": nombre, "numero": numero_ok,
+                     "unidad": str(unidad_txt).strip() if unidad_txt else None,
+                     "comuna": datos.get("comuna"), "confianza": datos.get("confianza")}
+    except Exception as e:
+        ESTADISTICAS_DIRECCION["fallido"] += 1
+        print(f"  [IA-DIRECCION] no se pudo rescatar la dirección de este aviso con IA ({e}); sigue sin "
+              f"dirección, como antes (no se guarda en la caché - se vuelve a intentar en la próxima corrida).")
+        return None
+
+    _guardar_cache(cache_db_path, h, resultado, tabla="cache_ia_direccion")
+    if resultado["nombre"]:
+        ESTADISTICAS_DIRECCION["nuevo_con_direccion"] += 1
+    else:
+        ESTADISTICAS_DIRECCION["nuevo_vacio"] += 1
+    return resultado if resultado["nombre"] else None

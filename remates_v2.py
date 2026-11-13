@@ -2830,6 +2830,9 @@ def leer_avisos_docx(ruta, cache_ia_path=None):
 # de la última corrida (ver avisos_ia.resumen_estadisticas()) para que quede
 # en el RESUMEN del Excel y en el log de consola, sea cual sea el resultado.
 _ESTADISTICAS_IA_AVISOS = {}
+# Mismo propósito que _ESTADISTICAS_IA_AVISOS, para el rescate de DIRECCIONES con IA
+# (ver avisos_ia.rescatar_direccion) - se llena dentro de resolver_avisos() mismo.
+_ESTADISTICAS_IA_DIRECCION = {}
 
 
 def _reportar_ia_avisos():
@@ -2931,6 +2934,8 @@ def resolver_avisos(df, db_path):
     _MUESTRA_AMBIGUO["casos"] = []
     _MUESTRA_NO_SE_PUDO_LEER["n"] = 0
     _MUESTRA_NO_SE_PUDO_LEER["casos"] = []
+    if AVISOS_IA_DISPONIBLE:
+        avisos_ia.reiniciar_estadisticas_direccion()
     for c in ("rol_origen", "rol_candidatos", "estado_busqueda_direccion", "verif_direccion_catastro",
               "avaluo_roles_total", "n_roles_encontrados", "ubicacion_texto_crudo"):
         if c not in df.columns:
@@ -2940,6 +2945,26 @@ def resolver_avisos(df, db_path):
         cands = f["candidatos_comuna"] or []
         roles = f["roles_lista"] or []
         dtx = extraer_direccion_texto(f["texto_aviso"])
+        # OJO (12-11-2026, pedido urgente de Rodrigo - "necesito velocidad, pero
+        # además de velocidad necesito eficacia"): mismo patrón ya probado del
+        # rescate de ROLES con IA (avisos_ia.py), esta vez para la DIRECCIÓN. Se
+        # intenta SOLO cuando el regex de direcciones no encontró nada - nunca
+        # reemplaza una dirección que el regex SÍ encontró. El resultado se arma
+        # como si fuera del regex (mismo dict nombre/numero/unidad) y pasa por las
+        # MISMAS validaciones contra el catastro de siempre más abajo - si la IA
+        # lee mal la calle o el número, el cruce lo detecta igual (SIN
+        # COINCIDENCIA), nunca se inventa un ROL a partir de una dirección mala.
+        if dtx is None and not roles and AVISOS_IA_DISPONIBLE:
+            rescate_dir = avisos_ia.rescatar_direccion(f["texto_aviso"], cache_db_path=DATOS / "precio_mercado.db")
+            if rescate_dir:
+                dtx = {"nombre": clave_calle(rescate_dir["nombre"]), "numero": rescate_dir["numero"],
+                       "unidad": parsear_unidad(rescate_dir["unidad"]) if rescate_dir.get("unidad") else None}
+                df.at[i, "alertas_fuente"] = "; ".join(
+                    x for x in [str(df.at[i, "alertas_fuente"] or "").strip("; "), "DIRECCION_RESCATADA_CON_IA"] if x)
+                if not cands and rescate_dir.get("comuna"):
+                    sii_dir = NOMBRE2SII.get(normalizar(rescate_dir["comuna"]))
+                    if sii_dir:
+                        cands = [(sii_dir, "IA")]
         elegido = None
         if roles and con is not None:
             man, pre = roles[0]
@@ -3151,6 +3176,16 @@ def resolver_avisos(df, db_path):
               "de redacción que el parser todavía no reconoce):")
         for fragmento in _MUESTRA_NO_SE_PUDO_LEER["casos"]:
             decir(f"    {fragmento!r}")
+    if AVISOS_IA_DISPONIBLE:
+        std = avisos_ia.resumen_estadisticas_direccion()
+        global _ESTADISTICAS_IA_DIRECCION
+        _ESTADISTICAS_IA_DIRECCION = std
+        decir(f"  [IA-DIRECCION] resumen real de esta corrida: "
+              f"rescatadas con dirección (llamada nueva): {std['nuevo_con_direccion']} | "
+              f"consultadas, sin dirección de verdad (llamada nueva): {std['nuevo_vacio']} | "
+              f"fallidas (error técnico, se reintenta la próxima vez): {std['fallido']} | "
+              f"ya en caché con dirección: {std['cache_con_direccion']} | "
+              f"ya en caché sin dirección: {std['cache_vacio']} | sin cliente disponible: {std['sin_cliente']}")
     return df
 
 
@@ -4259,6 +4294,21 @@ def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
                            f"fallidos (error técnico): {st['fallido']} | "
                            f"ya en caché con ROL: {st['cache_con_rol']} | ya en caché sin ROL: {st['cache_vacio']} | "
                            f"sin cliente disponible (sin API key válida): {st['sin_cliente']}"))
+    # Mismo propósito, para el rescate de DIRECCIONES con IA (12-11-2026, pedido
+    # urgente de Rodrigo - extensión del mismo sistema ya pagado y ya probado).
+    if _ESTADISTICAS_IA_DIRECCION:
+        std = _ESTADISTICAS_IA_DIRECCION
+        if not any(std.values()):
+            filas.append(("RESCATE CON IA DE DIRECCIONES NO RECONOCIDAS (avisos_ia.py)",
+                           "no hubo ningún aviso sin dirección que requiriera intentarlo esta corrida"))
+        else:
+            filas.append(("RESCATE CON IA DE DIRECCIONES NO RECONOCIDAS (avisos_ia.py)",
+                           f"rescatadas con dirección (llamada nueva): {std['nuevo_con_direccion']} | "
+                           f"consultadas, sin dirección de verdad: {std['nuevo_vacio']} | "
+                           f"fallidas (error técnico): {std['fallido']} | "
+                           f"ya en caché con dirección: {std['cache_con_direccion']} | "
+                           f"ya en caché sin dirección: {std['cache_vacio']} | "
+                           f"sin cliente disponible (sin API key válida): {std['sin_cliente']}"))
     for estado, n in df["cruce_estado"].value_counts().items():
         filas.append((f"Cruce SII: {estado}", int(n)))
     for k, n in df["confianza"].value_counts().items():
