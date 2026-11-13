@@ -2448,8 +2448,18 @@ RE_MARCA_COMUNA = re.compile(
     r"(?:COMUNA(?: Y CIUDAD| DE LA CIUDAD)? DE|CIUDAD Y COMUNA DE|UBICAD[OA]S? EN(?: LA)?(?: CIUDAD| COMUNA)?(?: DE)?|"
     r"SITO EN|SITA EN|EN ESTA CIUDAD DE|, DE|COMUNA)\s+(" + _ALT_COMUNAS + r")\b")
 RE_CBR = re.compile(r"(?:CONSERVADOR(?: DE BIENES RAICES)?|CBR) DE\s+(" + _ALT_COMUNAS + r")\b")
+# OJO (12-11-2026, caso real encontrado al revisar "Inglaterra 1144" en SIN
+# COINCIDENCIA): el formato "Publicación Martillero" (liquidaciones), cuando remata
+# VARIOS inmuebles en un mismo aviso, a veces identifica cada rol con la palabra del
+# tipo de unidad en el medio - "Rol de Avalúo Departamento: 2152-233 Independencia,
+# Rol de Avalúo Bodega: 2152-309 Independencia" - antes la regex esperaba el número
+# justo después de "avalúo" (con o sin "N°"/"número"), así que esa palabra en el
+# medio ("Departamento"/"Bodega") cortaba el calce por completo y extraer_roles()
+# no encontraba NINGÚN rol en todo el aviso, aunque los roles estuvieran ahí mismo,
+# escritos con toda claridad.
 RE_ROL_AVALUO = re.compile(
-    r"\bROLE?S?\s+(?:DE\s+)?(?:AVALUOS?\s+)?(?:FISCAL(?:ES)?\s+)?(?:N\s*|NUMERO\s*|NRO\.?\s*|NO\s+)?[:\s]*"
+    r"\bROLE?S?\s+(?:DE\s+)?(?:AVALUOS?\s+)?(?:DEPARTAMENTOS?|BODEGAS?|ESTACIONAMIENTOS?|LOCALES?|OFICINAS?)?\s*"
+    r"(?:FISCAL(?:ES)?\s+)?(?:N\s*|NUMERO\s*|NRO\.?\s*|NO\s+)?[:\s]*"
     r"((?:\d{1,5}\s*-\s*\d{1,4}\b[\s,;]*(?:Y\s+|E\s+)?)+)")
 RE_PRIMERA_PALABRA_TRIB = r"(?:\d{1,2}\s*[ºO°]?|PRIMER|SEGUND|TERCER|CUART|QUINT|SEXT|SEPTIM|OCTAV|NOVEN|DECIM|VIGESIM)\w*"
 RE_TRIBUNAL = re.compile(
@@ -4910,6 +4920,13 @@ def prueba():
     comprobar("Aviso partición detectado",
               extraer_tipo_juicio("ante el juez partidor se rematará") == "PARTICIONAL")
     comprobar("Un rol de causa sin letra no se confunde con rol de avalúo", extraer_roles("ROL 2583-2023 DEL JUZGADO") == [])
+    # Caso real (12-11-2026, hallado al revisar "Inglaterra 1144" en SIN COINCIDENCIA):
+    # "Publicación Martillero" con varios inmuebles en un mismo aviso identifica cada
+    # rol con la palabra del tipo de unidad en el medio - antes esto no calzaba y
+    # extraer_roles() no encontraba NINGÚN rol en todo el aviso.
+    comprobar("Rol de Avalúo con la palabra del tipo de unidad en el medio (Departamento/Bodega) sí se lee",
+              extraer_roles(normalizar("Rol de Avalúo Departamento: 2152-233 Independencia, Rol de Avalúo "
+                                        "Bodega: 2152-309 Independencia.")) == [(2152, 233), (2152, 309)])
     comprobar("Cabecera de fecha", cabecera_fecha("14 DE SEPTIEMBRE") == (14, 9))
 
     # --- Macal ---
