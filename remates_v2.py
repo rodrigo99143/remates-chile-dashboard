@@ -1393,6 +1393,24 @@ def nombres_compatibles(a, b):
     corto, largo = (ta, tb) if len(ta) <= len(tb) else (tb, ta)
     if len(corto) >= 2 and all(w in largo for w in corto):
         return True
+    # OJO (auditoría 12-11-2026, pedido de Rodrigo - caso real "GUSTAVO CABELLO OLGUIN"
+    # (aviso) vs "P GUSTAVO CABELLO" (catastro)): el catastro a veces antepone una sola
+    # letra suelta que clave_calle() no reconoce como tipo de vía (aquí "P", probablemente
+    # de "Pasaje"), lo que deja el nombre desalineado (una palabra de más al inicio Y una
+    # de menos al final) aunque el total de palabras sea igual - la contención de arriba
+    # no lo detecta porque compara contra la lista SIN recortar. Se repite SOLO la
+    # contención (nunca la regla de la última palabra sola, que exige una señal más fuerte)
+    # quitando una posible letra suelta al inicio de cualquiera de los dos lados. Esto NO
+    # se aplica cuando AMBOS lados quedarían reducidos a una sola palabra (ej. "A
+    # GONZALEZ" vs "B GONZALEZ" -> "GONZALEZ"="GONZALEZ"): ahí la letra inicial es la
+    # única información que distingue dos calles distintas, así que igualarlas sería un
+    # falso positivo real, no una variante de escritura.
+    ta2 = ta[1:] if len(ta) > 1 and len(ta[0]) == 1 else ta
+    tb2 = tb[1:] if len(tb) > 1 and len(tb[0]) == 1 else tb
+    if (ta2, tb2) != (ta, tb) and not (len(ta2) == 1 and len(tb2) == 1):
+        corto2, largo2 = (ta2, tb2) if len(ta2) <= len(tb2) else (tb2, ta2)
+        if len(corto2) >= 2 and all(w in largo2 for w in corto2):
+            return True
     # OJO (llamada Álvaro 12-11-2026, caso real "Jaime Guzmán Errázuriz" / catastro SII
     # que solo trae "Errázuriz"): el catastro a veces trunca nombres de calle largos,
     # dejando solo la ÚLTIMA palabra. Se permite ese caso puntual - una sola palabra,
@@ -1484,7 +1502,15 @@ def extraer_direccion_texto(texto):
 
 def parsear_dir_catastro(direccion):
     """'SANTA ISABEL 171 199 DP 801' -> ('SANTA ISABEL', 171, 199, ({'801'}, '')). 'PJE 9 SUR 3486' -> ('9 SUR', 3486, 3486, None)"""
-    toks = normalizar(direccion).replace(".", " ").replace(",", " ").split()
+    # OJO (auditoría 12-11-2026, pedido de Rodrigo - caso real "PJE.SAGRADA FAMILIA 2503
+    # LT- 145"): el catastro a veces pega el guión del marcador de lote directo a la
+    # palabra ("LT-" en vez de "LT -" o "LT"), y como MARCAS_LOTE solo reconoce el token
+    # exacto "LT" (sin guión), el corte nunca se activaba - el programa leía "2503 LT-"
+    # como si fuera parte del NOMBRE de la calle y "145" (el número de lote) como si
+    # fuera el número de la calle, perdiendo el número real (2503) por completo. Se
+    # reemplaza el guión por espacio ANTES de tokenizar (igual que ya se hace con "." y
+    # ","), para que "LT-" se lea como el token suelto "LT" y el corte funcione.
+    toks = normalizar(direccion).replace(".", " ").replace(",", " ").replace("-", " ").split()
     unidad = None
     corte = len(toks)
     for i, t in enumerate(toks):
@@ -2767,6 +2793,7 @@ _MUESTRA_AMBIGUO = {"n": 0, "casos": []}
 # real sobre TODOS los avisos de la corrida (antes del filtro histórico) y se deja
 # explícita en la pestaña RESUMEN de cada Excel, sin depender de qué quedó en AVISO.
 _COBERTURA_REAL_AVISOS = {}
+_MUESTRA_NO_SE_PUDO_LEER = {"n": 0, "casos": []}
 
 
 def resolver_avisos(df, db_path):
@@ -2777,6 +2804,8 @@ def resolver_avisos(df, db_path):
     _MUESTRA_SIN_COINCIDENCIA["casos"] = []
     _MUESTRA_AMBIGUO["n"] = 0
     _MUESTRA_AMBIGUO["casos"] = []
+    _MUESTRA_NO_SE_PUDO_LEER["n"] = 0
+    _MUESTRA_NO_SE_PUDO_LEER["casos"] = []
     for c in ("rol_origen", "rol_candidatos", "estado_busqueda_direccion", "verif_direccion_catastro",
               "avaluo_roles_total", "n_roles_encontrados", "ubicacion_texto_crudo"):
         if c not in df.columns:
@@ -2882,6 +2911,20 @@ def resolver_avisos(df, db_path):
                         df.at[i, "rol_candidatos"] = "; ".join(f"{m}-{p} ({d})" for m, p, d, _, _ in cs)
             elif dtx is None:
                 df.at[i, "estado_busqueda_direccion"] = "NO SE PUDO LEER LA DIRECCION"
+                # Muestra de "NO SE PUDO LEER LA DIRECCION" (pedido de Rodrigo 12-11-2026,
+                # 21:33 - "necesito velocidad... pero además de velocidad necesito
+                # eficacia"): este bloque (94 de 343 avisos sin rol) nunca se había
+                # muestreado con texto real, a diferencia de SIN COINCIDENCIA y AMBIGUO -
+                # no se sabía cuánto es parcela rural genuina (sin calle+número, ya
+                # cubierta por el texto crudo de ubicacion_texto_crudo) y cuánto es un
+                # patrón de redacción que el parser simplemente no reconoce todavía. Se
+                # guarda el fragmento de texto donde se describe el inmueble (mismo punto
+                # de partida que usa extraer_ubicacion_cruda) para decidir el próximo
+                # arreglo con datos reales, no a ciegas.
+                if _MUESTRA_NO_SE_PUDO_LEER["n"] < 40:
+                    _MUESTRA_NO_SE_PUDO_LEER["n"] += 1
+                    _MUESTRA_NO_SE_PUDO_LEER["casos"].append(
+                        (extraer_ubicacion_cruda(f["texto_aviso"]) or "(sin fragmento de ubicación identificable)"))
             elif not cands:
                 # OJO (auditoría 12-11-2026, pedido de Rodrigo: "por qué muchos quedan con
                 # dirección pero sin rol"): si no se identificó NINGUNA comuna candidata
@@ -2951,6 +2994,12 @@ def resolver_avisos(df, db_path):
         for direccion_aviso, comuna, estado, candidatos in _MUESTRA_AMBIGUO["casos"]:
             decir(f"    aviso: {direccion_aviso!r} (comuna SII {comuna}) [{estado}] "
                   f"| candidatos en catastro: {candidatos}")
+    if _MUESTRA_NO_SE_PUDO_LEER["casos"]:
+        decir("  Muestra de \"NO SE PUDO LEER LA DIRECCION\" (fragmento real de cómo el aviso "
+              "describe el inmueble - para saber cuánto es parcela rural genuina vs. un patrón "
+              "de redacción que el parser todavía no reconoce):")
+        for fragmento in _MUESTRA_NO_SE_PUDO_LEER["casos"]:
+            decir(f"    {fragmento!r}")
     return df
 
 
