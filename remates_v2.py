@@ -1291,6 +1291,25 @@ RE_VIA_CON_MARCA = re.compile(
 RE_VIA_SIN_MARCA = re.compile(
     r"(?i)\b(calle|avenida|avda\.?|av\.?|pasaje|psje\.?|pje\.?|camino|diagonal|callej[oó]n|paseo)\s+"
     r"([^,;\d]{1,55}?)\s+" + _GRUPO_NUMERO_VIA + r"\b")
+# OJO (auditoría 12-11-2026, pedido de Rodrigo: "qué crees tú que sea lo más indicado" -
+# muestra real del bloque "NO SE PUDO LEER LA DIRECCION"): varios avisos reales dan la
+# dirección completa SIN ninguna de las palabras de arriba por delante - el aviso ya dijo
+# "ubicado en"/"con acceso por" y da el nombre de la calle directo, sin repetir "calle" o
+# "avenida" (casos reales: "con acceso por Américo Vespucio Nº 0484", "ubicado en Salvador
+# Allende Nº 341", "ubicado en Alcalde Miguel Rojas Acuña 0428"). Se agregan dos variantes
+# más (con/sin marca de número, igual que arriba) ancladas a esas frases en vez de a un
+# tipo de vía - se agregan DESPUÉS de las de arriba en el orden de búsqueda (ver
+# extraer_direccion_texto) porque son más genéricas y por lo tanto más arriesgadas: el
+# filtro de "es la dirección del TRIBUNAL, no de la propiedad" que ya existe (ver más abajo)
+# sigue aplicando igual, y es el que evita que esto capture frases como "el Juzgado...,
+# ubicado en Rengifo Nº 240" (la oficina del tribunal, no la propiedad) - verificado con
+# una prueba real que ya existía (AVISO_PRUEBA_1).
+RE_VIA_UBICADO_CON_MARCA = re.compile(
+    r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?en|con\s+acceso(?:\s+principal)?\s+(?:por|a))\s+"
+    r"([^,;\d]{1,55}?)\s*,?\s*(?:N[º°o]\.?\s*|n[uú]mero\s+|#\s*)" + _GRUPO_NUMERO_VIA)
+RE_VIA_UBICADO_SIN_MARCA = re.compile(
+    r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?en|con\s+acceso(?:\s+principal)?\s+(?:por|a))\s+"
+    r"([^,;\d]{1,55}?)\s+" + _GRUPO_NUMERO_VIA + r"\b")
 # Palabras numéricas españolas (hasta 999.999) para "traducir" un número de calle
 # escrito en palabras a un entero - ver a_numero_chileno_o_palabras() más abajo.
 _UNIDADES_PALABRA = {"cero": 0, "uno": 1, "un": 1, "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5,
@@ -1509,7 +1528,7 @@ def extraer_direccion_texto(texto):
     # reales), así que este recorte es seguro.
     if "Detalle:" in texto:
         texto = texto.split("Detalle:", 1)[1]
-    for regex in (RE_VIA_CON_MARCA, RE_VIA_SIN_MARCA):
+    for regex in (RE_VIA_CON_MARCA, RE_VIA_SIN_MARCA, RE_VIA_UBICADO_CON_MARCA, RE_VIA_UBICADO_SIN_MARCA):
         for m in regex.finditer(texto):
             ctx = texto[max(0, m.start() - 110):m.start()]
             ult = None
