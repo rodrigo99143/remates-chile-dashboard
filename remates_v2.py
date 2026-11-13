@@ -3002,11 +3002,37 @@ def resolver_avisos(df, db_path):
                         _MUESTRA_SIN_COINCIDENCIA["n"] += 1
                         palabras = [p for p in dtx["nombre"].split() if len(p) >= 3 and not p.isdigit()]
                         ancla = max(palabras, key=len) if palabras else dtx["nombre"]
+                        # OJO (12-11-2026, pedido de Rodrigo - "necesito eficacia, no solo
+                        # velocidad"): antes esto solo mostraba el texto crudo del catastro,
+                        # sin decir POR QUÉ cada fila fue descartada - obligaba a adivinar si
+                        # el problema era el nombre, el número, o el filtro de "rol matriz".
+                        # Ahora se explica cada fila, para encontrar bugs reales sin tener que
+                        # repetir corridas a ciegas (caso real que esto debería exponer:
+                        # "GUSTAVO CABELLO OLGUIN 944" calza en nombre Y número contra el
+                        # catastro, pero igual queda SIN COINCIDENCIA - hay que ver cuál de
+                        # los tres filtros lo está descartando).
                         filas_calle = con.execute(
-                            "SELECT direccion FROM predios WHERE comuna=? AND REPLACE(direccion,'Ñ','N') LIKE ? "
-                            "LIMIT 8", (sii, f"%{ancla}%")).fetchall()
+                            "SELECT predio, direccion, destino FROM predios WHERE comuna=? AND "
+                            "REPLACE(direccion,'Ñ','N') LIKE ? LIMIT 8", (sii, f"%{ancla}%")).fetchall()
+                        detalle = []
+                        for pre_f, d_f, dest_f in filas_calle:
+                            pz = parsear_dir_catastro(d_f)
+                            if not pz:
+                                detalle.append(f"{d_f} [no se pudo leer el número de esta dirección del catastro]")
+                                continue
+                            nombre_f, n1_f, n2_f, _unidad_f = pz
+                            if pre_f >= 90000 or dest_f == "K":
+                                detalle.append(f"{d_f} [excluido: rol matriz/condominio (predio={pre_f}, destino={dest_f})]")
+                                continue
+                            if not nombres_compatibles(nombre_f, dtx["nombre"]):
+                                detalle.append(f"{d_f} [nombre no calza: '{nombre_f}' vs '{dtx['nombre']}']")
+                                continue
+                            if not (n1_f <= dtx["numero"] <= max(n1_f, n2_f)):
+                                detalle.append(f"{d_f} [número {dtx['numero']} fuera del rango {n1_f}-{n2_f}]")
+                                continue
+                            detalle.append(f"{d_f} [nombre y número SÍ calzan - revisar a mano por qué quedó fuera]")
                         _MUESTRA_SIN_COINCIDENCIA["casos"].append(
-                            (f"{dtx['nombre']} {dtx['numero']}", sii, [f[0] for f in filas_calle]))
+                            (f"{dtx['nombre']} {dtx['numero']}", sii, detalle))
                     # Muestra de "AMBIGUO": la calle SÍ se encontró, pero no se pudo elegir
                     # un único predio - se guarda el texto real del aviso completo para ver
                     # si el depto/unidad estaba ahí y el programa no lo leyó, o si de verdad
