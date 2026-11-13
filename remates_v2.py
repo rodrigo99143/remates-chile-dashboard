@@ -2457,8 +2457,16 @@ RE_CBR = re.compile(r"(?:CONSERVADOR(?: DE BIENES RAICES)?|CBR) DE\s+(" + _ALT_C
 # medio ("Departamento"/"Bodega") cortaba el calce por completo y extraer_roles()
 # no encontraba NINGÚN rol en todo el aviso, aunque los roles estuvieran ahí mismo,
 # escritos con toda claridad.
+# OJO (13-11-2026, mismo caso "Inglaterra 1144" al verificar la separación de avisos
+# con varios inmuebles): el inmueble 1 y el inmueble 3 de ESE MISMO aviso escriben el
+# rol como "Rol de Avalúo: 693-531" - el símbolo ":" va PEGADO justo después de
+# "Avalúo", sin "Nº"/"número" y sin espacio entre "Avalúo" y ":". Antes, "(?:AVALUOS?\s+)?"
+# exigía un espacio después de "AVALUO", así que con el ":" pegado esa palabra no se
+# podía saltar y la regex no encontraba el rol (a diferencia del inmueble 2, que sí
+# tenía espacio: "Avalúo Departamento:"). Se cambia ese "\s+" por "\s*" para que
+# "AVALUO" se pueda saltar aunque no haya espacio después.
 RE_ROL_AVALUO = re.compile(
-    r"\bROLE?S?\s+(?:DE\s+)?(?:AVALUOS?\s+)?(?:DEPARTAMENTOS?|BODEGAS?|ESTACIONAMIENTOS?|LOCALES?|OFICINAS?)?\s*"
+    r"\bROLE?S?\s+(?:DE\s+)?(?:AVALUOS?\s*)?(?:DEPARTAMENTOS?|BODEGAS?|ESTACIONAMIENTOS?|LOCALES?|OFICINAS?)?\s*"
     r"(?:FISCAL(?:ES)?\s+)?(?:N\s*|NUMERO\s*|NRO\.?\s*|NO\s+)?[:\s]*"
     r"((?:\d{1,5}\s*-\s*\d{1,4}\b[\s,;]*(?:Y\s+|E\s+)?)+)")
 RE_PRIMERA_PALABRA_TRIB = r"(?:\d{1,2}\s*[ºO°]?|PRIMER|SEGUND|TERCER|CUART|QUINT|SEXT|SEPTIM|OCTAV|NOVEN|DECIM|VIGESIM)\w*"
@@ -2826,6 +2834,50 @@ def extraer_demandado(texto):
     return None
 
 
+# OJO (13-11-2026, pedido explícito de Rodrigo tras revisar el caso real
+# "Inglaterra 1144"): el formato "Publicación Martillero" (liquidación) a veces
+# remata VARIOS inmuebles distintos en un solo aviso, numerados "1.- ...",
+# "2.- ...", "3.- ..." dentro de "Detalle: Se rematan LOS SIGUIENTES
+# INMUEBLES:". Cada número es una propiedad distinta (calle distinta, rol de
+# avalúo distinto, a veces comuna distinta) y hasta ahora todo el aviso se
+# procesaba como una sola fila - por diseño, todas las funciones de extracción
+# (extraer_direccion_texto, extraer_roles, etc.) sólo encuentran la PRIMERA
+# coincidencia en el texto completo, así que los inmuebles 2, 3, etc. se
+# perdían en silencio. Instrucción textual de Rodrigo: "Sí, deberían separarse
+# porque, claro, es un mismo aviso, pero son tres remates. Si son tres
+# remates, entonces son tres publicaciones distintas."
+RE_ITEM_MULTI_INMUEBLE = re.compile(
+    r"\b([1-9])\s*\.\s*-\s*(?=(?:Departamento|Casa|Sitio|Lote|Parcela|Local(?:es)?|"
+    r"Oficinas?|Bodegas?|Inmuebles?|Vivienda|Terreno|Derechos?|Estacionamientos?)\b)",
+    re.IGNORECASE)
+
+
+def dividir_aviso_multi_inmueble(texto):
+    """Si el aviso remata varios inmuebles numerados (1.- Departamento..., 2.-
+    Casa..., 3.- Sitio...), lo separa en una lista de textos - uno por
+    inmueble, cada uno con el preámbulo común (incluyendo todo lo anterior a
+    "Detalle:", que ya filtra correctamente la dirección del liquidador) más
+    SOLO la descripción de ese ítem. Si el aviso no trae ese patrón (el caso
+    normal, un solo inmueble), devuelve [texto] sin modificarlo.
+
+    Se exige que los números encontrados sean exactamente la secuencia
+    ascendente y consecutiva 1, 2, 3... (mínimo 2) antes de separar algo - así
+    un aviso que solo menciona "1.- " una vez de pasada (ej. "conforme al
+    artículo 1.- Las partes acuerdan...") nunca se corta por error: para eso
+    necesitaría además un "2.-" y así siguiendo, cada uno seguido de una
+    palabra de tipo de inmueble."""
+    matches = list(RE_ITEM_MULTI_INMUEBLE.finditer(texto))
+    numeros = [int(m.group(1)) for m in matches]
+    if len(matches) < 2 or numeros != list(range(1, len(matches) + 1)):
+        return [texto]
+    preambulo = texto[:matches[0].start()]
+    piezas = []
+    for i, m in enumerate(matches):
+        fin = matches[i + 1].start() if i + 1 < len(matches) else len(texto)
+        piezas.append(preambulo + texto[m.start():fin])
+    return piezas
+
+
 def parsear_aviso(texto, cab=None):
     tn = normalizar(texto)
     fecha, nota_fecha = extraer_fecha_hora(tn, cab)
@@ -2892,24 +2944,31 @@ def leer_avisos_docx(ruta, cache_ia_path=None):
         if len(tx) < 150 or not re.search(r"(?i)remat|subast", tx):
             continue
         n += 1
-        a = parsear_aviso(tx, cab)
-        # Rescate con IA (pedido de Rodrigo, 11-11-2026): el regex sigue siendo
-        # el método principal; esto SOLO se intenta si este aviso puntual se
-        # quedó sin ningún ROL. Sin ANTHROPIC_API_KEY configurada, avisos_ia
-        # no hace nada y el comportamiento queda idéntico al de siempre. Ver
-        # avisos_ia.py para el porqué y las validaciones que igual se aplican
-        # después (cruce contra el catastro) aunque el ROL venga de la IA.
-        if not a["roles"] and AVISOS_IA_DISPONIBLE:
-            rescate = avisos_ia.rescatar(tx, cache_db_path=cache_ia_path)
-            if rescate and rescate["roles"]:
-                a["roles"] = rescate["roles"]
-                a["alertas_aviso"] = a["alertas_aviso"] + ["RESCATADO_CON_IA"]
-                if rescate.get("comuna") and not a["candidatos"]:
-                    sii = NOMBRE2SII.get(normalizar(rescate["comuna"]))
-                    if sii:
-                        a["candidatos"] = [(sii, "IA")]
-        a.update({"texto": tx, "archivo": Path(ruta).name, "n_aviso": n})
-        filas.append(a)
+        # Si el aviso remata varios inmuebles numerados (ver comentario de
+        # dividir_aviso_multi_inmueble), se procesa cada uno como su propia
+        # publicación/fila - "n_aviso" se le agrega un ".N" para que cada
+        # inmueble tenga su propio id_fuente y nunca se mezclen entre sí.
+        piezas = dividir_aviso_multi_inmueble(tx)
+        for i, tx_pieza in enumerate(piezas):
+            a = parsear_aviso(tx_pieza, cab)
+            # Rescate con IA (pedido de Rodrigo, 11-11-2026): el regex sigue siendo
+            # el método principal; esto SOLO se intenta si este aviso puntual se
+            # quedó sin ningún ROL. Sin ANTHROPIC_API_KEY configurada, avisos_ia
+            # no hace nada y el comportamiento queda idéntico al de siempre. Ver
+            # avisos_ia.py para el porqué y las validaciones que igual se aplican
+            # después (cruce contra el catastro) aunque el ROL venga de la IA.
+            if not a["roles"] and AVISOS_IA_DISPONIBLE:
+                rescate = avisos_ia.rescatar(tx_pieza, cache_db_path=cache_ia_path)
+                if rescate and rescate["roles"]:
+                    a["roles"] = rescate["roles"]
+                    a["alertas_aviso"] = a["alertas_aviso"] + ["RESCATADO_CON_IA"]
+                    if rescate.get("comuna") and not a["candidatos"]:
+                        sii = NOMBRE2SII.get(normalizar(rescate["comuna"]))
+                        if sii:
+                            a["candidatos"] = [(sii, "IA")]
+            n_aviso = n if len(piezas) == 1 else f"{n}.{i + 1}"
+            a.update({"texto": tx_pieza, "archivo": Path(ruta).name, "n_aviso": n_aviso})
+            filas.append(a)
     return filas
 
 
@@ -4927,6 +4986,55 @@ def prueba():
     comprobar("Rol de Avalúo con la palabra del tipo de unidad en el medio (Departamento/Bodega) sí se lee",
               extraer_roles(normalizar("Rol de Avalúo Departamento: 2152-233 Independencia, Rol de Avalúo "
                                         "Bodega: 2152-309 Independencia.")) == [(2152, 233), (2152, 309)])
+
+    # Caso real completo (13-11-2026, pedido explícito de Rodrigo: "si son tres
+    # remates, entonces son tres publicaciones distintas") - mismo aviso "Inglaterra
+    # 1144", esta vez probando que se separa en 3 inmuebles distintos y que cada uno
+    # recupera SU PROPIA dirección y SU PROPIO rol (antes, todo el aviso completo
+    # colapsaba en una sola fila con solo los datos del primer inmueble).
+    AVISO_MULTI_INMUEBLE_PRUEBA = (
+        "Publicación Martillero. Fecha del Remate: 19/11/2026 12:00. Tipo Procedimiento: "
+        "Liquidación voluntaria simplificada. Rol Causa: C-925-2026. Tribunal: 1º Juzgado de "
+        "Letras de San Fernando. Deudor: ROMINA ALEJANDRA ZAPATA PÉREZ. Deudor Rut: 16022923-3. "
+        "Liquidador: MARÍA FERNANDA CROSS LUCERO. Dirección del Remate Región: Región "
+        "Metropolitana. Comuna: QUILICURA Dirección: Av. Américo Vespucio 1560, Quilicura 100% "
+        "ONLINE. Detalle: Se rematan LOS SIGUIENTES INMUEBES: 1.- Departamento A-2918, ubicado en "
+        "Coronel Souper 4060, comuna de Estación Central, inscrito a fojas 47862 Nº 68792 del "
+        "Registro de Propiedad del año 2017 del Conservador de Bienes Raíces de Santiago. Rol de "
+        "Avalúo: 693-531 Estación Central. MÍNIMO $55.000.000. 2.- Departamento 1708 del piso 17 "
+        "del Edificio A, y bodega B 23 Edificio A, ubicados en Inglaterra 1144, comuna de "
+        "Independencia, inscritos a fojas 32575 Nº 46875 del Registro de Propiedad del año 2017 "
+        "del Conservador de Bienes Raíces de Santiago. Rol de Avalúo Departamento: 2152-233 "
+        "Independencia, Rol de Avalúo Bodega: 2152-309 Independencia. MÍNIMO $50.500.000. 3.- "
+        "Departamento 1613, ubicado en Santa Petronila 38, comuna de Estación Central, inscrito a "
+        "fojas 25302 Nº 36538 del Registro de Propiedad del año 2019 del Conservador de Bienes "
+        "Raíces de Santiago. Rol de Avalúo: 7041-321 Estación Central. MÍNIMO $27.000.000. Valor "
+        "Mínimo (pesos): $132.500.000. Comisión: 2,00%."
+    )
+    piezas_multi = dividir_aviso_multi_inmueble(AVISO_MULTI_INMUEBLE_PRUEBA)
+    comprobar("Aviso con 3 remates numerados se separa en 3 textos", len(piezas_multi) == 3)
+    roles_multi = [extraer_roles(normalizar(p)) for p in piezas_multi]
+    comprobar("Inmueble 1 (Coronel Souper) recupera solo su propio rol",
+              roles_multi[0] == [(693, 531)])
+    comprobar("Inmueble 2 (Inglaterra 1144) recupera sus 2 propios roles (depto y bodega), sin mezclar con los otros 2",
+              roles_multi[1] == [(2152, 233), (2152, 309)])
+    comprobar("Inmueble 3 (Santa Petronila) recupera solo su propio rol",
+              roles_multi[2] == [(7041, 321)])
+    dir_multi = [extraer_direccion_texto(p) for p in piezas_multi]
+    comprobar("Inmueble 1 recupera su propia dirección (Coronel Souper), no la del liquidador",
+              dir_multi[0] is not None and "SOUPER" in dir_multi[0]["nombre"] and dir_multi[0]["numero"] == 4060)
+    comprobar("Inmueble 2 recupera su propia dirección (Inglaterra 1144), no la del inmueble 1 ni la del liquidador",
+              dir_multi[1] is not None and "INGLATERRA" in dir_multi[1]["nombre"] and dir_multi[1]["numero"] == 1144)
+    comprobar("Inmueble 3 recupera su propia dirección (Santa Petronila), no la de los otros 2",
+              dir_multi[2] is not None and "PETRONILA" in dir_multi[2]["nombre"] and dir_multi[2]["numero"] == 38)
+    comprobar("Aviso normal (un solo inmueble, sin numeración 1.-/2.-/3.-) no se separa",
+              dividir_aviso_multi_inmueble(AVISO_PRUEBA_1) == [AVISO_PRUEBA_1])
+    comprobar("Un '1.-' suelto sin seguir con '2.-' Departamento/Casa/etc. no gatilla una separación falsa",
+              dividir_aviso_multi_inmueble("Conforme al artículo 1.- Las partes acuerdan lo siguiente, "
+                                            "se rematará el inmueble ubicado en Calle Falsa 123.") ==
+              ["Conforme al artículo 1.- Las partes acuerdan lo siguiente, se rematará el inmueble "
+               "ubicado en Calle Falsa 123."])
+
     comprobar("Cabecera de fecha", cabecera_fecha("14 DE SEPTIEMBRE") == (14, 9))
 
     # --- Macal ---
