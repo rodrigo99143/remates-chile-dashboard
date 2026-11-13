@@ -1304,11 +1304,15 @@ RE_VIA_SIN_MARCA = re.compile(
 # sigue aplicando igual, y es el que evita que esto capture frases como "el Juzgado...,
 # ubicado en Rengifo Nº 240" (la oficina del tribunal, no la propiedad) - verificado con
 # una prueba real que ya existía (AVISO_PRUEBA_1).
+# OJO (12-11-2026, muestra real de "NO SE PUDO LEER LA DIRECCION"): caso real
+# "...con acceso general por AV..." - el "general" no estaba contemplado (solo
+# "principal" u omitido), así que este aviso se perdía entero aunque la
+# dirección SÍ estaba escrita de forma reconocible.
 RE_VIA_UBICADO_CON_MARCA = re.compile(
-    r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?en|con\s+acceso(?:\s+principal)?\s+(?:por|a))\s+"
+    r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?en|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a))\s+"
     r"([^,;\d]{1,55}?)\s*,?\s*(?:N[º°o]\.?\s*|n[uú]mero\s+|#\s*)" + _GRUPO_NUMERO_VIA)
 RE_VIA_UBICADO_SIN_MARCA = re.compile(
-    r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?en|con\s+acceso(?:\s+principal)?\s+(?:por|a))\s+"
+    r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?en|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a))\s+"
     r"([^,;\d]{1,55}?)\s+" + _GRUPO_NUMERO_VIA + r"\b")
 # Palabras numéricas españolas (hasta 999.999) para "traducir" un número de calle
 # escrito en palabras a un entero - ver a_numero_chileno_o_palabras() más abajo.
@@ -1633,10 +1637,22 @@ def buscar_rol_por_direccion(con, comuna_sii, dir_tx):
         if sin_unidad or not cands:
             cands = sin_unidad
         else:
+            # OJO (12-11-2026, muestra real de "AMBIGUO"): si TODOS los candidatos de un
+            # edificio comparten exactamente el mismo avalúo fiscal (p. ej. "AV GENERAL
+            # BULNES 85" - 45 unidades, las 45 con el mismo avalúo), la ambigüedad de CUÁL
+            # fila exacta del catastro corresponde no cambia el dato que de verdad importa
+            # para el negocio (el avalúo fiscal, que es lo que usa el cálculo de
+            # oportunidad) - se resuelve igual, aunque no sepamos la unidad exacta. Si hay
+            # más de un avalúo distinto entre los candidatos, sigue siendo una ambigüedad
+            # real (no se adivina).
+            if cands and len({c[3] for c in cands}) == 1:
+                return "UNICO", [cands[0][:5]]
             return "AMBIGUO (edificio: hay varias unidades)", [c[:5] for c in cands[:6]]
     if not cands:
         return "SIN COINCIDENCIA", []
     if len(cands) == 1:
+        return "UNICO", [cands[0][:5]]
+    if len({c[3] for c in cands}) == 1:   # mismo razonamiento: mismo avalúo en todos, se resuelve igual
         return "UNICO", [cands[0][:5]]
     return f"AMBIGUO ({len(cands)} candidatos)", [c[:5] for c in cands[:6]]
 
@@ -2988,7 +3004,7 @@ def resolver_avisos(df, db_path):
                         ancla = max(palabras, key=len) if palabras else dtx["nombre"]
                         filas_calle = con.execute(
                             "SELECT direccion FROM predios WHERE comuna=? AND REPLACE(direccion,'Ñ','N') LIKE ? "
-                            "LIMIT 3", (sii, f"%{ancla}%")).fetchall()
+                            "LIMIT 8", (sii, f"%{ancla}%")).fetchall()
                         _MUESTRA_SIN_COINCIDENCIA["casos"].append(
                             (f"{dtx['nombre']} {dtx['numero']}", sii, [f[0] for f in filas_calle]))
                     # Muestra de "AMBIGUO": la calle SÍ se encontró, pero no se pudo elegir
