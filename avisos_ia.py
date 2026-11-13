@@ -63,6 +63,37 @@ VERSION_CACHE = 2
 
 _cliente_cache = {}
 
+# OJO (12-11-2026): Rodrigo preguntó por qué este módulo, ya pagado y ya
+# conectado, parecía no haber hecho nada en ninguna corrida real - y la
+# respuesta honesta es que, tal como estaba escrito, un rescate exitoso NO
+# deja ningún rastro visible: solo se imprime algo en consola cuando algo
+# FALLA (sin cliente, o la llamada a la IA revienta). Si todo funcionaba
+# bien, quedaba en silencio total. Estas estadísticas existen para que la
+# próxima corrida diga, con números reales, qué pasó - sin tener que
+# adivinar a partir de la ausencia de líneas de error.
+ESTADISTICAS = {
+    "sin_cliente": 0,       # no hay API key (o la librería/clave fallaron) - ni se intentó llamar a la IA
+    "cache_con_rol": 0,     # ya se había rescatado antes este mismo aviso (incluso de otra corrida)
+    "cache_vacio": 0,       # ya se había consultado antes y la IA de verdad no encontró nada
+    "nuevo_con_rol": 0,     # llamada nueva a la IA esta corrida, SÍ encontró ROL
+    "nuevo_vacio": 0,       # llamada nueva a la IA esta corrida, no encontró ROL (dato genuinamente ausente)
+    "fallido": 0,           # la llamada a la IA en sí falló (red, modelo inválido, etc.) - se reintenta la próxima vez
+}
+
+
+def resumen_estadisticas():
+    """Copia de ESTADISTICAS al momento de llamarla - para que remates_v2.py
+    la deje en el RESUMEN del Excel y en el log de la corrida."""
+    return dict(ESTADISTICAS)
+
+
+def reiniciar_estadisticas():
+    """Vuelve todos los contadores a cero - se llama una vez al principio de
+    cada corrida real (tabla_avisos() en remates_v2.py), por si el proceso
+    reutiliza el módulo más de una vez (como en --prueba)."""
+    for k in ESTADISTICAS:
+        ESTADISTICAS[k] = 0
+
 
 def _cliente():
     """Devuelve el cliente de Anthropic, o None si no hay API key o falla la
@@ -164,11 +195,16 @@ def rescatar(texto, cache_db_path=None):
     camino normal, exactamente como si esta función no existiera."""
     cliente = _cliente()
     if cliente is None:
+        ESTADISTICAS["sin_cliente"] += 1
         return None
 
     h = _hash_texto(texto)
     cacheado = _leer_cache(cache_db_path, h)
     if cacheado is not None:
+        if cacheado.get("roles"):
+            ESTADISTICAS["cache_con_rol"] += 1
+        else:
+            ESTADISTICAS["cache_vacio"] += 1
         return cacheado if cacheado.get("roles") else None
 
     # OJO (este fue el bug real del 11-11-2026, segunda parte): antes, si la
@@ -200,9 +236,14 @@ def rescatar(texto, cache_db_path=None):
                  if m is not None and p is not None]
         resultado = {"roles": roles, "comuna": datos.get("comuna"), "confianza": datos.get("confianza")}
     except Exception as e:
+        ESTADISTICAS["fallido"] += 1
         print(f"  [IA-AVISOS] no se pudo rescatar este aviso con IA ({e}); sigue sin ROL, como antes "
               f"(no se guarda en la caché - se vuelve a intentar en la próxima corrida).")
         return None
 
     _guardar_cache(cache_db_path, h, resultado)
+    if resultado["roles"]:
+        ESTADISTICAS["nuevo_con_rol"] += 1
+    else:
+        ESTADISTICAS["nuevo_vacio"] += 1
     return resultado if resultado["roles"] else None

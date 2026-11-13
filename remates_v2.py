@@ -2795,6 +2795,38 @@ def leer_avisos_docx(ruta, cache_ia_path=None):
     return filas
 
 
+# OJO (12-11-2026, pedido de Rodrigo): hasta ahora, el rescate con IA de
+# avisos_ia.py no dejaba ningún rastro visible cuando funcionaba bien - solo
+# se imprimía algo si fallaba. _ESTADISTICAS_IA_AVISOS guarda el resumen real
+# de la última corrida (ver avisos_ia.resumen_estadisticas()) para que quede
+# en el RESUMEN del Excel y en el log de consola, sea cual sea el resultado.
+_ESTADISTICAS_IA_AVISOS = {}
+
+
+def _reportar_ia_avisos():
+    """Se llama justo después de tabla_avisos() en main(). Imprime y guarda
+    el resumen real de qué hizo (o no hizo) el rescate con IA esta corrida."""
+    global _ESTADISTICAS_IA_AVISOS
+    _ESTADISTICAS_IA_AVISOS = {}
+    if not AVISOS_IA_DISPONIBLE:
+        decir("  [IA-AVISOS] el módulo avisos_ia no está disponible en esta corrida (no se pudo importar).")
+        return
+    st = avisos_ia.resumen_estadisticas()
+    _ESTADISTICAS_IA_AVISOS = st
+    intentos_reales = st["nuevo_con_rol"] + st["nuevo_vacio"] + st["fallido"]
+    if st["sin_cliente"] and not intentos_reales and not st["cache_con_rol"] and not st["cache_vacio"]:
+        decir(f"  [IA-AVISOS] no se intentó ningún rescate esta corrida: no hay ANTHROPIC_API_KEY disponible "
+              f"(o no se pudo preparar el cliente) para {st['sin_cliente']} aviso(s) que lo habrían necesitado.")
+    else:
+        decir(f"  [IA-AVISOS] resumen real de esta corrida: "
+              f"rescatados con ROL (llamada nueva): {st['nuevo_con_rol']} | "
+              f"consultados, sin ROL de verdad (llamada nueva): {st['nuevo_vacio']} | "
+              f"fallidos (error técnico, se reintenta la próxima vez): {st['fallido']} | "
+              f"ya en caché con ROL (de otra corrida): {st['cache_con_rol']} | "
+              f"ya en caché sin ROL (de otra corrida): {st['cache_vacio']} | "
+              f"sin cliente disponible: {st['sin_cliente']}")
+
+
 def buscar_docx_avisos():
     carpeta = BASE / AVISOS_CARPETA_NOMBRE
     rutas = []
@@ -2810,6 +2842,8 @@ def buscar_docx_avisos():
 
 
 def tabla_avisos(rutas, cache_ia_path=None):
+    if AVISOS_IA_DISPONIBLE:
+        avisos_ia.reiniciar_estadisticas()
     filas = []
     for r in rutas:
         for a in leer_avisos_docx(r, cache_ia_path=cache_ia_path):
@@ -4154,6 +4188,22 @@ def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
                        f"{cra['total']} avisos | con ROL: {cra['con_rol']} ({cra['con_rol']/tot*100:.1f}%) | "
                        f"con dirección: {cra['con_direccion']} ({cra['con_direccion']/tot*100:.1f}%) | "
                        f"con AMBOS (rol y dirección): {cra['con_ambos']} ({cra['con_ambos']/tot*100:.1f}%)"))
+    # OJO (12-11-2026, pedido de Rodrigo): antes no había forma de saber, mirando
+    # el Excel, si el rescate con IA de avisos sin ROL (avisos_ia.py) hizo algo
+    # esta corrida o no - un rescate exitoso no dejaba ningún rastro. Esta línea
+    # muestra el resumen real, sea cual sea el resultado.
+    if _ESTADISTICAS_IA_AVISOS:
+        st = _ESTADISTICAS_IA_AVISOS
+        if not any(st.values()):
+            filas.append(("RESCATE CON IA DE AVISOS SIN ROL (avisos_ia.py)",
+                           "no hubo ningún aviso sin ROL que requiriera intentarlo esta corrida"))
+        else:
+            filas.append(("RESCATE CON IA DE AVISOS SIN ROL (avisos_ia.py)",
+                           f"rescatados con ROL (llamada nueva): {st['nuevo_con_rol']} | "
+                           f"consultados, sin ROL de verdad: {st['nuevo_vacio']} | "
+                           f"fallidos (error técnico): {st['fallido']} | "
+                           f"ya en caché con ROL: {st['cache_con_rol']} | ya en caché sin ROL: {st['cache_vacio']} | "
+                           f"sin cliente disponible (sin API key válida): {st['sin_cliente']}"))
     for estado, n in df["cruce_estado"].value_counts().items():
         filas.append((f"Cruce SII: {estado}", int(n)))
     for k, n in df["confianza"].value_counts().items():
@@ -4438,6 +4488,7 @@ def reunir_fuentes():
                 tablas.append(t)
                 estado["AVISOS"] = f"OK ({len(t)} avisos de {len(rutas)} archivo(s): " + ", ".join(p.name for p in rutas) + ")"
                 decir(f"  [AVISOS] OK: {len(t)} avisos")
+                _reportar_ia_avisos()
                 if PRECIO_MERCADO_DISPONIBLE:
                     try:
                         archivos_avisos_nuevos = precio_mercado.registrar_avisos_procesados(DATOS, rutas)
