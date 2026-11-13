@@ -14,7 +14,7 @@ Paso 1 de 4: catastro nacional del SII
   Leyendo BRORGA2441AL_NAC_2026_2 (93 MB)...
     11,718,011 líneas de construcción cargadas...    12,218,011 líneas de construcción cargadas...    12,695,895 líneas de construcción cargadas...
   Sumando superficie construida y buscando el año más antiguo por propiedad...
-  Base lista: 9,655,566 predios, 12,695,895 líneas de construcción, en 70 segundos.
+  Base lista: 9,655,566 predios, 12,695,895 líneas de construcción, en 132 segundos.
 
 Paso 2 de 4: barrido en vivo de las fuentes
 
@@ -35,7 +35,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
   [PRECIO_MERCADO] actualizando base propia de precios de mercado...
   [PRECIO_MERCADO: ChilePropiedades] barriendo...
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/concepcion/0
-    [DIAG]   HTML recibido: 157,151 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 157,147 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 186
     [DIAG]   -> con precio Y m2 detectados: 42
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 42
@@ -149,7 +149,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/nunoa/0
-    [DIAG]   HTML recibido: 154,329 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 154,804 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 195
     [DIAG]   -> con precio Y m2 detectados: 38
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 38
@@ -173,8 +173,8 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/puente-alto/0
-    [DIAG]   HTML recibido: 153,779 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 189
+    [DIAG]   HTML recibido: 154,566 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 188
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
@@ -299,7 +299,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
     [DIAG]   -> de esos, con comuna reconocida: 32 (= 32 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/rancagua/0
-    [DIAG]   HTML recibido: 161,903 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 161,864 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
@@ -322,11 +322,11 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> con precio Y m2 detectados: 28
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 28
     [DIAG]   -> de esos, con comuna reconocida: 28 (= 28 avisos aprovechables)
-  [PRECIO_MERCADO: ChilePropiedades] OK: 0 nuevas, 1795 ya vistas, 0 descartadas
+  [PRECIO_MERCADO: ChilePropiedades] OK: 3 nuevas, 1792 ya vistas, 0 descartadas
   [PRECIO_MERCADO: TopPropiedades] barriendo...
     [DIAG] https://www.toppropiedades.cl/propiedades/venta
-    [DIAG]   HTML recibido: 283,564 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 78
+    [DIAG]   HTML recibido: 283,752 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 79
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
     [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
@@ -337,7 +337,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
   [PRECIO_MERCADO: TopPropiedades] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Procasa] barriendo...
     [DIAG] https://www.procasa.cl/Todos_los_tipos/Venta/Todas_las_comunas
-    [DIAG]   HTML recibido: 97,650 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 97,641 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 127
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -363,7 +363,7 @@ Call log:
   [PRECIO_MERCADO: Doomos] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Inmoclick] barriendo...
     [DIAG] https://www.inmoclick.cl/casas-en-venta
-    [DIAG]   HTML recibido: 510,879 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 511,142 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 66
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -373,7 +373,7 @@ Call log:
     [DIAG]     #2: 'Menu INGRESAR VENTA Casas Departamentos Lotes ALQUILERES Casas Departamentos Locales Temporarios INMOBILIARIAS Busca inmobiliarias en Mendoza Busca inmobiliarias en Neuquén Busca inmobiliarias en Salt'
     [DIAG]     #3: 'INGRESAR VENTA Casas Departamentos Lotes ALQUILERES Casas Departamentos Locales Temporarios INMOBILIARIAS Busca inmobiliarias en Mendoza Busca inmobiliarias en Neuquén Busca inmobiliarias en Salta Bus'
     [DIAG] https://www.inmoclick.cl/departamentos-en-venta
-    [DIAG]   HTML recibido: 524,258 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 524,164 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 67
     [DIAG]   -> con precio Y m2 detectados: 2
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 2
@@ -384,7 +384,7 @@ Call log:
   [PRECIO_MERCADO: Inmoclick] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: ProUrbano] barriendo...
     [DIAG] https://www.prourbano.cl/s/casa/venta?id_property_type=1&business_type%5B0%5D=for_sale
-    [DIAG]   HTML recibido: 595,461 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 595,478 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 119
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -394,7 +394,7 @@ Call log:
     [DIAG]     #2: 'escribenos@prourbanogroup.com +56942004000 Select Language \u200b ▼'
     [DIAG]     #3: 'escribenos@prourbanogroup.com +56942004000 Select Language \u200b ▼'
     [DIAG] https://www.prourbano.cl/s/departamento/venta?id_property_type=2&business_type%5B0%5D=for_sale
-    [DIAG]   HTML recibido: 595,917 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 595,934 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 119
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -478,7 +478,7 @@ Call log:
   [PRECIO_MERCADO: Maitencillo] OK: 0 nuevas, 8 ya vistas, 0 descartadas
   [PRECIO_MERCADO: GrupoPremium] barriendo...
     [DIAG] https://gpremium.cl/comprar-una-propiedad/
-    [DIAG]   HTML recibido: 169,313 caracteres | bloques article/li/div en la página: 207
+    [DIAG]   HTML recibido: 169,510 caracteres | bloques article/li/div en la página: 207
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 121
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -534,37 +534,37 @@ Call log:
   [PRECIO_MERCADO: EngelVolkers] OK: 0 nuevas, 18 ya vistas, 0 descartadas
   [PRECIO_MERCADO: PropertyPartners] barriendo...
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-metropolitana-de-santiago
-    [DIAG]   HTML recibido: 406,022 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 405,977 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 216
     [DIAG]   -> con precio Y m2 detectados: 138
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 114
     [DIAG]   -> de esos, con comuna reconocida: 114 (= 114 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-metropolitana-de-santiago
-    [DIAG]   HTML recibido: 414,406 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 414,424 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 213
     [DIAG]   -> con precio Y m2 detectados: 138
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 132
     [DIAG]   -> de esos, con comuna reconocida: 132 (= 132 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-de-valparaiso
-    [DIAG]   HTML recibido: 417,270 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 417,323 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 209
     [DIAG]   -> con precio Y m2 detectados: 143
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 125
     [DIAG]   -> de esos, con comuna reconocida: 125 (= 125 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-de-valparaiso
-    [DIAG]   HTML recibido: 408,849 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 408,768 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 207
     [DIAG]   -> con precio Y m2 detectados: 113
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 97
     [DIAG]   -> de esos, con comuna reconocida: 97 (= 97 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-del-bio-bio
-    [DIAG]   HTML recibido: 409,076 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 409,210 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 213
     [DIAG]   -> con precio Y m2 detectados: 142
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 142
     [DIAG]   -> de esos, con comuna reconocida: 142 (= 142 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-del-bio-bio
-    [DIAG]   HTML recibido: 410,656 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 410,808 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 221
     [DIAG]   -> con precio Y m2 detectados: 144
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 126
@@ -572,12 +572,12 @@ Call log:
   [PRECIO_MERCADO: PropertyPartners] OK: 0 nuevas, 736 ya vistas, 0 descartadas
 
 Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
-  Avisos: 792 leídos | con ROL: 474 (informado: 237, deducido por dirección: 237)
-  Avisos sin ROL (318) - motivo de por qué no se pudo deducir por dirección:
-    155 | SIN COINCIDENCIA
+  Avisos: 792 leídos | con ROL: 478 (informado: 237, deducido por dirección: 241)
+  Avisos sin ROL (314) - motivo de por qué no se pudo deducir por dirección:
+    150 | SIN COINCIDENCIA
      62 | NO SE PUDO LEER LA DIRECCION
      23 | SIN COINCIDENCIA | COMUNA ASUMIDA DEL TRIBUNAL
-     20 | AMBIGUO (edificio: hay varias unidades)
+     21 | AMBIGUO (edificio: hay varias unidades)
      12 | AMBIGUO (2 candidatos)
       9 | AMBIGUO (3 candidatos)
       7 | SIN COMUNA CANDIDATA (no se pudo intentar)
@@ -594,7 +594,7 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
       1 | AMBIGUO (151 candidatos)
       1 | AMBIGUO (68 candidatos)
       1 | AMBIGUO (242 candidatos)
-      1 | AMBIGUO (6 candidatos)
+      1 | AMBIGUO (18 candidatos)
       1 | AMBIGUO (109 candidatos)
       1 | AMBIGUO (76 candidatos)
       1 | AMBIGUO (57 candidatos)
@@ -608,20 +608,20 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
       1 | AMBIGUO (73 candidatos)
   Muestra de "SIN COINCIDENCIA" (la dirección del aviso contra lo que SÍ hay en el catastro para esa calle, en esa comuna - para ver si la calle existe con otro número, o si no existe del todo):
     aviso: 'ZAPARELI 1174' (comuna SII 02201) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'COQUIMBO 10' (comuna SII 08211) | catastro para esa calle: ['COQUIMBO 518 [excluido: rol matriz/condominio (predio=90046, destino=K)]', 'COQUIMBO 157 CHGTE [no se pudo leer el número de esta dirección del catastro]', 'COQUIMBO 251 EQUIPAMIENTO CHGTE [no se pudo leer el número de esta dirección del catastro]', 'COQUIMBO ST 18 CHGTE [no se pudo leer el número de esta dirección del catastro]', "COQUIMBO ST 19 [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']", 'COQUIMBO ST 20 427 CHGTE [no se pudo leer el número de esta dirección del catastro]', "COQUIMBO ST 30 [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']", 'COQUIMBO ST 31 CHGTE [no se pudo leer el número de esta dirección del catastro]']
+    aviso: 'COQUIMBO 10' (comuna SII 08211) | catastro para esa calle: ['COQUIMBO 518 [excluido: rol matriz/condominio (predio=90046, destino=K)]', 'COQUIMBO 157 CHGTE [número 10 fuera del rango 157-157]', 'COQUIMBO 251 EQUIPAMIENTO CHGTE [número 10 fuera del rango 251-251]', "COQUIMBO ST 18 CHGTE [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']", "COQUIMBO ST 19 [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']", "COQUIMBO ST 20 427 CHGTE [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']", "COQUIMBO ST 30 [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']", "COQUIMBO ST 31 CHGTE [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']"]
     aviso: 'COQUIMBO 10' (comuna SII 08201) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'CUETO 1207' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'SAMUEL BANADO MORRI 9491' (comuna SII 02201) | catastro para esa calle: ["SAMUEL ROMAN 03057 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03053 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03049 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03045 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03042 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03067 CS 1 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03067 CS 2 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03067 CS 3 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']"]
     aviso: 'SAMUEL BANADO MORRI 9491' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'LAS GOLONDRINA PONIENTE 4274' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'LAS PARCELA 4280' (comuna SII 01211) | catastro para esa calle: ["AV LAS PARCELAS 8 I 2 4726 [nombre no calza: 'LAS PARCELA 8 I' vs 'LAS PARCELA']", "LAS PARCELAS PARC 2 2604 ST C [nombre no calza: 'LAS PARCELA PARC' vs 'LAS PARCELA']", 'PARCELA 9 ALTO HOSPICIO [no se pudo leer el número de esta dirección del catastro]', "PARCELA 36 LT C 2 [nombre no calza: '' vs 'LAS PARCELA']", "AV LAS PARCELAS PLANO HIJUELA 3 [nombre no calza: 'LAS PARCELA PLANO HIJUELA' vs 'LAS PARCELA']", 'AV LOS AROMOS PARCELA 33 ALTO HOSPICIO [no se pudo leer el número de esta dirección del catastro]', 'AVENIDA LAS PARCELAS 2721 [número 4280 fuera del rango 2721-2721]', 'PARCELA 32 PI 2 2973 CR [no se pudo leer el número de esta dirección del catastro]']
-    aviso: 'LAS PARCELA 4280' (comuna SII 01201) | catastro para esa calle: ['PL 01101 - 455 -CR LAS PARCELAS [no se pudo leer el número de esta dirección del catastro]']
+    aviso: 'LAS PARCELA 4280' (comuna SII 01211) | catastro para esa calle: ["AV LAS PARCELAS 8 I 2 4726 [nombre no calza: 'LAS PARCELA 8 I' vs 'LAS PARCELA']", "LAS PARCELAS PARC 2 2604 ST C [nombre no calza: 'LAS PARCELA PARC' vs 'LAS PARCELA']", "PARCELA 9 ALTO HOSPICIO [nombre no calza: '' vs 'LAS PARCELA']", "PARCELA 36 LT C 2 [nombre no calza: '' vs 'LAS PARCELA']", "AV LAS PARCELAS PLANO HIJUELA 3 [nombre no calza: 'LAS PARCELA PLANO HIJUELA' vs 'LAS PARCELA']", 'AV LOS AROMOS PARCELA 33 ALTO HOSPICIO [número 4280 fuera del rango 33-33]', 'AVENIDA LAS PARCELAS 2721 [número 4280 fuera del rango 2721-2721]', "PARCELA 32 PI 2 2973 CR [nombre no calza: '32 PI' vs 'LAS PARCELA']"]
+    aviso: 'LAS PARCELA 4280' (comuna SII 01201) | catastro para esa calle: ["PL 01101 - 455 -CR LAS PARCELAS [nombre no calza: 'PL' vs 'LAS PARCELA']"]
     aviso: 'EL VERGEL 2720' (comuna SII 15103) | catastro para esa calle: ['EL VERGEL 2932 [número 2720 fuera del rango 2932-2932]', 'EL VERGEL 2908 LC 1 [número 2720 fuera del rango 2908-2908]', 'EL VERGEL 2914 LC 2 [número 2720 fuera del rango 2914-2914]', 'EL VERGEL 2922 LC 3 [número 2720 fuera del rango 2922-2922]', 'EL VERGEL 2926 LC 4 [número 2720 fuera del rango 2926-2926]', 'EL VERGEL 2252 DP 201 [número 2720 fuera del rango 2252-2252]', 'EL VERGEL 2252 DP 202 [número 2720 fuera del rango 2252-2252]', 'EL VERGEL 2252 DP 203 [número 2720 fuera del rango 2252-2252]']
     aviso: 'EL VERGEL 2720' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'BALMACEDA 29' (comuna SII 14502) | catastro para esa calle: ['BALMACEDA 4239 [número 29 fuera del rango 4239-4239]', 'BALMACEDA 4255 [número 29 fuera del rango 4255-4255]', 'BALMACEDA 4273 [número 29 fuera del rango 4273-4273]', 'BALMACEDA 4101 [número 29 fuera del rango 4101-4101]', 'BALMACEDA 4117 [número 29 fuera del rango 4117-4117]', 'BALMACEDA 4133 [número 29 fuera del rango 4133-4133]', 'BALMACEDA 4149 [número 29 fuera del rango 4149-4149]', 'AVDA. BALMACEDA 4165 ST. 84 [número 29 fuera del rango 4165-4165]']
     aviso: 'BALMACEDA 29' (comuna SII 14501) | catastro para esa calle: ['BALMACEDA 84 [número 29 fuera del rango 84-84]', 'BALMACEDA 88 [número 29 fuera del rango 88-88]', 'BALMACEDA 92 [número 29 fuera del rango 92-92]', 'BALMACEDA 96 [número 29 fuera del rango 96-96]', 'BALMACEDA 836 [número 29 fuera del rango 836-836]', 'BALMACEDA 838 [número 29 fuera del rango 838-838]', 'BALMACEDA 848 [número 29 fuera del rango 848-848]', 'BALMACEDA 860 [número 29 fuera del rango 860-860]']
     aviso: 'BALMACEDA 29' (comuna SII 13101) | catastro para esa calle: ["BANDERA 960 A 962 BALMACEDA 1108 A 1142 [nombre no calza: 'BANDERA 960 A 962 BALMACEDA 1108 A' vs 'BALMACEDA']", 'BALMACEDA 1264 [número 29 fuera del rango 1264-1264]', 'BALMACEDA 1270 1276 [número 29 fuera del rango 1270-1276]', 'BALMACEDA 1296 [número 29 fuera del rango 1296-1296]', 'AV BALMACEDA 1244 LC 01 [número 29 fuera del rango 1244-1244]', 'AV BALMACEDA 1236 LC 02 [número 29 fuera del rango 1236-1236]', 'AV BALMACEDA 1232 LC 03 [número 29 fuera del rango 1232-1232]', 'AV BALMACEDA 1228 LC 04 [número 29 fuera del rango 1228-1228]']
-    aviso: 'LAS AMERICA 4525' (comuna SII 01201) | catastro para esa calle: ['PASAJE ARICA 2257 POB AMERICA [no se pudo leer el número de esta dirección del catastro]']
+    aviso: 'LAS AMERICA 4525' (comuna SII 01201) | catastro para esa calle: ["PASAJE ARICA 2257 POB AMERICA [nombre no calza: 'ARICA' vs 'LAS AMERICA']"]
     aviso: '22 1/2 NORTE A 3643' (comuna SII 07201) | catastro para esa calle: ["AVDA PIDUCO NORTE 1620 [nombre no calza: 'PIDUCO NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 1 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 2 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 3 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 4 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 5 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 6 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 7 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']"]
     aviso: 'LOCAL 91' (comuna SII 13101) | catastro para esa calle: ["ESTADOS UNIDOS 226 LOCAL COM P 1 [nombre no calza: 'ESTADO UNIDO 226 LOCAL COM P' vs 'LOCAL']", "MONEDA 782 LOCAL 201 [nombre no calza: 'MONEDA 782 LOCAL' vs 'LOCAL']", "ESTADO 33 LOCAL 1 B [nombre no calza: 'ESTADO 33 LOCAL' vs 'LOCAL']", "SAN ANTONIO 50 LOCAL 5 [nombre no calza: 'SAN ANTONIO 50 LOCAL' vs 'LOCAL']", "SAN ANTONIO 54 LOCAL 4 [nombre no calza: 'SAN ANTONIO 54 LOCAL' vs 'LOCAL']", "AHUMADA 83 LOCAL 113 [nombre no calza: 'AHUMADA 83 LOCAL' vs 'LOCAL']", "MONEDA 772 LOCAL 309 B [nombre no calza: 'MONEDA 772 LOCAL' vs 'LOCAL']", "MONEDA 782 LOCAL 0209 A [nombre no calza: 'MONEDA 782 LOCAL' vs 'LOCAL']"]
     aviso: 'CONCEJAL SIMON YARZA CELI 1085' (comuna SII 06112) | catastro para esa calle: (la calle no aparece del todo)
@@ -629,7 +629,7 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
     aviso: 'LA DEHESA 1201' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: '7 170' (comuna SII 07305) | catastro para esa calle: ["HUENUTIL LT 7 [nombre no calza: 'HUENUTIL LT' vs '7']", "PJ ROBERTO ORTEGA B 477 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 75 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 71 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 57 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 47 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 27 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 17 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']"]
     aviso: '7 170' (comuna SII 07301) | catastro para esa calle: ["O SUBERCASEAUX 0117 [nombre no calza: 'O SUBERCASEAUX' vs '7']", "O SUBERCASEAUX 0127 [nombre no calza: 'O SUBERCASEAUX' vs '7']", "INTEND FONTANA 127 [nombre no calza: 'INTEND FONTANA' vs '7']", "INTEND FONTANA 157 [nombre no calza: 'INTEND FONTANA' vs '7']", "FCO ANTONIO ENCINA 127 [nombre no calza: 'FCO ANTONIO ENCINA' vs '7']", "PJE TRAPICHE 0087 [nombre no calza: 'TRAPICHE' vs '7']", "PJE TRAPICHE 0117 [nombre no calza: 'TRAPICHE' vs '7']", "PASAJE LIUCURA 107 [nombre no calza: 'LIUCURA' vs '7']"]
-    aviso: 'SARGENTO ALDEA 321' (comuna SII 05501) | catastro para esa calle: ['SARGENTO ALDEA 632 FDO MIRAFLORES LT M [no se pudo leer el número de esta dirección del catastro]', 'SARGENTO ALDEA 120 [número 321 fuera del rango 120-120]', 'LT 2 A ARIZTIA ESQ SARGENTO ALDEA [no se pudo leer el número de esta dirección del catastro]', 'SARGENTO ALDEA 50 LT. 1 [número 321 fuera del rango 50-50]', 'SARGENTO ALDEA 92 LT 1 [número 321 fuera del rango 92-92]', 'SARGENTO ALDEA 120 [número 321 fuera del rango 120-120]', 'SARGENTO ALDEA 92 LT 2 [número 321 fuera del rango 92-92]', 'SARGENTO ALDEA 14 - 20 LT A- 1 [número 321 fuera del rango 14-20]']
+    aviso: 'SARGENTO ALDEA 321' (comuna SII 05501) | catastro para esa calle: ['SARGENTO ALDEA 632 FDO MIRAFLORES LT M [número 321 fuera del rango 632-632]', 'SARGENTO ALDEA 120 [número 321 fuera del rango 120-120]', "LT 2 A ARIZTIA ESQ SARGENTO ALDEA [nombre no calza: 'LT' vs 'SARGENTO ALDEA']", 'SARGENTO ALDEA 50 LT. 1 [número 321 fuera del rango 50-50]', 'SARGENTO ALDEA 92 LT 1 [número 321 fuera del rango 92-92]', 'SARGENTO ALDEA 120 [número 321 fuera del rango 120-120]', 'SARGENTO ALDEA 92 LT 2 [número 321 fuera del rango 92-92]', 'SARGENTO ALDEA 14 - 20 LT A- 1 [número 321 fuera del rango 14-20]']
     aviso: 'CANAL SARMIENTO 6081' (comuna SII 10301) | catastro para esa calle: ['SARMIENTO 264 [número 6081 fuera del rango 264-264]', 'SARMIENTO 270 [número 6081 fuera del rango 270-270]', 'SARMIENTO 263 [número 6081 fuera del rango 263-263]', 'SARMIENTO 269 [número 6081 fuera del rango 269-269]', "SARMIENTO MZ 1 ST 5 [nombre no calza: 'SARMIENTO MZ' vs 'CANAL SARMIENTO']", "SARMIENTO MZ 1 ST 8 [nombre no calza: 'SARMIENTO MZ' vs 'CANAL SARMIENTO']", "SARMIENTO MZ 1 ST 10 [nombre no calza: 'SARMIENTO MZ' vs 'CANAL SARMIENTO']", 'SARMIENTO 672 [número 6081 fuera del rango 672-672]']
     aviso: 'CANAL SARMIENTO 6081' (comuna SII 10303) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'CHILOE 1951' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
@@ -637,36 +637,36 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
     aviso: 'PRESIDENTE BALMACEDA 2914' (comuna SII 13101) | catastro para esa calle: ["PRESIDENTE JUAN ANTONIO RIOS 32 DP 11 [nombre no calza: 'PRESIDENTE JUAN ANTONIO RIOS' vs 'PRESIDENTE BALMACEDA']", "PRESIDENTE RIOS 32 DP 22 [nombre no calza: 'PRESIDENTE RIOS' vs 'PRESIDENTE BALMACEDA']", "PRESIDENTE RIOS 11 [nombre no calza: 'PRESIDENTE RIOS' vs 'PRESIDENTE BALMACEDA']", "PRESIDENTE RIO 21 63 [nombre no calza: 'PRESIDENTE RIO' vs 'PRESIDENTE BALMACEDA']", "PRESIDENTE J A RIOS 33 52 [nombre no calza: 'PRESIDENTE J A RIOS' vs 'PRESIDENTE BALMACEDA']", "AV PRESIDENTE BULNES 80 OF 55 [nombre no calza: 'PRESIDENTE BULNE' vs 'PRESIDENTE BALMACEDA']", "AVENIDA PRESIDENTE BULNES 84 LC 1 [nombre no calza: 'PRESIDENTE BULNE' vs 'PRESIDENTE BALMACEDA']", "AVENIDA PRESIDENTE BULNES 79 OF 64 [nombre no calza: 'PRESIDENTE BULNE' vs 'PRESIDENTE BALMACEDA']"]
     aviso: 'GENERAL JOSE ARTIGA 3121' (comuna SII 13101) | catastro para esa calle: ["GENERAL MACKENNA 1138 DP 202 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 203 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 204 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 205 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 206 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 207 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 208 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 209 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']"]
     aviso: 'FRANCISCO DE RIVERO 4550' (comuna SII 13101) | catastro para esa calle: ["SAN FRANCISCO 4 L 18 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SAN FRANCISCO 6 L 17 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SN FRANCISCO 8 L 15 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SAN FRANCISCO 10 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SAN FRANCISCO 12 DP 1 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SAN FRANCISCO 12 DP 2 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SAN FRANCISCO 12 DP 3 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SN FRANCISCO 12 4 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']"]
-    aviso: 'EL PERAL 668' (comuna SII 14202) | catastro para esa calle: ["EL PERAL ST 54 [nombre no calza: 'EL PERAL ST' vs 'EL PERAL']", 'EL PERAL 454 [número 668 fuera del rango 454-454]', "EL PERAL ST 79 [nombre no calza: 'EL PERAL ST' vs 'EL PERAL']", 'EL PERAL ST 114 VALLE GRANDE [no se pudo leer el número de esta dirección del catastro]', 'PERALILLO SITIO D [no se pudo leer el número de esta dirección del catastro]', "PERALILLO PC 1 [nombre no calza: 'PERALILLO PC' vs 'EL PERAL']", 'PARCELA 2 EL PERALILLO [no se pudo leer el número de esta dirección del catastro]', 'PC 3 PP PERALILLO [no se pudo leer el número de esta dirección del catastro]']
+    aviso: 'EL PERAL 668' (comuna SII 14202) | catastro para esa calle: ["EL PERAL ST 54 [nombre no calza: 'EL PERAL ST' vs 'EL PERAL']", 'EL PERAL 454 [número 668 fuera del rango 454-454]', "EL PERAL ST 79 [nombre no calza: 'EL PERAL ST' vs 'EL PERAL']", "EL PERAL ST 114 VALLE GRANDE [nombre no calza: 'EL PERAL ST' vs 'EL PERAL']", 'PERALILLO SITIO D [no se pudo leer el número de esta dirección del catastro]', "PERALILLO PC 1 [nombre no calza: 'PERALILLO PC' vs 'EL PERAL']", "PARCELA 2 EL PERALILLO [nombre no calza: '' vs 'EL PERAL']", "PC 3 PP PERALILLO [nombre no calza: 'PC' vs 'EL PERAL']"]
     aviso: 'EL PERAL 668' (comuna SII 14201) | catastro para esa calle: ["LOS PERALES 64 [nombre no calza: 'LOS PERALE' vs 'EL PERAL']", "LOS PERALES 058 [nombre no calza: 'LOS PERALE' vs 'EL PERAL']", "LOS PERALES 10 [nombre no calza: 'LOS PERALE' vs 'EL PERAL']", "LOS PERALES 11 [nombre no calza: 'LOS PERALE' vs 'EL PERAL']", "LOS PERALES 057 [nombre no calza: 'LOS PERALE' vs 'EL PERAL']", "LOS PERALES DE CHACABUCO LT 1 [nombre no calza: 'LOS PERALE DE CHACABUCO LT' vs 'EL PERAL']", "LOS PERALES DE CHACABUCO LT 2 [nombre no calza: 'LOS PERALE DE CHACABUCO LT' vs 'EL PERAL']", "LOS PERALES DE CHACABUCO LT 3 [nombre no calza: 'LOS PERALE DE CHACABUCO LT' vs 'EL PERAL']"]
     aviso: 'INGLATERRA 1144' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'INGLATERRA 1144' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'JAIME GUZMAN ERRAZURIZ 4080' (comuna SII 01201) | catastro para esa calle: ['ERRAZURIZ 25 [número 4080 fuera del rango 25-25]', 'ERRAZURIZ 21 [número 4080 fuera del rango 21-21]', 'ERRAZURIZ 27 [número 4080 fuera del rango 27-27]', 'ERRAZURIZ 31 [número 4080 fuera del rango 31-31]', 'ERRAZURIZ 51 [número 4080 fuera del rango 51-51]', 'ERRAZURIZ 10 [número 4080 fuera del rango 10-10]', 'ERRAZURIZ 20 [número 4080 fuera del rango 20-20]', 'ERRAZURIZ 30 [número 4080 fuera del rango 30-30]']
-    aviso: 'PEDRO PRADO 555' (comuna SII 01201) | catastro para esa calle: ['PEDRO PRADO 339 [número 555 fuera del rango 339-339]', 'PEDRO PRADO 359 [número 555 fuera del rango 359-359]', 'PEDRO PRADO 349 [número 555 fuera del rango 349-349]', "AV P PEDRO 475 [nombre no calza: 'P PEDRO' vs 'PEDRO PRADO']", 'AV PEDRO PRADO 475 LTH [no se pudo leer el número de esta dirección del catastro]', 'AV PEDRO PRADO 450 DP 101 [número 555 fuera del rango 450-450]', 'AV PEDRO PRADO 450 DP 102 [número 555 fuera del rango 450-450]', 'AV PEDRO PRADO 450 DP 103 [número 555 fuera del rango 450-450]']
-    aviso: 'SANTA ROSA 5741' (comuna SII 13101) | catastro para esa calle: ['SANTA LUCIA 199 PLAZA NEPTUNO [no se pudo leer el número de esta dirección del catastro]', "SANTA MONICA 1919 BX 1 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 2 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 3 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 4 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 5 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 6 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 7 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']"]
-    aviso: 'SANTA ROSA 5741' (comuna SII 13101) | catastro para esa calle: ['SANTA LUCIA 199 PLAZA NEPTUNO [no se pudo leer el número de esta dirección del catastro]', "SANTA MONICA 1919 BX 1 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 2 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 3 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 4 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 5 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 6 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 7 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']"]
-    aviso: 'SANTA ROSA 5741' (comuna SII 13101) | catastro para esa calle: ['SANTA LUCIA 199 PLAZA NEPTUNO [no se pudo leer el número de esta dirección del catastro]', "SANTA MONICA 1919 BX 1 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 2 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 3 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 4 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 5 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 6 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 7 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']"]
-    aviso: 'SANTA ROSA 5741' (comuna SII 13101) | catastro para esa calle: ['SANTA LUCIA 199 PLAZA NEPTUNO [no se pudo leer el número de esta dirección del catastro]', "SANTA MONICA 1919 BX 1 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 2 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 3 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 4 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 5 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 6 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 7 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']"]
-    aviso: 'SANTA ROSA 5741' (comuna SII 13101) | catastro para esa calle: ['SANTA LUCIA 199 PLAZA NEPTUNO [no se pudo leer el número de esta dirección del catastro]', "SANTA MONICA 1919 BX 1 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 2 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 3 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 4 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 5 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 6 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 7 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']"]
+    aviso: 'PEDRO PRADO 555' (comuna SII 01201) | catastro para esa calle: ['PEDRO PRADO 339 [número 555 fuera del rango 339-339]', 'PEDRO PRADO 359 [número 555 fuera del rango 359-359]', 'PEDRO PRADO 349 [número 555 fuera del rango 349-349]', "AV P PEDRO 475 [nombre no calza: 'P PEDRO' vs 'PEDRO PRADO']", 'AV PEDRO PRADO 475 LTH [número 555 fuera del rango 475-475]', 'AV PEDRO PRADO 450 DP 101 [número 555 fuera del rango 450-450]', 'AV PEDRO PRADO 450 DP 102 [número 555 fuera del rango 450-450]', 'AV PEDRO PRADO 450 DP 103 [número 555 fuera del rango 450-450]']
+    aviso: 'SANTA ROSA 5741' (comuna SII 13101) | catastro para esa calle: ["SANTA LUCIA 199 PLAZA NEPTUNO [nombre no calza: 'SANTA LUCIA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 1 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 2 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 3 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 4 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 5 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 6 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 7 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']"]
+    aviso: 'SANTA ROSA 5741' (comuna SII 13101) | catastro para esa calle: ["SANTA LUCIA 199 PLAZA NEPTUNO [nombre no calza: 'SANTA LUCIA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 1 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 2 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 3 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 4 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 5 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 6 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 7 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']"]
+    aviso: 'SANTA ROSA 5741' (comuna SII 13101) | catastro para esa calle: ["SANTA LUCIA 199 PLAZA NEPTUNO [nombre no calza: 'SANTA LUCIA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 1 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 2 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 3 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 4 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 5 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 6 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 7 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']"]
+    aviso: 'SANTA ROSA 5741' (comuna SII 13101) | catastro para esa calle: ["SANTA LUCIA 199 PLAZA NEPTUNO [nombre no calza: 'SANTA LUCIA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 1 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 2 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 3 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 4 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 5 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 6 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 7 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']"]
+    aviso: 'SANTA ROSA 5741' (comuna SII 13101) | catastro para esa calle: ["SANTA LUCIA 199 PLAZA NEPTUNO [nombre no calza: 'SANTA LUCIA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 1 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 2 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 3 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 4 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 5 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 6 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']", "SANTA MONICA 1919 BX 7 [nombre no calza: 'SANTA MONICA' vs 'SANTA ROSA']"]
     aviso: 'INGLATERRA 1144' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'SAN ISIDRO 154' (comuna SII 13101) | catastro para esa calle: ['SAN ISIDRO 39 LC 1 [número 154 fuera del rango 39-39]', 'SAN ISIDRO 41 LC 2 [número 154 fuera del rango 41-41]', 'SAN ISIDRO 43 LC 3 [número 154 fuera del rango 43-43]', 'SAN ISIDRO 49 LC 4 [número 154 fuera del rango 49-49]', 'SAN ISIDRO 45 DP 301 [número 154 fuera del rango 45-45]', 'SAN ISIDRO 45 DP 302 [número 154 fuera del rango 45-45]', 'SAN ISIDRO 45 DP 303 [número 154 fuera del rango 45-45]', 'SAN ISIDRO 45 DP 304 [número 154 fuera del rango 45-45]']
-    aviso: 'JUAREZ 621' (comuna SII 13159) | catastro para esa calle: ["JUAREZ 616 EX RECOLETA 500 508 [nombre no calza: 'JUAREZ 616 EX RECOLETA' vs 'JUAREZ']", "JUAREZ LARGA 760 [nombre no calza: 'JUAREZ LARGA' vs 'JUAREZ']", 'JUAREZ 776 778 [número 621 fuera del rango 776-778]', 'JUAREZ 802 [número 621 fuera del rango 802-802]', 'JUAREZ 812 [número 621 fuera del rango 812-812]', 'JUAREZ 814 CAS A [no se pudo leer el número de esta dirección del catastro]', 'JUAREZ 814 CS B [número 621 fuera del rango 814-814]', 'JUAREZ 814 CS C [número 621 fuera del rango 814-814]']
+    aviso: 'JUAREZ 621' (comuna SII 13159) | catastro para esa calle: ["JUAREZ 616 EX RECOLETA 500 508 [nombre no calza: 'JUAREZ 616 EX RECOLETA' vs 'JUAREZ']", "JUAREZ LARGA 760 [nombre no calza: 'JUAREZ LARGA' vs 'JUAREZ']", 'JUAREZ 776 778 [número 621 fuera del rango 776-778]', 'JUAREZ 802 [número 621 fuera del rango 802-802]', 'JUAREZ 812 [número 621 fuera del rango 812-812]', 'JUAREZ 814 CAS A [número 621 fuera del rango 814-814]', 'JUAREZ 814 CS B [número 621 fuera del rango 814-814]', 'JUAREZ 814 CS C [número 621 fuera del rango 814-814]']
     aviso: 'JUAREZ 621' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'CHICUREO 14000' (comuna SII 14201) | catastro para esa calle: ['FDO CHICUREO HJ I Y II [no se pudo leer el número de esta dirección del catastro]', "C DEL ALBA CHICUREO PC 45 [nombre no calza: 'C DEL ALBA CHICUREO PC' vs 'CHICUREO']", "SANTA SARA DE CHICUREO HIJ 2 [nombre no calza: 'SANTA SARA DE CHICUREO HIJ' vs 'CHICUREO']", 'HIJ 3 STA SARA DE CHICUREO [no se pudo leer el número de esta dirección del catastro]', "CHICUREO PC 20 21 52 A 56 [nombre no calza: 'CHICUREO PC 20 21 52 A' vs 'CHICUREO']", "LT 5 FDO CHICUREO RETAZO HJ 1 Y 2 X [nombre no calza: 'LT 5 FDO CHICUREO RETAZO HJ 1 Y' vs 'CHICUREO']", "SANTA LUISA CHICUREO LT 33 [nombre no calza: 'SANTA LUISA CHICUREO LT' vs 'CHICUREO']", "BRISAS DE CHICUREO NORTE LT 3 -C [nombre no calza: 'BRISA DE CHICUREO NORTE LT' vs 'CHICUREO']"]
+    aviso: 'CHICUREO 14000' (comuna SII 14201) | catastro para esa calle: ['FDO CHICUREO HJ I Y II [no se pudo leer el número de esta dirección del catastro]', "C DEL ALBA CHICUREO PC 45 [nombre no calza: 'C DEL ALBA CHICUREO PC' vs 'CHICUREO']", "SANTA SARA DE CHICUREO HIJ 2 [nombre no calza: 'SANTA SARA DE CHICUREO HIJ' vs 'CHICUREO']", "HIJ 3 STA SARA DE CHICUREO [nombre no calza: 'HIJ' vs 'CHICUREO']", "CHICUREO PC 20 21 52 A 56 [nombre no calza: 'CHICUREO PC 20 21 52 A' vs 'CHICUREO']", "LT 5 FDO CHICUREO RETAZO HJ 1 Y 2 X [nombre no calza: 'LT 5 FDO CHICUREO RETAZO HJ 1 Y' vs 'CHICUREO']", "SANTA LUISA CHICUREO LT 33 [nombre no calza: 'SANTA LUISA CHICUREO LT' vs 'CHICUREO']", "BRISAS DE CHICUREO NORTE LT 3 -C [nombre no calza: 'BRISA DE CHICUREO NORTE LT' vs 'CHICUREO']"]
     aviso: 'CHICUREO 14000' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'CORONEL SOUPER 4058' (comuna SII 14157) | catastro para esa calle: ["CORONEL GODOY 0 157 LC 1 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 LC 2 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 LC 3 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 LC 4 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 LC 5 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 LC 6 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 DP 201 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 DP 202 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']"]
-    aviso: 'CORONEL SOUPER 4058' (comuna SII 13101) | catastro para esa calle: ["CORONEL BUERAS 124 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 170 BX 1 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 164 BX 12 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 172 DP 1 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 172 CDP 3 C [nombre no calza: 'CORONEL BUERA 172 CDP' vs 'CORONEL SOUPER']", "CORONEL S BUERAS 176 [nombre no calza: 'CORONEL S BUERA' vs 'CORONEL SOUPER']", 'CORONEL BUERAS 112 A BODEGA [no se pudo leer el número de esta dirección del catastro]', "CORONEL BUERAS 112 A BD 23 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']"]
-    aviso: 'TIERRA LINDA 487' (comuna SII 14201) | catastro para esa calle: ['TIERRA NUESTRA SAN VICENTE DE LO ARCAYA [no se pudo leer el número de esta dirección del catastro]', 'PC 31 B TIERRA NUESTRA [no se pudo leer el número de esta dirección del catastro]', "TIERRA NUESTRA PC. 29 [nombre no calza: 'TIERRA NUESTRA PC' vs 'TIERRA LINDA']", "TIERRA NUESTRA ST 18 [nombre no calza: 'TIERRA NUESTRA ST' vs 'TIERRA LINDA']", "TIERRA NUESTRA ST 13 [nombre no calza: 'TIERRA NUESTRA ST' vs 'TIERRA LINDA']", 'TIERRA NUESTRA PC 18 RESTO [no se pudo leer el número de esta dirección del catastro]', "TIERRA NUESTRA PC 16 S 2 [nombre no calza: 'TIERRA NUESTRA PC 16 S' vs 'TIERRA LINDA']", "TIERRA NUESTRA PC 10 ST 1 [nombre no calza: 'TIERRA NUESTRA PC' vs 'TIERRA LINDA']"]
+    aviso: 'CORONEL SOUPER 4058' (comuna SII 13101) | catastro para esa calle: ["CORONEL BUERAS 124 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 170 BX 1 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 164 BX 12 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 172 DP 1 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 172 CDP 3 C [nombre no calza: 'CORONEL BUERA 172 CDP' vs 'CORONEL SOUPER']", "CORONEL S BUERAS 176 [nombre no calza: 'CORONEL S BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 112 A BODEGA [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 112 A BD 23 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']"]
+    aviso: 'TIERRA LINDA 487' (comuna SII 14201) | catastro para esa calle: ['TIERRA NUESTRA SAN VICENTE DE LO ARCAYA [no se pudo leer el número de esta dirección del catastro]', "PC 31 B TIERRA NUESTRA [nombre no calza: 'PC' vs 'TIERRA LINDA']", "TIERRA NUESTRA PC. 29 [nombre no calza: 'TIERRA NUESTRA PC' vs 'TIERRA LINDA']", "TIERRA NUESTRA ST 18 [nombre no calza: 'TIERRA NUESTRA ST' vs 'TIERRA LINDA']", "TIERRA NUESTRA ST 13 [nombre no calza: 'TIERRA NUESTRA ST' vs 'TIERRA LINDA']", "TIERRA NUESTRA PC 18 RESTO [nombre no calza: 'TIERRA NUESTRA PC' vs 'TIERRA LINDA']", "TIERRA NUESTRA PC 16 S 2 [nombre no calza: 'TIERRA NUESTRA PC 16 S' vs 'TIERRA LINDA']", "TIERRA NUESTRA PC 10 ST 1 [nombre no calza: 'TIERRA NUESTRA PC' vs 'TIERRA LINDA']"]
     aviso: 'TIERRA LINDA 487' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'HERMANO AMUNATEGUI 695' (comuna SII 13101) | catastro para esa calle: ['AMUNATEGUI 21 21 A [número 695 fuera del rango 21-21]', 'AMUNATEGUI 23 25 [número 695 fuera del rango 23-25]', 'AMUNATEGUI 31 [número 695 fuera del rango 31-31]', 'AMUNATEGUI 57 [número 695 fuera del rango 57-57]', 'AMUNATEGUI 63 LC 4 [número 695 fuera del rango 63-63]', 'AMUNATEGUI 63 LC 4 A [número 695 fuera del rango 63-63]', 'AMUNATEGUI 69 L 5 [número 695 fuera del rango 69-69]', 'AMUNATEGUI 73 [número 695 fuera del rango 73-73]']
     aviso: 'JUAN DE BARRO 3885' (comuna SII 13101) | catastro para esa calle: ["ALTE BARROSO 17 [nombre no calza: 'ALTE BARROSO' vs 'JUAN DE BARRO']", "ALTE BARROSO 23 [nombre no calza: 'ALTE BARROSO' vs 'JUAN DE BARRO']", "ALTE BARROSO 25 [nombre no calza: 'ALTE BARROSO' vs 'JUAN DE BARRO']", "ALTE BARROSO 27 [nombre no calza: 'ALTE BARROSO' vs 'JUAN DE BARRO']", "ALTE BARROSO 31 [nombre no calza: 'ALTE BARROSO' vs 'JUAN DE BARRO']", "ALTE BARROSO 37 [nombre no calza: 'ALTE BARROSO' vs 'JUAN DE BARRO']", "ALTE BARROSO 41 [nombre no calza: 'ALTE BARROSO' vs 'JUAN DE BARRO']", "ALMIRANTE BARROSO 43 DP 11 BK [nombre no calza: 'ALMIRANTE BARROSO' vs 'JUAN DE BARRO']"]
-    aviso: 'DEL VALLE 3301' (comuna SII 06101) | catastro para esa calle: ["CLL J VALLE 440 DP 101 [nombre no calza: 'CLL J VALLE' vs 'DEL VALLE']", "CLL J VALLE 440 DP 102 [nombre no calza: 'CLL J VALLE' vs 'DEL VALLE']", "CLL J VALLE 440 DP 103 [nombre no calza: 'CLL J VALLE' vs 'DEL VALLE']", "CLL J VALLE 440 DP 104 [nombre no calza: 'CLL J VALLE' vs 'DEL VALLE']", "CLL J VALLE 440 DP 105 [nombre no calza: 'CLL J VALLE' vs 'DEL VALLE']", "CLL J VALLE 440 DP 106 [nombre no calza: 'CLL J VALLE' vs 'DEL VALLE']", "CLL J VALLE EX MEM 440 DP 109 [nombre no calza: 'CLL J VALLE EX MEM' vs 'DEL VALLE']", "CLL J VALLE EX MEBRI 440 DP 110 [nombre no calza: 'CLL J VALLE EX MEBRI' vs 'DEL VALLE']"]
-    aviso: 'DEL VALLE 3301' (comuna SII 13101) | catastro para esa calle: ["ALONSO OVALLE 659 671 [nombre no calza: 'ALONSO OVALLE' vs 'DEL VALLE']", "ALONSO OVALLE 675 LC 2 [nombre no calza: 'ALONSO OVALLE' vs 'DEL VALLE']", "A OVALLE 679 DP 21 [nombre no calza: 'A OVALLE' vs 'DEL VALLE']", "A OVALLE 679 DP 22 [nombre no calza: 'A OVALLE' vs 'DEL VALLE']", "A OVALLE 679 DP 23 [nombre no calza: 'A OVALLE' vs 'DEL VALLE']", "A OVALLE 679 DP 24 [nombre no calza: 'A OVALLE' vs 'DEL VALLE']", "A OVALLE 679 DP 25 [nombre no calza: 'A OVALLE' vs 'DEL VALLE']", "A OVALLE 679 D 31 [nombre no calza: 'A OVALLE 679 D' vs 'DEL VALLE']"]
     aviso: 'CALETERA AMERICO VESPUCIO 1700' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'AMERICO VESPUCIO 4641' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'COLOMBIA 7000' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'JAVIERA CARRERA 10019' (comuna SII 16165) | catastro para esa calle: ['PJE ROSARIO ROSALES 10217 JAVIERA CARRER [no se pudo leer el número de esta dirección del catastro]', 'PAULA JARAQUEMADA 10289 JAVIERA CARRERA [no se pudo leer el número de esta dirección del catastro]', 'JAVIERA CARRERA 1172 [número 10019 fuera del rango 1172-1172]', 'JAVIERA CARRERA 1179 [número 10019 fuera del rango 1179-1179]', 'JAVIERA CARRERA 1102 [número 10019 fuera del rango 1102-1102]', 'JAVIERA CARRERA 9746 A [número 10019 fuera del rango 9746-9746]', 'JAVIERA CARRERA 9906 [número 10019 fuera del rango 9906-9906]', 'JAVIERA CARRERA 9912 [número 10019 fuera del rango 9912-9912]']
+    aviso: 'JAVIERA CARRERA 10019' (comuna SII 16165) | catastro para esa calle: ["PJE ROSARIO ROSALES 10217 JAVIERA CARRER [nombre no calza: 'ROSARIO ROSALE' vs 'JAVIERA CARRERA']", "PAULA JARAQUEMADA 10289 JAVIERA CARRERA [nombre no calza: 'PAULA JARAQUEMADA' vs 'JAVIERA CARRERA']", 'JAVIERA CARRERA 1172 [número 10019 fuera del rango 1172-1172]', 'JAVIERA CARRERA 1179 [número 10019 fuera del rango 1179-1179]', 'JAVIERA CARRERA 1102 [número 10019 fuera del rango 1102-1102]', 'JAVIERA CARRERA 9746 A [número 10019 fuera del rango 9746-9746]', 'JAVIERA CARRERA 9906 [número 10019 fuera del rango 9906-9906]', 'JAVIERA CARRERA 9912 [número 10019 fuera del rango 9912-9912]']
     aviso: 'JAVIERA CARRERA 10019' (comuna SII 16106) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'JAVIERA CARRERA 10019' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'LA LAGUNA 18947' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
   Muestra de "AMBIGUO" (la calle SÍ está en el catastro, pero hay más de un predio que calza - para ver si el depto/unidad estaba en el aviso y no se leyó):
     aviso: 'EXPLORADORE 14011 (sin unidad leída)' (comuna SII 02201) [AMBIGUO (68 candidatos)] | candidatos en catastro: ['LOS EXPLORADORES 14011 CS 12 (avalúo 72204641)', 'LOS EXPLORADORES 14011 CS 13 (avalúo 72204641)', 'LOS EXPLORADORES 14011 CS 14 (avalúo 85855409)', 'LOS EXPLORADORES 14011 CS 15 (avalúo 72691971)', 'LOS EXPLORADORES 14011 CS 16 (avalúo 72691971)', 'LOS EXPLORADORES 14011 CS 17 (avalúo 85855409)']
     aviso: 'MERCED 832 (sin unidad leída)' (comuna SII 13101) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['MERCED 22 1001 (avalúo 218641547)', 'MERCED 645 907 (avalúo 17811293)']
@@ -698,7 +698,7 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
     aviso: 'LA LADERA 1121 (sin unidad leída)' (comuna SII 16401) [AMBIGUO (151 candidatos)] | candidatos en catastro: ['LA LADERA 1121 CS 1 (avalúo 56421710)', 'LA LADERA 1121 CS 2 (avalúo 55335338)', 'LA LADERA 1121 CS 3 (avalúo 55335338)', 'LA LADERA 1121 CS 4 (avalúo 56421710)', 'LA LADERA 1121 CS 5 (avalúo 56421710)', 'LA LADERA 1121 CS 6 (avalúo 55335338)']
     aviso: 'ALTO DEL CARMEN 1560 (sin unidad leída)' (comuna SII 14158) [AMBIGUO (68 candidatos)] | candidatos en catastro: ['ALTOS DEL CARMEN 1560 CS 01 (avalúo 256796587)', 'ALTOS DEL CARMEN 1560 CS 02 (avalúo 233080082)', 'ALTOS DEL CARMEN 1560 CS 03 (avalúo 233080082)', 'ALTOS DEL CARMEN 1560 CS 04 (avalúo 233080082)', 'ALTOS DEL CARMEN 1560 CS 05 (avalúo 206445189)', 'ALTOS DEL CARMEN 1560 CS 06 (avalúo 206445189)']
     aviso: 'JORGE ROSS OSSA 1553 (sin unidad leída)' (comuna SII 16301) [AMBIGUO (242 candidatos)] | candidatos en catastro: ['AV JORGE ROSS OSSA 1553 CS 43 (avalúo 131368090)', 'AV JORGE ROSS OSSA 1553 CS 44 (avalúo 131368090)', 'AV JORGE ROSS OSSA 1553 CS 45 (avalúo 113030677)', 'AV JORGE ROSS OSSA 1553 CS 46 (avalúo 113030677)', 'AV JORGE ROSS OSSA 1553 CS 47 (avalúo 90188988)', 'AV JORGE ROSS OSSA 1553 CS 48 (avalúo 90188988)']
-    aviso: "SAN PABLO 1825 (unidad leída: ('203', ''))" (comuna SII 13101) [AMBIGUO (6 candidatos)] | candidatos en catastro: ['SAN PABLO 1825 DP 203 ESC G (avalúo 50319368)', 'SAN PABLO 1825 DP 203 ESC H (avalúo 65599338)', 'SAN PABLO 1825 DP 203 ESC I (avalúo 55488482)', 'SAN PABLO 1825 DP 203 ESC J (avalúo 55488482)', 'SAN PABLO 1825 DP 203 ESC K (avalúo 55064054)', 'SAN PABLO 1825 DP 203 ESC L (avalúo 55488482)']
+    aviso: "SAN PABLO 1825 (unidad leída: ('203', ''))" (comuna SII 13101) [AMBIGUO (18 candidatos)] | candidatos en catastro: ['SAN PABLO 1825 ESC M DEPTO 203 (avalúo 55858843)', 'SAN PABLO 1825 ESC N DEPTO 203 (avalúo 55858843)', 'SAN PABLO 1825 ESC O DEPTO 203 (avalúo 54766443)', 'SAN PABLO 1825 ESC P DEPTO 203 (avalúo 55858843)', 'SAN PABLO 1825 ESC Q DEPTO 203 (avalúo 55858843)', 'SAN PABLO 1825 ESC R DEPTO 203 (avalúo 55858843)']
     aviso: 'EJERCITO LIBERTADOR 1281 (sin unidad leída)' (comuna SII 16301) [AMBIGUO (109 candidatos)] | candidatos en catastro: ['EJERCITO LIBERTADOR 1281 CS 20 (avalúo 108374958)', 'EJERCITO LIBERTADOR 1281 CS 21 (avalúo 108374958)', 'EJERCITO LIBERTADOR 1281 CS 22 (avalúo 162015757)', 'EJERCITO LIBERTADOR 1281 CS 23 (avalúo 162015757)', 'EJERCITO LIBERTADOR 1281 CS 24 (avalúo 134770221)', 'EJERCITO LIBERTADOR 1281 CS 25 (avalúo 134770221)']
     aviso: 'OHIGGIN 926 (sin unidad leída)' (comuna SII 16401) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['OHIGGINS 926 DP 201 (avalúo 32996013)', 'CALLE OHIGGINS 926 DP 202 (avalúo 57227659)', 'CALLE OHIGGINS 926 DP 203 (avalúo 70458297)', 'CALLE OHIGGINS 926 DP 204 (avalúo 56138869)', 'CALLE OHIGGINS 926 DP 205 (avalúo 57180614)', 'CALLE OHIGGINS 926 DP 206 (avalúo 34051772)']
     aviso: "SAN DIEGO 376 (unidad leída: ('210', ''))" (comuna SII 13101) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['SAN DIEGO 376 DP 210 (avalúo 48442385)', 'SAN DIEGO 376 BD 210 (avalúo 9579397)']
@@ -749,27 +749,28 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
     'Se rematarán los derechos hereditarios que corresponden a don CÉSAR ANTONIO TORO REYES, correspondientes a un 6,5% de la herencia quedada al fallecimiento de su abuela doña Mercedes del Carmen Painemal Toro, lo que const'
     'El lote número 17 de la primera etapa del condominio La Foresta o Los Notros de la Foresta, superficie total de terreno de 529,67 metros cuadrados, y una vivienda de 140 metros cuadrados de superficie total construida de'
     'el Inmueble consistente en Parcela Nº 110 del proyecto de subdivisión de la hijuela C del Fundo Santa Rosa, Comuna de Lampa, Región Metropolitana. Inscrito a fojas 41096 número 62602, del Registro de Propiedad del año 20'
-  [IA-DIRECCION] resumen real de esta corrida: rescatadas con dirección (llamada nueva): 11 | consultadas, sin dirección de verdad (llamada nueva): 63 | fallidas (error técnico, se reintenta la próxima vez): 0 | ya en caché con dirección: 0 | ya en caché sin dirección: 0 | sin cliente disponible: 0
+  [IA-DIRECCION] resumen real de esta corrida: rescatadas con dirección (llamada nueva): 0 | consultadas, sin dirección de verdad (llamada nueva): 0 | fallidas (error técnico, se reintenta la próxima vez): 0 | ya en caché con dirección: 11 | ya en caché sin dirección: 63 | sin cliente disponible: 0
   [MACAL] fichas con más de un rol de avalúo: 0 verificadas por dirección, 1 sin poder confirmar cuál corresponde (quedan marcadas para revisar a mano).
   ROL deducido por dirección: 0 únicos | 0 ambiguos (no se asignan) | 0 sin coincidencia/lectura
   Filas recibidas: 1,510 | propiedades únicas (misma propiedad y fecha): 1,448
-  [HISTORICO] 1,256 propiedades ya vistas antes sin cambios se excluyen de este informe (quedan 192 nuevas o con cambios).
-/home/runner/work/remates-chile-dashboard/remates-chile-dashboard/remates_v2.py:3600: Pandas4Warning: 'ndarray' is not supported as a fill value for float64 dtype. In a future version, calling fillna with an incompatible value will raise. Explicitly cast to a common dtype before filling.
+  [HISTORICO] 1,349 propiedades ya vistas antes sin cambios se excluyen de este informe (quedan 99 nuevas o con cambios).
+/home/runner/work/remates-chile-dashboard/remates-chile-dashboard/remates_v2.py:3612: Pandas4Warning: 'ndarray' is not supported as a fill value for float64 dtype. In a future version, calling fillna with an incompatible value will raise. Explicitly cast to a common dtype before filling.
   valor_mercado_final = df["valor_mercado_pesos"].fillna(df["valor_mercado_estimado_m2_pesos"])
-    Cruce SII - OK: 101
-    Cruce SII - SIN ROL (no informado ni deducible): 78
-    Cruce SII - ROL NO ENCONTRADO EN CATASTRO: 10
-    Cruce SII - COMUNA NO RECONOCIDA: 3
+    Cruce SII - SIN ROL (no informado ni deducible): 68
+    Cruce SII - OK: 29
+    Cruce SII - COMUNA NO RECONOCIDA: 2
 
   [PODER_JUDICIAL] consultando el estado de la causa de cada propiedad del TOP...
-  [PODER_JUDICIAL] 13 causas del TOP con link + instrucción para buscar a mano (ya no se intenta entrar de forma automática - el sitio bloquea las consultas que vienen desde la nube).
+  [PODER_JUDICIAL] 15 causas del TOP con link + instrucción para buscar a mano (ya no se intenta entrar de forma automática - el sitio bloquea las consultas que vienen desde la nube).
 
 Paso 4 de 4: guardando archivos
   [PDF-MAPA] sin mapa para 'RUTA G- 86 3351 LT A 3' (SAN ANTONIO): Nominatim no encontró resultados (consulta usada: 'RUTA G- 86 3351, SAN ANTONIO, Chile')
   [PDF-MAPA] sin mapa para 'LOS AROMOS 751 PC 124' (SAN ANTONIO): Nominatim no encontró resultados (consulta usada: 'LOS AROMOS 751 PC 124, SAN ANTONIO, Chile')
   [PDF-MAPA] sin mapa para 'FDO STO DOMINGO SC A' (SANTO DOMINGO): Nominatim no encontró resultados (consulta usada: 'FDO STO DOMINGO SC A, SANTO DOMINGO, Chile')
+  [PDF-MAPA] sin mapa para 'CAMINO DEL VALLE 03301 MZE LT 14' (RANCAGUA): Nominatim no encontró resultados (consulta usada: 'CAMINO DEL VALLE 03301 MZE, RANCAGUA, Chile')
+  [PDF-MAPA] sin mapa para 'LAS TORCAZAS NORTE 874 MZC L 136' (GRANEROS): Nominatim no encontró resultados (consulta usada: 'LAS TORCAZAS NORTE 874 MZC, GRANEROS, Chile')
 
-LISTO. En el consolidado final (máx. 50): 15 propiedades | elegibles fiscal: 15 | elegibles mercado: 2 de 192 analizadas
+LISTO. En el consolidado final (máx. 50): 17 propiedades | elegibles fiscal: 17 | elegibles mercado: 2 de 99 analizadas
   AVISO: OPORTUNIDAD VS. MERCADO - Provincia de Concepción: solo 0 de 2 cupos
   AVISO: OPORTUNIDAD VS. MERCADO - Región Metropolitana: solo 1 de 2 cupos
   AVISO: OPORTUNIDAD VS. MERCADO - Región de Valparaíso: solo 0 de 2 cupos
@@ -777,12 +778,12 @@ LISTO. En el consolidado final (máx. 50): 15 propiedades | elegibles fiscal: 15
   AVISO: El Ranking de mercado solo llenó 2 de 20 cupos; los 18 que faltaron se le prestaron al Ranking de avalúo fiscal.
   AVISO: OPORTUNIDAD VS. AVALUO FISCAL - Provincia de Concepción: solo 0 de 2 cupos
   AVISO: OPORTUNIDAD VS. AVALUO FISCAL - Región Metropolitana: solo 0 de 2 cupos
-  AVISO: OPORTUNIDAD VS. AVALUO FISCAL: solo 13 de 38 elegibles en total
+  AVISO: OPORTUNIDAD VS. AVALUO FISCAL: solo 15 de 38 elegibles en total
   AVISO: Comodín: solo 0 de 10 cupos (no quedan más elegibles)
-  Fuente TGR: OK (574 registros, 03:40)
-  Fuente MACAL: OK (144 fichas leídas, 0 con error, 03:42)
+  Fuente TGR: OK (574 registros, 04:02)
+  Fuente MACAL: OK (144 fichas leídas, 0 con error, 04:03)
   Fuente AVISOS: OK (792 avisos de 4 archivo(s): INFORME_02-11-2026_AL_03-11-2026.docx, INFORME_06-11-2026_AL_08-11-2026.docx, INFORME_09-11-2026_AL_10-11-2026.docx, RESUMEN_26-10-2026_AL_30-10-2026.docx)
-  Fuente PRECIO_MERCADO:ChilePropiedades: OK (0 nuevas, 1795 ya vistas, 0 descartadas)
+  Fuente PRECIO_MERCADO:ChilePropiedades: OK (3 nuevas, 1792 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:TopPropiedades: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Procasa: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Doomos: OK (0 nuevas, 0 ya vistas, 0 descartadas)
