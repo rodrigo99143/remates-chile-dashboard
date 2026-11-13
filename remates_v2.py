@@ -1516,6 +1516,34 @@ def nombres_compatibles(a, b):
     # para no abrir la puerta a falsos positivos con palabras cortas o genéricas.
     if len(corto) == 1 and len(corto[0]) >= 7 and largo and corto[0] == largo[-1]:
         return True
+    # OJO (13-11-2026, pedido explícito de Rodrigo: revisar a fondo "SIN COINCIDENCIA" y
+    # distinguir casos donde la información SÍ está en el aviso pero no se está leyendo bien,
+    # de casos genuinamente irresolubles). Al revisar con el catastro real y los avisos reales
+    # completos, un patrón concreto y repetido: el catastro SII a veces junta las iniciales de
+    # DOS o TRES nombres de pila seguidos en un solo token pegado ("JM CARRERA" = "JOSE MIGUEL
+    # CARRERA"; "JP ALESSANDRI" = "JOSE PEDRO ALESSANDRI") - distinto del caso de una sola
+    # letra suelta por palabra que ya se maneja arriba. Se exige que el resto de las palabras
+    # (antes y después de las iniciales) calcen exactas, y que el token de iniciales no sea una
+    # palabra real conocida (PALABRAS_COMUNES) para no confundir "SAN"/"LOS"/etc. con iniciales.
+    def _iniciales_combinadas(corto2, largo2):
+        li = 0
+        for tok in corto2:
+            if li < len(largo2) and (tok == largo2[li] or (len(tok) == 1 and largo2[li].startswith(tok))):
+                li += 1
+                continue
+            if 2 <= len(tok) <= 3 and tok.isalpha() and tok not in PALABRAS_COMUNES:
+                calzo = False
+                for span in (2, 3):
+                    if li + span <= len(largo2) and "".join(w[0] for w in largo2[li:li + span]) == tok:
+                        li += span
+                        calzo = True
+                        break
+                if calzo:
+                    continue
+            return False
+        return li == len(largo2)
+    if _iniciales_combinadas(ta, tb) or _iniciales_combinadas(tb, ta):
+        return True
     return False
 
 
@@ -4979,6 +5007,20 @@ def prueba():
     comprobar("Aviso partición detectado",
               extraer_tipo_juicio("ante el juez partidor se rematará") == "PARTICIONAL")
     comprobar("Un rol de causa sin letra no se confunde con rol de avalúo", extraer_roles("ROL 2583-2023 DEL JUZGADO") == [])
+
+    # Casos reales (13-11-2026, revisión a fondo de "SIN COINCIDENCIA" con el catastro real
+    # completo, pedido explícito de Rodrigo): el catastro SII a veces junta las iniciales de
+    # dos o tres nombres de pila en un solo token pegado, en vez de poner una letra sola por
+    # palabra (ya cubierto). "JOSE MIGUEL CARRERA" (como lo escribe el aviso) aparece en el
+    # catastro real como "JM CARRERA"; "JOSE PEDRO ALESSANDRI" aparece como "JP ALESSANDRI".
+    comprobar("Iniciales combinadas de 2 nombres de pila: 'JM CARRERA' = 'JOSE MIGUEL CARRERA'",
+              nombres_compatibles("JM CARRERA", "JOSE MIGUEL CARRERA"))
+    comprobar("Iniciales combinadas de 2 nombres de pila: 'JP ALESSANDRI' = 'JOSE PEDRO ALESSANDRI'",
+              nombres_compatibles("JP ALESSANDRI", "JOSE PEDRO ALESSANDRI"))
+    comprobar("'SAN' no se confunde con iniciales combinadas (es una palabra real, no 3 iniciales)",
+              not nombres_compatibles("SAN CARLOS", "SEBASTIAN ANTONIO NUNEZ CARLOS"))
+    comprobar("Dos calles realmente distintas (coincidencia de una sola palabra) siguen sin calzar",
+              not nombres_compatibles("CORONEL SOUPER", "CORONEL GODOY"))
     # Caso real (12-11-2026, hallado al revisar "Inglaterra 1144" en SIN COINCIDENCIA):
     # "Publicación Martillero" con varios inmuebles en un mismo aviso identifica cada
     # rol con la palabra del tipo de unidad en el medio - antes esto no calzaba y
