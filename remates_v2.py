@@ -1358,11 +1358,44 @@ RE_VIA_SIN_MARCA = re.compile(
 # "principal" u omitido), así que este aviso se perdía entero aunque la
 # dirección SÍ estaba escrita de forma reconocible.
 RE_VIA_UBICADO_CON_MARCA = re.compile(
-    r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?en|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a))\s+"
+    r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?(?:en\s+)?|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a)\s+)"
     r"([^,;\d]{1,55}?)\s*,?\s*(?:N[º°o]\.?\s*|n[uú]mero\s+|#\s*)" + _GRUPO_NUMERO_VIA)
 RE_VIA_UBICADO_SIN_MARCA = re.compile(
-    r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?en|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a))\s+"
+    r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?(?:en\s+)?|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a)\s+)"
     r"([^,;\d]{1,55}?)\s+" + _GRUPO_NUMERO_VIA + r"\b")
+# OJO (19-11-2026, caso real "Inmueble ubicado Manuel Rodríguez N° 123" - auditoría NO
+# SE PUDO LEER): "ubicado" sin la palabra "en" después (sin ese "en" que las dos regex
+# de arriba exigían) también es una forma real de redactarlo - se deja "en" como
+# opcional en vez de obligatorio, sin tocar la rama "con acceso... por/a" que ya exige
+# su propia preposición.
+# OJO (19-11-2026, casos reales "inmueble Teniente Ponce Nº 2170" y "rematar inmueble
+# Saturnino Epulef Nº 346" - mismos auditoría): ni siquiera traen "calle"/"avenida" ni
+# "ubicado" - el nombre de la calle sigue DIRECTO a la palabra que describe la
+# propiedad ("inmueble"/"propiedad"/"vivienda"). Se agrega esta variante, la más
+# genérica y arriesgada de todas (por eso va AL FINAL del orden de búsqueda, ver
+# extraer_direccion_texto) - exige SIEMPRE la marca "Nº"/"número" explícita (nunca la
+# variante "sin marca") para no confundir cualquier frase con un número suelto con una
+# dirección real, y se excluyen palabras que casi siempre preceden a un lote/parcela/
+# registro/tribunal en vez de a una calle (ver _EXCLUIR_INMUEBLE_DIRECTO), para no
+# gastar búsquedas en el catastro con nombres que de entrada no son calles.
+_EXCLUIR_INMUEBLE_DIRECTO = re.compile(
+    r"(?i)^(lote|parcela|sitio|rol|fojas|registro|juzgado|tribunal|causa|secretar[ií]a|"
+    r"notar[ií]a|conservador|conjunto|condominio|villa|poblaci[oó]n|loteo|proyecto|"
+    r"sector|hijuela|fundo|t[ií]tulo|cooperativa|manzana|block|torre|edificio|depto|"
+    r"departamento|bodega|estacionamiento|unidad|casa|cuenta|resto|derecho)")
+RE_VIA_INMUEBLE_DIRECTO = re.compile(
+    r"(?i:\b(inmueble|propiedad|vivienda)\s+)"
+    # OJO: a diferencia de las otras regex de esta familia, ESTA se deja a propósito
+    # case-SENSITIVE para el nombre de la calle (solo el gatillo "inmueble/propiedad/
+    # vivienda" y el número son case-insensitive, con (?i:...) por partes) - un nombre
+    # propio real (de calle o de persona) siempre empieza con mayúscula, aun en avisos
+    # TODO EN MAYÚSCULAS ("SAN MARTÍN") - exigir mayúscula de verdad es lo que impide
+    # que una frase de relleno en minúscula ("inmueble consistente en Lote Nº 21") se
+    # cuele como si fuera un nombre de calle (con (?i) global esa frase SÍ se colaba -
+    # se detectó con una prueba real antes de subir esto).
+    r"([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑa-záéíóúñ]*(?:\s+[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑa-záéíóúñ]*){0,3})\s*,?\s*"
+    r"(?i:N[º°o]\.?\s*|n[uú]mero\s+)"
+    r"(\d[\d.]*|(?i:" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK + r"){0,6}))")
 # Palabras numéricas españolas (hasta 999.999) para "traducir" un número de calle
 # escrito en palabras a un entero - ver a_numero_chileno_o_palabras() más abajo.
 _UNIDADES_PALABRA = {"cero": 0, "uno": 1, "un": 1, "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5,
@@ -1635,19 +1668,44 @@ def extraer_direccion_texto(texto):
     # reales), así que este recorte es seguro.
     if "Detalle:" in texto:
         texto = texto.split("Detalle:", 1)[1]
-    for regex in (RE_VIA_CON_MARCA, RE_VIA_SIN_MARCA, RE_VIA_UBICADO_CON_MARCA, RE_VIA_UBICADO_SIN_MARCA):
+    for regex in (RE_VIA_CON_MARCA, RE_VIA_SIN_MARCA, RE_VIA_UBICADO_CON_MARCA, RE_VIA_UBICADO_SIN_MARCA,
+                  RE_VIA_INMUEBLE_DIRECTO):
         for m in regex.finditer(texto):
-            ctx = texto[max(0, m.start() - 110):m.start()]
-            ult = None
-            for t in PALABRAS_TRIBUNAL.finditer(ctx):
-                ult = t.end()
-            if ult is not None and not PALABRAS_PROPIEDAD.search(ctx[ult:]):
-                continue            # es la dirección del tribunal, no de la propiedad
+            if regex is RE_VIA_INMUEBLE_DIRECTO:
+                if _EXCLUIR_INMUEBLE_DIRECTO.match(m.group(2).strip()):
+                    continue        # "inmueble Lote Nº 21", "inmueble Rol Nº..." - no es una calle
+                # OJO (19-11-2026): el filtro de "es la dirección del tribunal" de abajo
+                # mira el texto ANTES del inicio del match - pero en esta regex el match
+                # empieza justo en la palabra "inmueble"/"propiedad"/"vivienda", que ya
+                # es por sí sola una palabra de PALABRAS_PROPIEDAD. Sin saltarse el
+                # filtro aquí, un caso real como "...JUZGADO CIVIL, EL INMUEBLE SAN
+                # MARTIN Nº 950..." quedaba descartado como si fuera la dirección del
+                # tribunal, aunque la propia palabra "inmueble" ya distingue que no lo es.
+                pass
+            else:
+                ctx = texto[max(0, m.start() - 110):m.start()]
+                ult = None
+                for t in PALABRAS_TRIBUNAL.finditer(ctx):
+                    ult = t.end()
+                if ult is not None and not PALABRAS_PROPIEDAD.search(ctx[ult:]):
+                    continue        # es la dirección del tribunal, no de la propiedad
             numero = a_numero_chileno_o_palabras(m.group(3))
             nombre = clave_calle(m.group(2))
             if numero is None or not nombre:
                 continue
-            # OJO (llamada Álvaro 12-11-2026): el número de depto no siempre viene
+            # OJO (19-11-2026, auditoría del bucket "SIN COMUNA CANDIDATA" pedida por
+            # Rodrigo): los 7 casos reales de ese bucket son todos remates ante Juez
+            # Árbitro/Partidor (juicios de partición) - un formato de aviso distinto al
+            # de los Juzgados, que no usa "Juzgado"/"Tribunal" (así que ni TRIBUNAL ni
+            # CBR encuentran nada) y da la comuna SUELTA, pegada a la dirección, sin
+            # "comuna de" por delante (ej. "...Nº 3823, Villa Los Zapadores, Recoleta,").
+            # Se guarda el texto que sigue inmediatamente a la dirección YA encontrada
+            # (nunca el texto completo del aviso - eso sería arriesgado: el caso real
+            # "Miraflores Nº 249, oficina 51A, Santiago" muestra la ciudad del
+            # LIQUIDADOR, no la de la propiedad, en otra parte del mismo aviso) para que
+            # resolver_avisos() pueda buscar ahí una comuna suelta como último recurso,
+            # solo cuando ninguna otra señal haya encontrado nada.
+            cola_cerca_direccion = texto[m.end():m.end() + 90]
             # DESPUÉS de la calle - a veces el aviso describe primero el inmueble
             # ("consistente en departamento 1704 del piso 17 de la Torre B...") y
             # recién más adelante da la dirección de acceso ("...ubicado en la calle
@@ -1679,7 +1737,8 @@ def extraer_direccion_texto(texto):
                         if esc:
                             letras = esc.group(1).upper()
                     unidad = (num_letras[0], letras, tipo)
-            return {"nombre": nombre, "numero": int(numero), "unidad": unidad}
+            return {"nombre": nombre, "numero": int(numero), "unidad": unidad,
+                    "cola_cerca_direccion": cola_cerca_direccion}
     return None
 
 
@@ -2540,6 +2599,17 @@ RE_MARCA_COMUNA = re.compile(
     r"(?:COMUNA(?: Y CIUDAD| DE LA CIUDAD)? DE|CIUDAD Y COMUNA DE|UBICAD[OA]S? EN(?: LA)?(?: CIUDAD| COMUNA)?(?: DE)?|"
     r"SITO EN|SITA EN|EN ESTA CIUDAD DE|, DE|COMUNA)\s+(" + _ALT_COMUNAS + r")\b")
 RE_CBR = re.compile(r"(?:CONSERVADOR(?: DE BIENES RAICES)?|CBR) DE\s+(" + _ALT_COMUNAS + r")\b")
+# OJO (19-11-2026, auditoría del bucket "SIN COMUNA CANDIDATA" pedida por Rodrigo): los
+# 7 casos reales son remates ante Juez Árbitro/Partidor (juicios de partición) - un
+# formato que no dice "Juzgado"/"Tribunal" ni "comuna de", así que ninguna señal de
+# arriba encuentra nada. La comuna real SÍ está, pero suelta, pegada a la dirección con
+# solo una coma ("...Nº 3823, Villa Los Zapadores, Recoleta,"). A propósito, esta regex
+# SOLO se usa (ver resolver_avisos) sobre el fragmento de texto que sigue INMEDIATAMENTE
+# a la dirección de la propiedad YA encontrada - nunca sobre el aviso completo: una
+# búsqueda sin ese límite es insegura (caso real "Miraflores Nº 249, oficina 51A,
+# Santiago" - "Santiago" ahí es la ciudad del LIQUIDADOR, no de la propiedad, y
+# aparece ANTES de la dirección real en el mismo aviso).
+RE_COMUNA_SUELTA_CERCA = re.compile(r",\s*(" + _ALT_COMUNAS + r")\s*[,.]")
 # OJO (12-11-2026, caso real encontrado al revisar "Inglaterra 1144" en SIN
 # COINCIDENCIA): el formato "Publicación Martillero" (liquidaciones), cuando remata
 # VARIOS inmuebles en un mismo aviso, a veces identifica cada rol con la palabra del
@@ -3226,6 +3296,16 @@ def resolver_avisos(df, db_path):
                     sii_dir = NOMBRE2SII.get(normalizar(rescate_dir["comuna"]))
                     if sii_dir:
                         cands = [(sii_dir, "IA")]
+        # OJO (19-11-2026, auditoría "SIN COMUNA CANDIDATA"): último recurso, solo
+        # cuando NINGUNA otra señal (texto, rol, CBR, tribunal, IA) encontró comuna -
+        # ver RE_COMUNA_SUELTA_CERCA más arriba para el porqué de buscar solo cerca
+        # de la dirección, nunca en el aviso completo.
+        if not cands and dtx and dtx.get("cola_cerca_direccion"):
+            m_com = RE_COMUNA_SUELTA_CERCA.search(normalizar(dtx["cola_cerca_direccion"]))
+            if m_com:
+                sii_cerca = NOMBRE2SII.get(m_com.group(1))
+                if sii_cerca:
+                    cands = [(sii_cerca, "TEXTO_CERCA_DIRECCION")]
         elegido = None
         if roles and con is not None:
             man, pre = roles[0]
@@ -5075,8 +5155,12 @@ def prueba():
     comprobar("Aviso: modalidad PRESENCIAL", a1["modalidad"] == "PRESENCIAL")
     comprobar("Aviso: comuna La Serena detectada", a1["candidatos"] and a1["candidatos"][0][0] == NOMBRE2SII["LA SERENA"])
     d1 = extraer_direccion_texto(AVISO_PRUEBA_1)
+    # OJO (19-11-2026): se compara solo nombre/numero/unidad, no el diccionario
+    # completo - desde esta fecha extraer_direccion_texto() también devuelve
+    # "cola_cerca_direccion" (ver RE_COMUNA_SUELTA_CERCA), que no es lo que esta
+    # prueba puntual quiere verificar.
     comprobar("Aviso: dirección de la PROPIEDAD (El Sauco 5299), no la del tribunal (Rengifo)",
-              d1 == {"nombre": "EL SAUCO", "numero": 5299, "unidad": None})
+              d1 and d1["nombre"] == "EL SAUCO" and d1["numero"] == 5299 and d1["unidad"] is None)
     a2 = parsear_aviso(AVISO_PRUEBA_2, (14, 9))
     comprobar("Aviso 2: mínimo en UF 3200,50", a2["minimo_valor"] == 3200.5 and a2["minimo_unidad"] == "UF")
     comprobar("Aviso 2: remoto, juicio ejecutivo, segundo remate",
