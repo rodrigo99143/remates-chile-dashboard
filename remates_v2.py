@@ -1441,6 +1441,24 @@ RE_UNIDAD = re.compile(r"(?i)\b(?P<tipo>departamentos?|deptos?\.?|dptos?\.?|dp\.
                        r"\s*(?:n[º°o.]*\s*|n[uú]mero\s+)?"
                        r"(?P<num>(?:[A-Za-z]\s?-\s?)?(?:\d{1,5}|" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK +
                        r"){0,6})(?:\s?-\s?[A-Za-z]\b|[A-Za-z]\b)?)")
+# OJO (19-11-2026, caso real "departamento nº 203, edificio o escalera nº j Condominio
+# San Pablo"): cuando un edificio grande repite el mismo número de depto en varias
+# escaleras/torres (ej. "SAN PABLO 1825 ESC M DEPTO 203", "...ESC N DEPTO 203"...), la
+# letra de la escalera es el dato que distingue una unidad real de otra - y el aviso
+# SÍ la dice, con todas sus letras, justo al lado del depto. Antes esto se perdía por
+# completo (no había ninguna regex que lo buscara), dejando 18 candidatos idénticos en
+# vez de uno solo. Se busca por separado (no es parte del número de depto) y, si se
+# encuentra, se usa como la "letra" de la unidad - mismo campo que ya existe para
+# cuando la letra viene pegada al número ("1207-C").
+RE_ESCALERA = re.compile(r"(?i)\b(?:escalera|torre)\s*(?:n[º°o.]*\s*|n[uú]mero\s+)?([A-Za-z])\b")
+# OJO (19-11-2026, auto-corrección: caso real "edificio o escalera nº j"): "edificio"
+# se descarta como palabra-gatillo (muy genérica, y en frases como "edificio o
+# escalera nº J" capturaba la "o" - la conjunción, no la letra real) - "escalera" y
+# "torre" son mucho más específicas y no tienen ese problema.
+# Mismo dato, del lado del catastro: "SAN PABLO 1825 ESC M DEPTO 203" trae la letra de
+# escalera como token suelto "ESC M" ANTES de la marca de unidad (DEPTO/BD/...) - hoy se
+# perdía igual que del lado del aviso (ver RE_ESCALERA más arriba).
+_RE_ESC_CATASTRO = re.compile(r"\bESC\.?\s*([A-Z])\b")
 PALABRAS_PROPIEDAD = re.compile(r"(?i)inmueble|propiedad|departamento|depto|casa|sitio|lote|vivienda|"
                                 r"bien ra[ií]z|parcela|local comercial|unidad")
 PALABRAS_TRIBUNAL = re.compile(r"(?i)juzgado|tribunal|secretar[ií]a|domicilio")
@@ -1645,13 +1663,22 @@ def extraer_direccion_texto(texto):
             # corta. Se amplía a 350 (con margen) en vez de a la medida justa de este
             # caso, para no tener que repetir este mismo ajuste con el próximo aviso
             # un poco más largo.
-            u = RE_UNIDAD.search(texto[m.end():m.end() + 80]) or RE_UNIDAD.search(texto[max(0, m.start() - 350):m.end() + 80])
+            ventana = texto[m.end():m.end() + 80]
+            u = RE_UNIDAD.search(ventana)
+            if not u:
+                ventana = texto[max(0, m.start() - 350):m.end() + 80]
+                u = RE_UNIDAD.search(ventana)
             unidad = None
             if u:
                 num_letras = parsear_unidad(u.group("num"))
                 if num_letras:
                     tipo = TIPO_DE_PALABRA_UNIDAD.get(u.group("tipo").lower().rstrip("."))
-                    unidad = (num_letras[0], num_letras[1], tipo)
+                    letras = num_letras[1]
+                    if not letras:
+                        esc = RE_ESCALERA.search(ventana)
+                        if esc:
+                            letras = esc.group(1).upper()
+                    unidad = (num_letras[0], letras, tipo)
             return {"nombre": nombre, "numero": int(numero), "unidad": unidad}
     return None
 
@@ -1681,7 +1708,18 @@ def parsear_dir_catastro(direccion):
             # trajo el catastro para esta fila, para poder comparar contra el tipo que
             # el aviso menciona explícitamente (ver TIPO_DE_MARCA_UNIDAD).
             tipo = TIPO_DE_MARCA_UNIDAD.get(t)
-            unidad = (set(nums), letras[:2], tipo) if nums else (set(), letras[:2], tipo)
+            letras = letras[:2]
+            # OJO (19-11-2026, caso real "SAN PABLO 1825 ESC M DEPTO 203"): si el depto
+            # no trae su propia letra (nada en "DP 203 A"), pero la dirección SÍ trae
+            # "ESC <letra>" en algún lugar (normalmente antes de la marca de unidad), esa
+            # letra es la que distingue una escalera de otra para el MISMO número de
+            # depto - se usa como "letras" de la unidad, igual que ya se hace con
+            # "DP 203 A". Nunca pisa una letra que el depto ya trae consigo.
+            if not letras:
+                esc = _RE_ESC_CATASTRO.search(normalizar(direccion))
+                if esc:
+                    letras = esc.group(1)
+            unidad = (set(nums), letras, tipo) if nums else (set(), letras, tipo)
             break
     for i, t in enumerate(toks[:corte]):
         if t in MARCAS_LOTE and i > 1 and any(x.isdigit() for x in toks[:i]):
