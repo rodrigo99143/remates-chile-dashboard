@@ -1236,7 +1236,18 @@ def valor_uf(fecha):
 # ------------------------------------------------------------------------------
 TIPOS_VIA = {"CALLE", "CL", "AV", "AVDA", "AVENIDA", "PJE", "PSJE", "PSJ", "PASAJE", "CAMINO", "CAM",
              "RUTA", "DIAGONAL", "DIAG", "CALLEJON", "CJN", "PASEO", "POBL", "POBLACION", "PARCELA"}
-MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "EST"}     # departamento, bodega, etc.
+MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "EST", "CS"}     # departamento, bodega, etc.
+# OJO (19-11-2026, auditoría a fondo del bucket AMBIGUO pedida por Rodrigo): "CS" ya
+# estaba en MARCAS_LOTE (se usaba solo para CORTAR el nombre de la calle), pero nunca
+# se guardaba el número que trae detrás como un número de unidad comparable - muestra
+# real: "LA LAGUNA 18947 CS 1010", "... CS 1012", "... CS 1014"... son CASAS distintas
+# dentro del mismo condominio (mismo número de calle, una fila por casa), pero como el
+# número de la casa se descartaba, todas esas filas quedaban con el mismo
+# (nombre, número, unidad=None) - exactamente lo que vuelve "AMBIGUO" a casos reales
+# donde el aviso SÍ dice la casa exacta (ej. "...Avenida Jorge Ross Ossa nº 1553 casa
+# 191" -> catastro "...1553 CS 191"): 242 candidatos en vez de uno solo. Al agregar "CS"
+# aquí (se sigue buscando primero en este set, antes que en MARCAS_LOTE), el número de
+# casa se captura igual que ya se hace con depto/bodega/estacionamiento.
 # OJO (12-11-2026, pedido explícito de Rodrigo tras comentario de Álvaro: "las
 # publicaciones exigen rol y dirección... la ambigüedad se puede discernir al menos
 # por un humano - hay que buscar la forma de automatizarlo"): muestra real de
@@ -1256,6 +1267,7 @@ TIPO_DE_MARCA_UNIDAD = {
     "BX": "ESTACIONAMIENTO", "ES": "ESTACIONAMIENTO", "EST": "ESTACIONAMIENTO",
     "OF": "OFICINA",
     "LC": "LOCAL",
+    "CS": "CASA",
 }
 # Mismo mapeo, pero desde la PALABRA que puede aparecer en el texto libre del aviso
 # ("departamento", "bodega", "estacionamiento", "box", "oficina", "local") hacia el
@@ -1268,6 +1280,11 @@ TIPO_DE_PALABRA_UNIDAD = {
     "box": "ESTACIONAMIENTO", "boxes": "ESTACIONAMIENTO",
     "oficina": "OFICINA", "oficinas": "OFICINA",
     "local": "LOCAL", "locales": "LOCAL",
+    # OJO (19-11-2026, caso real "Avenida Jorge Ross Ossa nº 1553 casa 191"): "casa Nº
+    # X" es la forma en que estos avisos identifican la vivienda exacta dentro de un
+    # condominio de casas (varias casas comparten el mismo número de calle) - mapea al
+    # mismo "CS" que ya usa el catastro para esto (ver TIPO_DE_MARCA_UNIDAD/MARCAS_UNIDAD).
+    "casa": "CASA", "casas": "CASA",
 }
 # OJO (auditoría 12-11-2026, pedido de Rodrigo): el catastro del SII usa a veces
 # "L" (Lote) y "MA" (Manzana) como abreviatura SUELTA, ej. "TENERIFE 2233 L 71 MA
@@ -1420,7 +1437,7 @@ def a_numero_chileno_o_palabras(s):
 # box/oficina/local como alternativas, y se nombra el grupo que las captura
 # ("tipo") para poder distinguir cuál palabra fue la que calzó.
 RE_UNIDAD = re.compile(r"(?i)\b(?P<tipo>departamentos?|deptos?\.?|dptos?\.?|dp\.?|"
-                       r"bodegas?|bod\.?|estacionamientos?|boxe?s?|oficinas?|locales?)"
+                       r"bodegas?|bod\.?|estacionamientos?|boxe?s?|oficinas?|locales?|casas?)"
                        r"\s*(?:n[º°o.]*\s*|n[uú]mero\s+)?"
                        r"(?P<num>(?:[A-Za-z]\s?-\s?)?(?:\d{1,5}|" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK +
                        r"){0,6})(?:\s?-\s?[A-Za-z]\b|[A-Za-z]\b)?)")
@@ -1619,7 +1636,16 @@ def extraer_direccion_texto(texto):
             # Juan de Barro 3885"). Se amplía la ventana "hacia atrás" (70->220) para
             # cubrir ese orden real, sin tocar la ventana "hacia adelante" (la más
             # común) que se sigue intentando primero.
-            u = RE_UNIDAD.search(texto[m.end():m.end() + 80]) or RE_UNIDAD.search(texto[max(0, m.start() - 220):m.end() + 80])
+            # OJO (19-11-2026, caso real "Juan de Barros 3885" - auditoría AMBIGUO/no
+            # leída): "departamento 1704, del piso 17, de la Torre B, denominada
+            # indistintamente también como edificio Los Nogales, del condominio...
+            # ...ubicado en calle Juan de Barros" mide 291 caracteres entre el número
+            # de depto y la calle - más que la ventana de 220 ya ampliada una vez.
+            # El dato SÍ estaba escrito de forma clara, solo que la ventana se quedaba
+            # corta. Se amplía a 350 (con margen) en vez de a la medida justa de este
+            # caso, para no tener que repetir este mismo ajuste con el próximo aviso
+            # un poco más largo.
+            u = RE_UNIDAD.search(texto[m.end():m.end() + 80]) or RE_UNIDAD.search(texto[max(0, m.start() - 350):m.end() + 80])
             unidad = None
             if u:
                 num_letras = parsear_unidad(u.group("num"))
