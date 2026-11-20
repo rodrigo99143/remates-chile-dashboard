@@ -1469,8 +1469,13 @@ def a_numero_chileno_o_palabras(s):
 # guardado para comparar contra el catastro). Se agregan bodega/estacionamiento/
 # box/oficina/local como alternativas, y se nombra el grupo que las captura
 # ("tipo") para poder distinguir cuál palabra fue la que calzó.
+# OJO (19-11-2026, caso real "el local número cuarenta... calle Merced número
+# ochocientos treinta y dos"): "locales?" como estaba escrito significa literalmente
+# "locale" o "locales" (la "e" es parte del literal, no del sufijo plural) - por eso
+# NUNCA calzaba con la forma singular "local", que es la más común en los avisos.
+# Se corrige a "local(?:es)?" para que matchee tanto "local" como "locales".
 RE_UNIDAD = re.compile(r"(?i)\b(?P<tipo>departamentos?|deptos?\.?|dptos?\.?|dp\.?|"
-                       r"bodegas?|bod\.?|estacionamientos?|boxe?s?|oficinas?|locales?|casas?)"
+                       r"bodegas?|bod\.?|estacionamientos?|boxe?s?|oficinas?|local(?:es)?|casas?)"
                        r"\s*(?:n[º°o.]*\s*|n[uú]mero\s+)?"
                        r"(?P<num>(?:[A-Za-z]\s?-\s?)?(?:\d{1,5}|" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK +
                        r"){0,6})(?:\s?-\s?[A-Za-z]\b|[A-Za-z]\b)?)")
