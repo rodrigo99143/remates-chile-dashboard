@@ -1333,6 +1333,16 @@ ABREVIATURAS = {"GRAL": "GENERAL", "GRL": "GENERAL", "CDTE": "COMANDANTE", "PDTE
                 "TTE": "TENIENTE", "ALM": "ALMIRANTE", "DR": "DOCTOR", "STA": "SANTA", "STO": "SANTO", "SN": "SAN",
                 "SGTO": "SARGENTO", "MCAL": "MARISCAL", "CARD": "CARDENAL", "OBPO": "OBISPO", "AVDA": "AV",
                 "PJE": "PJE", "PSJE": "PJE", "PASAJE": "PJE", "MED": "MEDIA",
+                # OJO (20-11-2026, auditoría SIN COINCIDENCIA, caso real "Avenida Manuel
+                # Rodríguez Norte Nº 37... estacionamiento E17", comuna Santiago): el
+                # catastro abrevia los puntos cardinales que califican una calle numerada
+                # ("NORTE"/"PONIENTE"/"ORIENTE") a "NTE"/"PTE"/"OTE" en algunas filas pero
+                # no en otras de la MISMA calle ("M RODRIGUEZ NTE" vs el aviso "MANUEL
+                # RODRIGUEZ NORTE") - sin esta normalización nunca calzaban, aunque
+                # nombres_compatibles() ya sabría reconocer "M"="MANUEL" por inicial. Son
+                # abreviaturas frecuentes a nivel nacional (NTE ~13.400 filas, PTE ~33.600,
+                # OTE ~20.700), no un caso aislado.
+                "NTE": "NORTE", "PTE": "PONIENTE", "OTE": "ORIENTE",
                 # OJO (20-11-2026, auditoría SIN COINCIDENCIA, caso real "Calle 22 1/2
                 # Norte A Nº 3643", Talca): el catastro ya normaliza "MED" -> "MEDIA"
                 # (línea de arriba) para calles como "22 MED NORTE A", pero el aviso
@@ -1951,7 +1961,26 @@ def parsear_dir_catastro(direccion):
         letra_pegada = None
         if t not in MARCAS_UNIDAD and t.startswith("DP") and len(t) == 3 and t[2].isalpha():
             letra_pegada = t[2]
-        if (t in MARCAS_UNIDAD or letra_pegada) and i > 0:
+        # OJO (20-11-2026, auditoría SIN COINCIDENCIA, caso real "Avenida Manuel
+        # Rodríguez Norte Nº 37... estacionamiento E17/E18", comuna Santiago): el
+        # catastro trae esta misma unidad como "M RODRIGUEZ NTE 37 - 41 BXE 17" -
+        # "BXE" (variante de "BX"/bodega-estacionamiento) no estaba en MARCAS_UNIDAD,
+        # así que el corte nunca se activaba y "BXE" se leía como parte del NOMBRE de
+        # la calle, perdiendo el número real. Al revisar el catastro completo se
+        # encontraron decenas de miles de filas con esta misma familia de marcas no
+        # contempladas ("BXE" sola: ~20.200 filas; "BDB", variante de "BD"/bodega:
+        # ~19.700 filas; más una larga cola de sufijos como "BXC"/"BXMOTO"/"BDA" para
+        # sub-tipos de bodega o estacionamiento) - demasiadas variantes puntuales para
+        # agregar una por una. Se reconoce de forma genérica cualquier token que
+        # EMPIECE con "BX" o "BD" seguido solo de letras (nunca uno que ya esté en
+        # MARCAS_UNIDAD, para no pisar "BD"/"BX"/"BOD"/"BOX" ya reconocidos tal cual).
+        marca_bx_bd = None
+        if t not in MARCAS_UNIDAD and not letra_pegada:
+            if re.fullmatch(r"BX[A-Z]{1,6}", t):
+                marca_bx_bd = "ESTACIONAMIENTO"
+            elif re.fullmatch(r"BD[A-Z]{1,6}", t):
+                marca_bx_bd = "BODEGA"
+        if (t in MARCAS_UNIDAD or letra_pegada or marca_bx_bd) and i > 0:
             corte = i
             resto = " ".join(toks[i + 1:i + 5])
             # OJO (19-11-2026, mismo caso real "...DEP 531 ED. 5"): "ED 5" (número de
@@ -1989,7 +2018,7 @@ def parsear_dir_catastro(direccion):
             # también el TIPO de marca (depto/bodega/estacionamiento/oficina/local) que
             # trajo el catastro para esta fila, para poder comparar contra el tipo que
             # el aviso menciona explícitamente (ver TIPO_DE_MARCA_UNIDAD).
-            tipo = TIPO_DE_MARCA_UNIDAD.get("DP" if letra_pegada else t)
+            tipo = marca_bx_bd or TIPO_DE_MARCA_UNIDAD.get("DP" if letra_pegada else t)
             letras = letras[:2]
             # OJO (19-11-2026, caso real "SAN PABLO 1825 ESC M DEPTO 203"): si el depto
             # no trae su propia letra (nada en "DP 203 A"), pero la dirección SÍ trae
