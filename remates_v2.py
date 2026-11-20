@@ -2059,12 +2059,37 @@ def buscar_rol_por_direccion(con, comuna_sii, dir_tx):
     utiles = [p for p in palabras if p not in PALABRAS_COMUNES] or palabras or dir_tx["nombre"].split()
     if not utiles:
         return "SIN DIRECCION UTIL", []
-    ancla = max(utiles, key=len)
-    if len(ancla) > 5 and ancla.endswith("S"):
-        ancla = ancla[:-1]
-    filas = con.execute(
-        "SELECT manzana, predio, direccion, avaluo, destino FROM predios "
-        "WHERE comuna=? AND REPLACE(direccion,'Ñ','N') LIKE ?", (comuna_sii, f"%{ancla}%")).fetchall()
+    def _recortar(palabra):
+        return palabra[:-1] if len(palabra) > 5 and palabra.endswith("S") else palabra
+    ancla = _recortar(max(utiles, key=len))
+    # OJO (20-11-2026, caso real "calle Arturo Prat Nº 955, Temuco" - auditoría SIN
+    # COINCIDENCIA): el catastro trae esta misma calle como "A PRAT 955..." - abrevia el
+    # NOMBRE DE PILA a su sola inicial (no es una abreviatura de diccionario como
+    # "GRAL"->"GENERAL", es específica de cada nombre propio, imposible de prever). La
+    # ancla elegida arriba es la palabra MÁS LARGA ("ARTURO", 6 letras) - que es
+    # justamente la que el catastro trunca a una sola letra: el LIKE SÍ encuentra filas
+    # (otras calles que también contienen "ARTURO" en algún lado), pero nunca la fila
+    # real, aunque nombres_compatibles() SÍ sabría reconocer "A PRAT" como compatible
+    # con "ARTURO PRAT" (ya tiene esa regla) - el problema es que esa fila real nunca
+    # llega a compararse porque el filtro SQL, con esa ancla, la descarta antes. Por eso
+    # no basta con reintentar solo cuando la primera búsqueda viene vacía (sí hay
+    # filas, solo que ninguna es la correcta): se busca SIEMPRE también por la ÚLTIMA
+    # palabra útil (normalmente el apellido, que el catastro no trunca) además de la
+    # más larga, y se combinan - nunca al revés (la primera palabra de un nombre
+    # compuesto es la más expuesta a quedar reducida a una inicial en el catastro).
+    anclas = {ancla}
+    if len(utiles) > 1:
+        anclas.add(_recortar(utiles[-1]))
+    filas = []
+    vistos = set()
+    for anc in anclas:
+        for fila in con.execute(
+                "SELECT manzana, predio, direccion, avaluo, destino FROM predios "
+                "WHERE comuna=? AND REPLACE(direccion,'Ñ','N') LIKE ?", (comuna_sii, f"%{anc}%")):
+            clave = (fila[0], fila[1])
+            if clave not in vistos:
+                vistos.add(clave)
+                filas.append(fila)
     # OJO (auditoría 12-11-2026, muestra real de "AMBIGUO"): el catastro del SII a veces
     # trae la MISMA fila (idéntica manzana y predio - el verdadero identificador único de
     # un predio) repetida más de una vez. Antes esto se contaba como "2 candidatos" (o
