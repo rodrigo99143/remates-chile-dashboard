@@ -1700,7 +1700,21 @@ def clave_calle(nombre):
         if len(t) > 4 and t.endswith("S") and not t.isdigit():
             t = t[:-1]
         out.append(t)
-    return " ".join(out)
+    nombre_out = " ".join(out)
+    # OJO (20-11-2026, auditoría comuna "Avenida Padre Hurtado 621, Maipú" - caso real
+    # "Condominio Altos de San Martín... de Avenida Padre Hurtado 621"): el aviso dice
+    # "Padre Hurtado" (el nombre popular del sacerdote, hoy canonizado San Alberto
+    # Hurtado), pero el catastro registra las unidades de ese mismo condominio bajo su
+    # nombre completo "San Alberto Hurtado" (verificado con el catastro real de Maipú:
+    # los números de la calle coinciden exactamente entre ambas variantes - 402, 590,
+    # 695 - y son el mismo condominio, solo que el lote matriz quedó con "Padre Hurtado"
+    # y cada depto individual con "San Alberto Hurtado"). Se repite en otras 13 comunas
+    # del catastro completo con el mismo patrón (una grafía predomina, la otra aparece
+    # suelta) - no son dos calles distintas, es la misma calle con dos nombres usados
+    # indistintamente. Se canonizan ambas a "PADRE HURTADO" (aplica por igual al nombre
+    # del aviso y al del catastro, como el resto de esta función).
+    nombre_out = re.sub(r"\bSAN ALBERTO HURTADO\b", "PADRE HURTADO", nombre_out)
+    return nombre_out
 
 
 def nombres_compatibles(a, b):
@@ -3745,12 +3759,26 @@ def resolver_avisos(df, db_path):
         # cuando NINGUNA otra señal (texto, rol, CBR, tribunal, IA) encontró comuna -
         # ver RE_COMUNA_SUELTA_CERCA más arriba para el porqué de buscar solo cerca
         # de la dirección, nunca en el aviso completo.
-        if not cands and dtx and dtx.get("cola_cerca_direccion"):
+        # OJO (20-11-2026, caso real "...de la Torre II, del Condominio Altos de San
+        # Martín... de Avenida Padre Hurtado 621, Maipú, y derechos en bienes
+        # comunes..."): esto antes solo se probaba cuando "cands" quedaba VACÍO, pero
+        # aquí "cands" NO estaba vacío - traía SIEMPRE la comuna del TRIBUNAL
+        # (Vigésimo Tercer Juzgado Civil "De Santiago") más sus 2 subcódigos SII, que
+        # es la comuna del tribunal, no necesariamente la de la propiedad. Esa
+        # candidata "de relleno" bloqueaba por completo esta búsqueda cerca de la
+        # dirección, aunque la comuna real (Maipú) estuviera dicha con toda claridad
+        # justo después del número. Se amplía la condición para que, cuando las ÚNICAS
+        # candidatas existentes sean de origen TRIBUNAL (o su subcódigo de Santiago),
+        # igual se intente esta búsqueda y, si encuentra algo, se agregue ANTES (más
+        # prioridad) que la mera suposición del tribunal - no se reemplaza "cands" por
+        # completo para no perder el respaldo del tribunal si la dirección falla.
+        if dtx and dtx.get("cola_cerca_direccion") and (
+                not cands or all(o in ("TRIBUNAL", "SANTIAGO_SUBCODIGO_SII") for _, o in cands)):
             m_com = RE_COMUNA_SUELTA_CERCA.search(normalizar(dtx["cola_cerca_direccion"]))
             if m_com:
                 sii_cerca = NOMBRE2SII.get(m_com.group(1))
-                if sii_cerca:
-                    cands = [(sii_cerca, "TEXTO_CERCA_DIRECCION")]
+                if sii_cerca and sii_cerca not in [c for c, _ in cands]:
+                    cands = [(sii_cerca, "TEXTO_CERCA_DIRECCION")] + cands
         elegido = None
         if roles and con is not None:
             man, pre = roles[0]
