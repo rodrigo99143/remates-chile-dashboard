@@ -1893,6 +1893,16 @@ def buscar_rol_por_direccion(con, comuna_sii, dir_tx):
     exactos = [c for c in cands if c[6] == dir_tx["nombre"]]
     if exactos:
         cands = exactos             # si hay calles de nombre idéntico, se prefieren a las "parecidas"
+    # OJO (19-11-2026, caso real "sitio y casa nº 11 manzana E, ubicado Pasaje Mozart nº
+    # 1.103"): cuando el catastro trae UNA SOLA fila física para esta calle+número (no
+    # está desglosado en unidades, "PJE. MOZART 1103" sin ninguna marca DP/CS/etc.), el
+    # filtro de unidad de abajo la descartaba igual porque esa fila no tiene unidad que
+    # comparar - aunque no hay NINGUNA ambigüedad posible (es la única fila que existe
+    # para esa dirección). Si el aviso menciona una unidad pero el catastro solo tiene un
+    # candidato y ese candidato no trae desglose de unidad, se acepta igual: no hay con
+    # qué confundirlo.
+    if dir_tx.get("unidad") and len(cands) == 1 and cands[0][5] is None:
+        return "UNICO", [cands[0][:5]]
     if dir_tx.get("unidad"):
         d, letras, tipo = dir_tx["unidad"]
         cands = [c for c in cands if c[5] is not None and d in c[5][0] and (not letras or letras == c[5][1])]
