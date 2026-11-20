@@ -1357,11 +1357,23 @@ RE_VIA_SIN_MARCA = re.compile(
 # "...con acceso general por AV..." - el "general" no estaba contemplado (solo
 # "principal" u omitido), así que este aviso se perdía entero aunque la
 # dirección SÍ estaba escrita de forma reconocible.
+# OJO (19-11-2026, caso real "...el departamento Nº 641... ubicados en Condominio Lo
+# Curro, José Manuel Balmaceda 825, Reñaca, Viña del Mar"): cuando el nombre del
+# condominio/edificio/villa va ANTES de la calle real, separado por una coma, el grupo
+# de la calle (que excluye comas a propósito, para no comerse basura) nunca llegaba a
+# "José Manuel Balmaceda 825" porque la coma lo cortaba antes. Se agrega una cláusula
+# opcional que salta justo ese prefijo ("Condominio/Edificio/Villa/Conjunto/Block/
+# Población/Loteo/Parque NOMBRE, ") antes de capturar la calle real - solo para esas
+# palabras conocidas, para no arriesgar capturar basura como si fuera un prefijo.
+_PREFIJO_COMPLEJO_OPC = (r"(?:(?:Condominio|Edificio|Villa|Conjunto(?:\s+Habitacional)?|"
+                         r"Block|Poblaci[oó]n|Loteo|Parque)\s+[^,;\d]{1,40},\s*)?")
 RE_VIA_UBICADO_CON_MARCA = re.compile(
     r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?(?:en\s+)?|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a)\s+)"
+    + _PREFIJO_COMPLEJO_OPC +
     r"([^,;\d]{1,55}?)\s*,?\s*(?:N[º°o]\.?\s*|n[uú]mero\s+|#\s*)" + _GRUPO_NUMERO_VIA)
 RE_VIA_UBICADO_SIN_MARCA = re.compile(
     r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?(?:en\s+)?|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a)\s+)"
+    + _PREFIJO_COMPLEJO_OPC +
     r"([^,;\d]{1,55}?)\s+" + _GRUPO_NUMERO_VIA + r"\b")
 # OJO (19-11-2026, caso real "Inmueble ubicado Manuel Rodríguez N° 123" - auditoría NO
 # SE PUDO LEER): "ubicado" sin la palabra "en" después (sin ese "en" que las dos regex
