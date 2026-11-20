@@ -1250,7 +1250,13 @@ TIPOS_VIA = {"CALLE", "CL", "AV", "AVDA", "AVENIDA", "PJE", "PSJE", "PSJ", "PASA
 # por completo. Se agrega "DEP" como alias de "DEPTO".
 # OJO (19-11-2026, caso real "CERRO MORENO 10500 CASA 35"): el catastro a veces escribe
 # la palabra completa "CASA" en vez de la abreviatura "CS" - se agrega como alias.
-MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "DEP", "EST", "CS", "CASA"}     # departamento, bodega, etc.
+MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "DEP", "EST", "CS", "CASA",
+                  "BOX", "BOD"}     # departamento, bodega, etc.
+# OJO (19-11-2026, caso real "FLEMING 6889 BOX 15" / "NAPOLEON 2905 BOX 16", "NAPOLEON
+# 2905 BOD 16"): el catastro también escribe estacionamiento y bodega con la palabra
+# completa ("BOX"/"BOD"), no solo las abreviaturas de 2 letras ("BX"/"BD") que ya estaban
+# contempladas - son 20.000+ filas en todo el catastro, no casos aislados. Sin esto,
+# "BOX 15" se leía como parte del NOMBRE de la calle ("FLEMING 6889 BOX", número 15).
 # OJO (19-11-2026, auditoría a fondo del bucket AMBIGUO pedida por Rodrigo): "CS" ya
 # estaba en MARCAS_LOTE (se usaba solo para CORTAR el nombre de la calle), pero nunca
 # se guardaba el número que trae detrás como un número de unidad comparable - muestra
@@ -1277,8 +1283,8 @@ MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "DEP
 # menciona explícitamente.
 TIPO_DE_MARCA_UNIDAD = {
     "DP": "DEPTO", "DPTO": "DEPTO", "DEPTO": "DEPTO", "DEP": "DEPTO",
-    "BD": "BODEGA", "BO": "BODEGA",
-    "BX": "ESTACIONAMIENTO", "ES": "ESTACIONAMIENTO", "EST": "ESTACIONAMIENTO",
+    "BD": "BODEGA", "BO": "BODEGA", "BOD": "BODEGA",
+    "BX": "ESTACIONAMIENTO", "ES": "ESTACIONAMIENTO", "EST": "ESTACIONAMIENTO", "BOX": "ESTACIONAMIENTO",
     "OF": "OFICINA",
     "LC": "LOCAL",
     "CS": "CASA", "CASA": "CASA",
@@ -1803,8 +1809,13 @@ def parsear_dir_catastro(direccion):
     # que "TOR <número>" - un par de tokens suelto ANTES del marcador de unidad que
     # contamina el número de calle ("SAN ISIDRO 154 EX" + número "164" en vez de "SAN
     # ISIDRO" + "154"). Se quita igual que "TOR"/"TORRE".
+    # OJO (19-11-2026, caso real "WAYRA 1710 EDIF 2 DP 324 PISO 3"): mismo problema con
+    # el número de EDIFICIO escrito como palabra completa ANTES del marcador de unidad -
+    # "ED <número>" ya se quitaba DENTRO de la ventana después de la marca (ver más
+    # abajo), pero no si caía ANTES, contaminando el número de calle igual que
+    # "TOR"/"EX" ("WAYRA 1710 EDIF" + número "2" en vez de "WAYRA" + "1710").
     while i < len(toks):
-        if toks[i] in ("TOR", "TORRE", "EX") and i + 1 < len(toks) and toks[i + 1].isdigit():
+        if toks[i] in ("TOR", "TORRE", "EX", "ED", "EDIF", "EDIFICIO") and i + 1 < len(toks) and toks[i + 1].isdigit():
             i += 2
             continue
         toks_sin_torre.append(toks[i])
@@ -1836,6 +1847,11 @@ def parsear_dir_catastro(direccion):
             # que "ED 5" (edificio), se descarta antes de extraer los números reales para
             # no ensuciar el conjunto de comparación con el número de piso.
             resto_sin_edificio = re.sub(r"\bED\s+\d+\b", " ", resto)
+            # OJO (19-11-2026, caso real "WAYRA 1710 EDIF 2 DP 324 PISO 3"): "PISO
+            # <número>" (palabra completa) cae en la misma ventana y ensucia el conjunto
+            # de números igual que "P <número>" (abreviado) ya contemplado - se descarta
+            # también.
+            resto_sin_edificio = re.sub(r"\bPISO\s+\d+\b", " ", resto_sin_edificio)
             resto_sin_edificio = re.sub(r"\bP\s+\d+\b", " ", resto_sin_edificio)
             nums = [x.lstrip("0") for x in re.findall(r"\d+", resto_sin_edificio)]
             nums = [x for x in nums if x]
