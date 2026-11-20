@@ -1963,13 +1963,23 @@ def buscar_rol_por_direccion(con, comuna_sii, dir_tx):
         return "UNICO", [cands[0][:5]]
     if dir_tx.get("unidad"):
         d, letras, tipo = dir_tx["unidad"]
-        cands = [c for c in cands if c[5] is not None and d in c[5][0] and (not letras or letras == c[5][1])]
+        # OJO (19-11-2026, caso real "CASTILLA 124 DEPTO 904 C", catastro tiene 3 filas
+        # idénticas "CASTILLA 124 DP 904" SIN ninguna letra escrita): si el aviso trae una
+        # letra de unidad ("904 C") pero la fila del catastro para ese MISMO número de
+        # depto no trae letra alguna (ni esa ni otra - "letras" de esa fila queda vacío al
+        # parsear), eso no significa que el catastro diga "es la unidad SIN letra, letra
+        # distinta a C" - significa que el catastro simplemente no registró el dato. Antes
+        # esto se trataba igual que una letra EXPLÍCITAMENTE distinta y se descartaba la
+        # fila por completo, perdiendo el único candidato real. Se acepta la fila cuando
+        # SU letra está vacía (como ya se hace con el tipo de marca, más abajo) - solo se
+        # descarta cuando el catastro SÍ trae una letra y es distinta a la del aviso.
+        cands = [c for c in cands if c[5] is not None and d in c[5][0] and (not letras or not c[5][1] or letras == c[5][1])]
         if not cands and exactos_iniciales:
             # El nombre "exacto" no tenía la unidad que pide el aviso - se reintenta con
             # el conjunto COMPLETO de nombres "parecidos" (ver OJO más arriba), en vez de
             # rendirse: puede que la fila con la unidad correcta sea una de las que el
             # catastro escribió de forma levemente distinta.
-            cands = [c for c in cands_todos if c[5] is not None and d in c[5][0] and (not letras or letras == c[5][1])]
+            cands = [c for c in cands_todos if c[5] is not None and d in c[5][0] and (not letras or not c[5][1] or letras == c[5][1])]
         # OJO (12-11-2026, pedido de Rodrigo tras comentario de Álvaro - ver
         # TIPO_DE_MARCA_UNIDAD más arriba): si el aviso dice explícitamente "departamento
         # Nº41" y el catastro trae, para ese mismo número, una fila de depto Y una de
