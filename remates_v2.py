@@ -1236,7 +1236,13 @@ def valor_uf(fecha):
 # ------------------------------------------------------------------------------
 TIPOS_VIA = {"CALLE", "CL", "AV", "AVDA", "AVENIDA", "PJE", "PSJE", "PSJ", "PASAJE", "CAMINO", "CAM",
              "RUTA", "DIAGONAL", "DIAG", "CALLEJON", "CJN", "PASEO", "POBL", "POBLACION", "PARCELA"}
-MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "EST", "CS"}     # departamento, bodega, etc.
+# OJO (19-11-2026, caso real "SARGENTO ALDEA 321 DEP 531 ED. 5"): el catastro también
+# abrevia "departamento" como "DEP" (sin la O final), que no estaba en la lista - como
+# ningún token calzaba con una marca de unidad conocida, el programa nunca cortaba ahí y
+# terminaba leyendo "DEP 531 ED" como si fuera parte del NOMBRE de la calle y "5" (el
+# número de EDIFICIO) como si fuera el número de la calle, perdiendo la dirección real
+# por completo. Se agrega "DEP" como alias de "DEPTO".
+MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "DEP", "EST", "CS"}     # departamento, bodega, etc.
 # OJO (19-11-2026, auditoría a fondo del bucket AMBIGUO pedida por Rodrigo): "CS" ya
 # estaba en MARCAS_LOTE (se usaba solo para CORTAR el nombre de la calle), pero nunca
 # se guardaba el número que trae detrás como un número de unidad comparable - muestra
@@ -1262,7 +1268,7 @@ MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "EST
 # marcas del catastro por TIPO para poder cruzarlas contra el tipo que el aviso
 # menciona explícitamente.
 TIPO_DE_MARCA_UNIDAD = {
-    "DP": "DEPTO", "DPTO": "DEPTO", "DEPTO": "DEPTO",
+    "DP": "DEPTO", "DPTO": "DEPTO", "DEPTO": "DEPTO", "DEP": "DEPTO",
     "BD": "BODEGA", "BO": "BODEGA",
     "BX": "ESTACIONAMIENTO", "ES": "ESTACIONAMIENTO", "EST": "ESTACIONAMIENTO",
     "OF": "OFICINA",
@@ -1776,7 +1782,13 @@ def parsear_dir_catastro(direccion):
         if t in MARCAS_UNIDAD and i > 0:
             corte = i
             resto = " ".join(toks[i + 1:i + 5])
-            nums = [x.lstrip("0") for x in re.findall(r"\d+", resto)]
+            # OJO (19-11-2026, mismo caso real "...DEP 531 ED. 5"): "ED 5" (número de
+            # EDIFICIO, no de la unidad) puede caer dentro de esta ventana de 4 tokens
+            # después de la marca - sin este filtro, el "5" de "ED. 5" se contaba como si
+            # fuera OTRO número de depto posible para esta fila, ensuciando el conjunto de
+            # comparación. Se descarta "ED <número>" antes de extraer los números reales.
+            resto_sin_edificio = re.sub(r"\bED\s+\d+\b", " ", resto)
+            nums = [x.lstrip("0") for x in re.findall(r"\d+", resto_sin_edificio)]
             nums = [x for x in nums if x]
             letras = "".join(re.findall(r"\b([A-Z])\b", resto))
             # OJO (12-11-2026, desambiguación de AMBIGUO por tipo de unidad): se guarda
@@ -1795,6 +1807,15 @@ def parsear_dir_catastro(direccion):
                 esc = _RE_ESC_CATASTRO.search(normalizar(direccion))
                 if esc:
                     letras = esc.group(1)
+            # OJO (19-11-2026, caso real "CANAL SARMIENTO 6081 -F DP- 304"): la letra de
+            # EDIFICIO a veces va pegada al número de la calle, ANTES de la marca de
+            # unidad ("-F" antes de "DP-"), no después como el caso de "DP 203 A" que ya
+            # se contemplaba - como la búsqueda de letras solo miraba el texto DESPUÉS de
+            # la marca (resto), esa "F" nunca se leía y todos los edificios (A, B, C...)
+            # quedaban indistinguibles para el mismo número de depto. Se usa el token
+            # suelto justo ANTES de la marca, si es una sola letra, como último fallback.
+            if not letras and i > 0 and len(toks[i - 1]) == 1 and toks[i - 1].isalpha():
+                letras = toks[i - 1]
             unidad = (set(nums), letras, tipo) if nums else (set(), letras, tipo)
             break
     for i, t in enumerate(toks[:corte]):
