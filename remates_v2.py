@@ -1319,7 +1319,20 @@ ABREVIATURAS = {"GRAL": "GENERAL", "GRL": "GENERAL", "CDTE": "COMANDANTE", "PDTE
                 "PJE": "PJE", "PSJE": "PJE", "PASAJE": "PJE", "MED": "MEDIA"}
 NUM_PALABRAS = {"UNO": "1", "UN": "1", "DOS": "2", "TRES": "3", "CUATRO": "4", "CINCO": "5", "SEIS": "6", "SIETE": "7",
                 "OCHO": "8", "NUEVE": "9", "DIEZ": "10", "ONCE": "11", "DOCE": "12", "TRECE": "13", "CATORCE": "14",
-                "QUINCE": "15", "PRIMERO": "1", "PRIMER": "1", "SEGUNDO": "2", "TERCERO": "3", "TERCER": "3"}
+                "QUINCE": "15", "PRIMERO": "1", "PRIMER": "1", "SEGUNDO": "2", "TERCERO": "3", "TERCER": "3",
+                # OJO (19-11-2026, auditoría del ROL explícito vs. catastro, pedido de
+                # Rodrigo - caso real "calle Dieciocho de Septiembre" / "calle Veintiuno
+                # de Mayo", dos nombres de calle MUY comunes en Chile, con fecha escrita
+                # en palabras): el diccionario llegaba solo hasta "QUINCE" (15) - nombres
+                # de calle con números más altos escritos en palabras (16 en adelante)
+                # nunca se normalizaban, así que "DIECIOCHO DE SEPTIEMBRE" (aviso) nunca
+                # calzaba contra "18 DE SEPTIEMBRE" (catastro). Se completa hasta 31
+                # (cubre fechas de calendario, el patrón más común: 5 de Abril, 18 de
+                # Septiembre, 21 de Mayo, etc.)
+                "DIECISEIS": "16", "DIECISIETE": "17", "DIECIOCHO": "18", "DIECINUEVE": "19", "VEINTE": "20",
+                "VEINTIUNO": "21", "VEINTIUN": "21", "VEINTIDOS": "22", "VEINTITRES": "23", "VEINTICUATRO": "24",
+                "VEINTICINCO": "25", "VEINTISEIS": "26", "VEINTISIETE": "27", "VEINTIOCHO": "28", "VEINTINUEVE": "29",
+                "TREINTA": "30", "TREINTAYUNO": "31"}
 PALABRAS_COMUNES = {"GENERAL", "DOCTOR", "PRESIDENTE", "SANTA", "SANTO", "SAN", "NORTE", "SUR", "ORIENTE", "PONIENTE",
                     "LOS", "LAS", "DEL", "DE", "LA", "EL", "AV", "PJE", "CALLE", "CAPITAN", "COMANDANTE", "ALMIRANTE"}
 
@@ -1352,7 +1365,15 @@ _PALABRA_NUM_TOK = (r"(?:mil|ciento?s?|doscientos|doscientas|trescientos|trescie
 _GRUPO_NUMERO_VIA = (r"(\d[\d.]*|" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK + r"){0,6})")
 RE_VIA_CON_MARCA = re.compile(
     r"(?i)\b(calle|avenida|avda\.?|av\.?|pasaje|psje\.?|pje\.?|camino|diagonal|callej[oó]n|paseo)\s+"
-    r"([^,;]{1,55}?)\s*,?\s*(?:N[º°o]\.?\s*|n[uú]mero\s+|#\s*)" + _GRUPO_NUMERO_VIA)
+    # OJO (19-11-2026, auditoría del ROL explícito vs. catastro, caso real "Avenida
+    # Irarrázaval NÚMEROS 4.846, 4.852 Y 4.856" - el inmueble abarca varios números
+    # seguidos): "número" en PLURAL ("números", cuando el aviso da varios números de
+    # calle juntos) no calzaba con el marcador (solo aceptaba singular) - esta regex
+    # nunca se activaba y se caía a RE_VIA_SIN_MARCA, que al no tener marcador que
+    # cortar, se tragaba la palabra "NUMEROS" completa como si fuera parte del
+    # NOMBRE de la calle ("IRARRAZAVAL NUMEROS"), rompiendo la comparación contra el
+    # catastro. Se acepta también el plural.
+    r"([^,;]{1,55}?)\s*,?\s*(?:N[º°o]\.?\s*|n[uú]meros?\s+|#\s*)" + _GRUPO_NUMERO_VIA)
 # OJO (auditoría 12-11-2026): sin la palabra "número"/"Nº" por delante, es solo
 # "calle NOMBRE <algo>" - pero como _GRUPO_NUMERO_VIA ya está restringido al
 # vocabulario numérico (ver arriba), no hay ambigüedad real: una palabra del
@@ -1390,7 +1411,7 @@ _PREFIJO_COMPLEJO_OPC = (r"(?:(?:Condominio|Edificio|Villa|Conjunto(?:\s+Habitac
 RE_VIA_UBICADO_CON_MARCA = re.compile(
     r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?(?:en\s+)?|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a)\s+)"
     + _PREFIJO_COMPLEJO_OPC +
-    r"([^,;\d]{1,55}?)\s*,?\s*(?:N[º°o]\.?\s*|n[uú]mero\s+|#\s*)" + _GRUPO_NUMERO_VIA)
+    r"([^,;\d]{1,55}?)\s*,?\s*(?:N[º°o]\.?\s*|n[uú]meros?\s+|#\s*)" + _GRUPO_NUMERO_VIA)
 RE_VIA_UBICADO_SIN_MARCA = re.compile(
     r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?(?:en\s+)?|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a)\s+)"
     + _PREFIJO_COMPLEJO_OPC +
