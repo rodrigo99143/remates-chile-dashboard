@@ -1422,7 +1422,14 @@ RE_VIA_CON_MARCA = re.compile(
     # cortar, se tragaba la palabra "NUMEROS" completa como si fuera parte del
     # NOMBRE de la calle ("IRARRAZAVAL NUMEROS"), rompiendo la comparación contra el
     # catastro. Se acepta también el plural.
-    r"([^,;]{1,55}?)\s*,?\s*(?:N[º°o]\.?\s*|n[uú]meros?\s+|#\s*)" + _GRUPO_NUMERO_VIA)
+    # OJO (20-11-2026, caso real "ubicado en calle Galvarino n.º 3780"): la RAE
+    # abrevia "número" como "n.º" (con el punto ENTRE la "n" y la "º", no después) -
+    # una forma tan válida y común como "Nº"/"N°" pegados, pero antes solo se
+    # aceptaba el punto DESPUÉS de la marca ("Nº." pero no "n.º"), así que esta
+    # variante no cortaba nunca y la "n" quedaba pegada al NOMBRE de la calle
+    # ("GALVARINO N" en vez de "GALVARINO"), rompiendo la comparación contra el
+    # catastro. Se acepta también el punto ANTES de la marca.
+    r"([^,;]{1,55}?)\s*,?\s*(?:N\.?\s*[º°o]\.?\s*|n[uú]meros?\s+|#\s*)" + _GRUPO_NUMERO_VIA)
 # OJO (auditoría 12-11-2026): sin la palabra "número"/"Nº" por delante, es solo
 # "calle NOMBRE <algo>" - pero como _GRUPO_NUMERO_VIA ya está restringido al
 # vocabulario numérico (ver arriba), no hay ambigüedad real: una palabra del
@@ -1460,7 +1467,9 @@ _PREFIJO_COMPLEJO_OPC = (r"(?:(?:Condominio|Edificio|Villa|Conjunto(?:\s+Habitac
 RE_VIA_UBICADO_CON_MARCA = re.compile(
     r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?(?:en\s+)?|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a)\s+)"
     + _PREFIJO_COMPLEJO_OPC +
-    r"([^,;\d]{1,55}?)\s*,?\s*(?:N[º°o]\.?\s*|n[uú]meros?\s+|#\s*)" + _GRUPO_NUMERO_VIA)
+    # OJO (20-11-2026, ver RE_VIA_CON_MARCA más arriba para el porqué): misma
+    # variante "n.º" (punto antes de la marca, no después).
+    r"([^,;\d]{1,55}?)\s*,?\s*(?:N\.?\s*[º°o]\.?\s*|n[uú]meros?\s+|#\s*)" + _GRUPO_NUMERO_VIA)
 RE_VIA_UBICADO_SIN_MARCA = re.compile(
     r"(?i)\b(ubicad[oa]s?\s+(?:principalmente\s+)?(?:en\s+)?|con\s+acceso(?:\s+(?:principal|general))?\s+(?:por|a)\s+)"
     + _PREFIJO_COMPLEJO_OPC +
@@ -1496,7 +1505,9 @@ RE_VIA_INMUEBLE_DIRECTO = re.compile(
     # cuele como si fuera un nombre de calle (con (?i) global esa frase SÍ se colaba -
     # se detectó con una prueba real antes de subir esto).
     r"([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑa-záéíóúñ]*(?:\s+[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑa-záéíóúñ]*){0,3})\s*,?\s*"
-    r"(?i:N[º°o]\.?\s*|n[uú]mero\s+)"
+    # OJO (20-11-2026, ver RE_VIA_CON_MARCA más arriba para el porqué): misma
+    # variante "n.º" (punto antes de la marca, no después).
+    r"(?i:N\.?\s*[º°o]\.?\s*|n[uú]mero\s+)"
     r"(\d[\d.]*|(?i:" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK + r"){0,6}))")
 # Palabras numéricas españolas (hasta 999.999) para "traducir" un número de calle
 # escrito en palabras a un entero - ver a_numero_chileno_o_palabras() más abajo.
