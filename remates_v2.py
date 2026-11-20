@@ -1242,7 +1242,9 @@ TIPOS_VIA = {"CALLE", "CL", "AV", "AVDA", "AVENIDA", "PJE", "PSJE", "PSJ", "PASA
 # terminaba leyendo "DEP 531 ED" como si fuera parte del NOMBRE de la calle y "5" (el
 # número de EDIFICIO) como si fuera el número de la calle, perdiendo la dirección real
 # por completo. Se agrega "DEP" como alias de "DEPTO".
-MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "DEP", "EST", "CS"}     # departamento, bodega, etc.
+# OJO (19-11-2026, caso real "CERRO MORENO 10500 CASA 35"): el catastro a veces escribe
+# la palabra completa "CASA" en vez de la abreviatura "CS" - se agrega como alias.
+MARCAS_UNIDAD = {"DP", "BX", "BD", "LC", "OF", "ES", "BO", "DPTO", "DEPTO", "DEP", "EST", "CS", "CASA"}     # departamento, bodega, etc.
 # OJO (19-11-2026, auditoría a fondo del bucket AMBIGUO pedida por Rodrigo): "CS" ya
 # estaba en MARCAS_LOTE (se usaba solo para CORTAR el nombre de la calle), pero nunca
 # se guardaba el número que trae detrás como un número de unidad comparable - muestra
@@ -1273,7 +1275,7 @@ TIPO_DE_MARCA_UNIDAD = {
     "BX": "ESTACIONAMIENTO", "ES": "ESTACIONAMIENTO", "EST": "ESTACIONAMIENTO",
     "OF": "OFICINA",
     "LC": "LOCAL",
-    "CS": "CASA",
+    "CS": "CASA", "CASA": "CASA",
 }
 # Mismo mapeo, pero desde la PALABRA que puede aparecer en el texto libre del aviso
 # ("departamento", "bodega", "estacionamiento", "box", "oficina", "local") hacia el
@@ -1779,7 +1781,16 @@ def parsear_dir_catastro(direccion):
     unidad = None
     corte = len(toks)
     for i, t in enumerate(toks):
-        if t in MARCAS_UNIDAD and i > 0:
+        # OJO (19-11-2026, caso real "JUAN DE BARROS 3885 DPA 1704", aviso dice "...
+        # departamento 1704 B..."): el catastro a veces pega la letra de la unidad
+        # DIRECTO al marcador "DP" sin espacio ("DPA"/"DPB"/"DPC"/"DPD"), que no calzaba
+        # con ningún token de MARCAS_UNIDAD (ni "DP" ni "DPTO"). Se reconoce ese patrón
+        # aparte, y la letra pegada se usa como "letras" de una vez (con prioridad, igual
+        # que el marcador de torre).
+        letra_pegada = None
+        if t not in MARCAS_UNIDAD and t.startswith("DP") and len(t) == 3 and t[2].isalpha():
+            letra_pegada = t[2]
+        if (t in MARCAS_UNIDAD or letra_pegada) and i > 0:
             corte = i
             resto = " ".join(toks[i + 1:i + 5])
             # OJO (19-11-2026, mismo caso real "...DEP 531 ED. 5"): "ED 5" (número de
@@ -1800,16 +1811,19 @@ def parsear_dir_catastro(direccion):
             # token de 2 letras, no una letra suelta) - antes de buscar una letra suelta
             # (que en este caso agarraba la "P" de "P 9", el piso, por error), se busca
             # primero ese patrón "T<letra>" y se usa esa letra con prioridad.
-            m_torre = re.search(r"\bT([A-Z])\b", resto)
-            if m_torre:
-                letras = m_torre.group(1)
+            if letra_pegada:
+                letras = letra_pegada
             else:
-                letras = "".join(re.findall(r"\b([A-Z])\b", re.sub(r"\bP\s+\d+\b", " ", resto)))
+                m_torre = re.search(r"\bT([A-Z])\b", resto)
+                if m_torre:
+                    letras = m_torre.group(1)
+                else:
+                    letras = "".join(re.findall(r"\b([A-Z])\b", re.sub(r"\bP\s+\d+\b", " ", resto)))
             # OJO (12-11-2026, desambiguación de AMBIGUO por tipo de unidad): se guarda
             # también el TIPO de marca (depto/bodega/estacionamiento/oficina/local) que
             # trajo el catastro para esta fila, para poder comparar contra el tipo que
             # el aviso menciona explícitamente (ver TIPO_DE_MARCA_UNIDAD).
-            tipo = TIPO_DE_MARCA_UNIDAD.get(t)
+            tipo = TIPO_DE_MARCA_UNIDAD.get("DP" if letra_pegada else t)
             letras = letras[:2]
             # OJO (19-11-2026, caso real "SAN PABLO 1825 ESC M DEPTO 203"): si el depto
             # no trae su propia letra (nada en "DP 203 A"), pero la dirección SÍ trae
