@@ -1342,7 +1342,11 @@ ABREVIATURAS = {"GRAL": "GENERAL", "GRL": "GENERAL", "CDTE": "COMANDANTE", "PDTE
                 # nombres_compatibles() ya sabría reconocer "M"="MANUEL" por inicial. Son
                 # abreviaturas frecuentes a nivel nacional (NTE ~13.400 filas, PTE ~33.600,
                 # OTE ~20.700), no un caso aislado.
-                "NTE": "NORTE", "PTE": "PONIENTE", "OTE": "ORIENTE",
+                "NTE": "NORTE", "PTE": "PONIENTE", "OTE": "ORIENTE", "PNTE": "PONIENTE",
+                # OJO (20-11-2026, mismo tipo de caso, calle "Los Magnolios Poniente
+                # 1255"): "PNTE" es otra abreviatura de "PONIENTE" que el catastro usa
+                # (~5.100 filas a nivel nacional) además de "PTE" - no es un caso
+                # aislado de esa calle.
                 # OJO (20-11-2026, auditoría SIN COINCIDENCIA, caso real "Calle 22 1/2
                 # Norte A Nº 3643", Talca): el catastro ya normaliza "MED" -> "MEDIA"
                 # (línea de arriba) para calles como "22 MED NORTE A", pero el aviso
