@@ -1904,9 +1904,15 @@ def buscar_rol_por_direccion(con, comuna_sii, dir_tx):
         nombre, n1, n2, unidad = p
         if nombres_compatibles(nombre, dir_tx["nombre"]) and n1 <= dir_tx["numero"] <= max(n1, n2):
             cands.append((man, pre, d, av, dest, unidad, nombre))
-    exactos = [c for c in cands if c[6] == dir_tx["nombre"]]
-    if exactos:
-        cands = exactos             # si hay calles de nombre idéntico, se prefieren a las "parecidas"
+    # OJO (19-11-2026, caso real "...Camino de Cintura 1458, depto 103..."): el propio
+    # catastro escribe la MISMA calle de forma inconsistente entre filas distintas de un
+    # mismo edificio ("CAMINO DE CINTURA 1458 DP 104" en una fila, "CAMINO CINTURA 1458
+    # DP 103" -sin "DE"- en otra) - antes, la preferencia por "nombre EXACTO" se aplicaba
+    # ANTES de filtrar por unidad, así que si la fila con nombre idéntico no era la que
+    # tenía el número de depto que pedía el aviso, esa fila con nombre "parecido" (pero
+    # con el depto correcto) quedaba descartada por completo, aunque fuera la única que
+    # en verdad calzaba. Se mueve esta preferencia para aplicarse DESPUÉS del filtro de
+    # unidad (ver más abajo), nunca antes - así nunca descarta la unidad correcta.
     # OJO (19-11-2026, caso real "sitio y casa nº 11 manzana E, ubicado Pasaje Mozart nº
     # 1.103"): cuando el catastro trae UNA SOLA fila física para esta calle+número (no
     # está desglosado en unidades, "PJE. MOZART 1103" sin ninguna marca DP/CS/etc.), el
@@ -1915,11 +1921,21 @@ def buscar_rol_por_direccion(con, comuna_sii, dir_tx):
     # para esa dirección). Si el aviso menciona una unidad pero el catastro solo tiene un
     # candidato y ese candidato no trae desglose de unidad, se acepta igual: no hay con
     # qué confundirlo.
+    exactos_iniciales = [c for c in cands if c[6] == dir_tx["nombre"]]
+    cands_todos = cands
+    if exactos_iniciales:
+        cands = exactos_iniciales    # preferencia por nombre idéntico, pero no definitiva - ver abajo
     if dir_tx.get("unidad") and len(cands) == 1 and cands[0][5] is None:
         return "UNICO", [cands[0][:5]]
     if dir_tx.get("unidad"):
         d, letras, tipo = dir_tx["unidad"]
         cands = [c for c in cands if c[5] is not None and d in c[5][0] and (not letras or letras == c[5][1])]
+        if not cands and exactos_iniciales:
+            # El nombre "exacto" no tenía la unidad que pide el aviso - se reintenta con
+            # el conjunto COMPLETO de nombres "parecidos" (ver OJO más arriba), en vez de
+            # rendirse: puede que la fila con la unidad correcta sea una de las que el
+            # catastro escribió de forma levemente distinta.
+            cands = [c for c in cands_todos if c[5] is not None and d in c[5][0] and (not letras or letras == c[5][1])]
         # OJO (12-11-2026, pedido de Rodrigo tras comentario de Álvaro - ver
         # TIPO_DE_MARCA_UNIDAD más arriba): si el aviso dice explícitamente "departamento
         # Nº41" y el catastro trae, para ese mismo número, una fila de depto Y una de
