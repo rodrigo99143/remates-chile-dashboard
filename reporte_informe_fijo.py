@@ -15,6 +15,10 @@ corrida inmediatamente anterior de hoy), esto usa el mismo mecanismo de
 "primera_vez" que ya usa reporte_acumulado.py, para no perder TGR nuevo
 aunque el programa se haya corrido varias veces entre medio.
 
+OJO (20-11-2026, pedido excepcional de Rodrigo: auditar también Macal, no
+solo TGR): se agrega, con el mismo mecanismo exacto, una hoja "MACAL_NUEVO"
+análoga a "TGR_NUEVO".
+
 No toca el historial real del programa (candidatas_historico / universo
 histórico) - es sólo un reporte de lectura, aparte del Excel de todos los
 días.
@@ -148,26 +152,34 @@ def main():
         hoja.to_excel(w, sheet_name=nombre_hoja, index=False)
         remates_v2.dar_formato(w.sheets[nombre_hoja])
 
-        # ---- 2) TGR genuinamente nuevo desde la fecha pedida ----
-        n_tgr_nuevo = 0
+        # ---- 2) TGR y MACAL genuinamente nuevas desde la fecha pedida ----
+        # OJO (20-11-2026, pedido "excepcional" de Rodrigo: auditar también MACAL, no
+        # solo TGR): hasta ahora esta hoja "_NUEVO" solo existía para TGR. Es el MISMO
+        # mecanismo (candidatas_historico.primera_vez), así que se generaliza a una lista
+        # de fuentes en vez de un solo fuente="TGR" fijo - MACAL queda cubierto con el
+        # mismo criterio y la misma garantía de no inventar nada.
+        n_nuevo_por_fuente = {}
         if EXCEL_HOY.exists() and DB_MERCADO.exists():
             try:
                 cand = pd.read_excel(EXCEL_HOY, sheet_name="CANDIDATAS")
-                cand_tgr = cand[cand["fuente"] == "TGR"].copy()
-                cand_tgr["clave_real"] = cand_tgr.apply(_clave_real, axis=1)
                 con = sqlite3.connect(DB_MERCADO)
                 primeras_vez = dict(con.execute("SELECT clave, primera_vez FROM candidatas_historico").fetchall())
                 con.close()
-                cand_tgr["primera_vez"] = cand_tgr["clave_real"].map(primeras_vez)
-                tgr_nuevo = cand_tgr[cand_tgr["primera_vez"] >= fecha_tgr_desde].drop(columns=["clave_real", "primera_vez"])
-                n_tgr_nuevo = len(tgr_nuevo)
-                tgr_nuevo.to_excel(w, sheet_name="TGR_NUEVO", index=False)
-                remates_v2.dar_formato(w.sheets["TGR_NUEVO"])
+                for fuente, nombre_hoja_nuevo in (("TGR", "TGR_NUEVO"), ("MACAL", "MACAL_NUEVO")):
+                    cand_f = cand[cand["fuente"] == fuente].copy()
+                    cand_f["clave_real"] = cand_f.apply(_clave_real, axis=1)
+                    cand_f["primera_vez"] = cand_f["clave_real"].map(primeras_vez)
+                    nuevo = cand_f[cand_f["primera_vez"] >= fecha_tgr_desde].drop(columns=["clave_real", "primera_vez"])
+                    n_nuevo_por_fuente[fuente] = len(nuevo)
+                    nuevo.to_excel(w, sheet_name=nombre_hoja_nuevo, index=False)
+                    remates_v2.dar_formato(w.sheets[nombre_hoja_nuevo])
             except Exception as e:
-                print(f"  [INFORME_FIJO] no pude armar la hoja TGR_NUEVO ({e}); queda sin esa hoja.")
+                print(f"  [INFORME_FIJO] no pude armar las hojas TGR_NUEVO/MACAL_NUEVO ({e}); quedan sin esas hojas.")
         else:
-            print("  [INFORME_FIJO] no encuentro el Excel/base de datos de hoy; la hoja TGR_NUEVO no se puede armar.")
-        print(f"  [INFORME_FIJO] {n_tgr_nuevo} propiedades de TGR nuevas desde el {fecha_tgr_desde}.")
+            print("  [INFORME_FIJO] no encuentro el Excel/base de datos de hoy; las hojas TGR_NUEVO/MACAL_NUEVO no se pueden armar.")
+        n_tgr_nuevo = n_nuevo_por_fuente.get("TGR", 0)
+        n_macal_nuevo = n_nuevo_por_fuente.get("MACAL", 0)
+        print(f"  [INFORME_FIJO] {n_tgr_nuevo} propiedades de TGR y {n_macal_nuevo} de MACAL nuevas desde el {fecha_tgr_desde}.")
 
     print(f"  [INFORME_FIJO] Excel: {ruta_excel.name}")
 
@@ -185,6 +197,7 @@ def main():
         f"Hoja '{nombre_hoja[:31]}': los {len(df_avisos)} avisos de {nombres_archivos}, completos o no "
         f"({con_rol} con ROL de avalúo utilizable).\n"
         f"Hoja 'TGR_NUEVO': {n_tgr_nuevo} propiedades de TGR nuevas desde el {fecha_tgr_desde}.\n"
+        f"Hoja 'MACAL_NUEVO': {n_macal_nuevo} propiedades de MACAL nuevas desde el {fecha_tgr_desde}.\n"
     )
     msg.add_attachment(
         ruta_excel.read_bytes(),
