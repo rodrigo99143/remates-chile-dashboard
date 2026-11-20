@@ -1787,10 +1787,24 @@ def parsear_dir_catastro(direccion):
             # después de la marca - sin este filtro, el "5" de "ED. 5" se contaba como si
             # fuera OTRO número de depto posible para esta fila, ensuciando el conjunto de
             # comparación. Se descarta "ED <número>" antes de extraer los números reales.
+            # OJO (19-11-2026, caso real "GRAL.MACKENNA 1555 DP 903 TA P 9", aviso dice
+            # "...Torre A, con acceso por calle General Mackenna número 1555..."): "P 9"
+            # (número de PISO, no de la unidad) también puede caer en esta ventana - igual
+            # que "ED 5" (edificio), se descarta antes de extraer los números reales para
+            # no ensuciar el conjunto de comparación con el número de piso.
             resto_sin_edificio = re.sub(r"\bED\s+\d+\b", " ", resto)
+            resto_sin_edificio = re.sub(r"\bP\s+\d+\b", " ", resto_sin_edificio)
             nums = [x.lstrip("0") for x in re.findall(r"\d+", resto_sin_edificio)]
             nums = [x for x in nums if x]
-            letras = "".join(re.findall(r"\b([A-Z])\b", resto))
+            # OJO (mismo caso real): la letra de TORRE viene pegada como "TA"/"TB" (un solo
+            # token de 2 letras, no una letra suelta) - antes de buscar una letra suelta
+            # (que en este caso agarraba la "P" de "P 9", el piso, por error), se busca
+            # primero ese patrón "T<letra>" y se usa esa letra con prioridad.
+            m_torre = re.search(r"\bT([A-Z])\b", resto)
+            if m_torre:
+                letras = m_torre.group(1)
+            else:
+                letras = "".join(re.findall(r"\b([A-Z])\b", re.sub(r"\bP\s+\d+\b", " ", resto)))
             # OJO (12-11-2026, desambiguación de AMBIGUO por tipo de unidad): se guarda
             # también el TIPO de marca (depto/bodega/estacionamiento/oficina/local) que
             # trajo el catastro para esta fila, para poder comparar contra el tipo que
