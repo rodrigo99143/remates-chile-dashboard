@@ -1305,7 +1305,23 @@ TIPO_DE_PALABRA_UNIDAD = {
     # condominio de casas (varias casas comparten el mismo número de calle) - mapea al
     # mismo "CS" que ya usa el catastro para esto (ver TIPO_DE_MARCA_UNIDAD/MARCAS_UNIDAD).
     "casa": "CASA", "casas": "CASA",
+    # OJO (20-11-2026, auditoría de "AMBIGUO (edificio: varias unidades)", ver OJO junto
+    # a RE_UNIDAD más arriba): "unidad Nº X"/"vivienda número X" son la forma en que
+    # varios condominios de casas describen la suya - el catastro, para estos mismos
+    # casos reales, siempre las trae marcadas como "CS" (el mismo tipo que "casa").
+    "unidad": "CASA", "unidades": "CASA", "vivienda": "CASA", "viviendas": "CASA",
 }
+# OJO (20-11-2026, casos reales "unidad 71 que corresponde al departamento 1201 A de
+# la Torre A" / "Unidad Nº 210 correspondiente al departamento Nº A1701"): "unidad N"
+# también se usa, en avisos de condominios de EDIFICIOS (no de casas), como un número
+# interno/administrativo del condominio que NO es el identificador que trae el
+# catastro - ahí mismo, a continuación, el aviso da el número real con un marcador
+# específico ("departamento N"), que es el que SÍ calza con el catastro. Antes de
+# agregar "unidad"/"vivienda" como marcador (ver OJO junto a RE_UNIDAD), no había
+# ambigüedad posible: solo el marcador específico existía. Ahora que "unidad" también
+# matchea, hay que decidir cuál de los dos usar cuando AMBOS aparecen - se usa esta
+# lista para preferir siempre el marcador específico sobre uno genérico de esta lista.
+_MARCADORES_UNIDAD_GENERICOS = {"unidad", "unidades", "vivienda", "viviendas"}
 # OJO (auditoría 12-11-2026, pedido de Rodrigo): el catastro del SII usa a veces
 # "L" (Lote) y "MA" (Manzana) como abreviatura SUELTA, ej. "TENERIFE 2233 L 71 MA
 # 7" - sin "L" y "MA" en este set, el código de más abajo no cortaba ahí y leía
@@ -1527,11 +1543,50 @@ def a_numero_chileno_o_palabras(s):
 # "locale" o "locales" (la "e" es parte del literal, no del sufijo plural) - por eso
 # NUNCA calzaba con la forma singular "local", que es la más común en los avisos.
 # Se corrige a "local(?:es)?" para que matchee tanto "local" como "locales".
+# OJO (20-11-2026, auditoría de "AMBIGUO (edificio: hay varias unidades)" - 15 casos
+# reales revisados uno por uno, pedido de Rodrigo: "busca tus propios criterios...
+# audítate"): en la gran mayoría de estos 15, el aviso SÍ decía la unidad exacta, pero
+# esta regex no la encontraba por 3 motivos reales distintos (nunca por falta de
+# información, siempre por un formato no contemplado - justo el tipo de caso
+# "inadmisible" que hay que corregir):
+#  1) "unidad"/"vivienda" como palabra-marca NUNCA estaban en el grupo "tipo" (solo
+#     departamento/bodega/estacionamiento/oficina/local/casa) - casos reales "la unidad
+#     o vivienda Nº 66", "vivienda número cuarenta y cinco", "la Unidad número
+#     doscientos ochenta y uno". Se agregan ambas (mapean a "CASA", el mismo tipo que ya
+#     usa el catastro con la marca "CS" para estos condominios de casas/viviendas - así
+#     lo confirman los candidatos reales de catastro de estos mismos casos).
+#  2) la letra de la unidad, cuando viene ANTES del número, exigía un GUIÓN entre
+#     medio ("A-146") - pero en los avisos reales viene pegada sin separador ("D54",
+#     "b2004") o con solo un espacio y sin guión ("B ciento doce", "A 146"). Se hace el
+#     guión opcional (ya no obligatorio) en ambas posiciones del número.
+#  3) "unidad signada con el Nº 129" - a veces hay 1 a 3 palabras de relleno entre la
+#     palabra-marca y el "Nº"/"número" (antes se exigía que vinieran pegados). Se
+#     permite ese relleno acotado, SIN relajar la exigencia de que el "Nº"/"número"
+#     explícito siga apareciendo (nunca se infiere un número solo por cercanía).
 RE_UNIDAD = re.compile(r"(?i)\b(?P<tipo>departamentos?|deptos?\.?|dptos?\.?|dp\.?|"
-                       r"bodegas?|bod\.?|estacionamientos?|boxe?s?|oficinas?|local(?:es)?|casas?)"
-                       r"\s*(?:n[º°o.]*\s*|n[uú]mero\s+)?"
-                       r"(?P<num>(?:[A-Za-z]\s?-\s?)?(?:\d{1,5}|" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK +
-                       r"){0,6})(?:\s?-\s?[A-Za-z]\b|[A-Za-z]\b)?)")
+                       r"bodegas?|bod\.?|estacionamientos?|boxe?s?|oficinas?|local(?:es)?|casas?|"
+                       r"unidad(?:es)?|viviendas?)"
+                       r"(?:\s*(?:n[º°o.]*\s*|n[uú]mero\s+)?|(?:\s+\w+){1,3}\s+(?:n[º°o.]*\s*|n[uú]mero\s+))"
+                       r"(?P<num>(?:[A-Za-z]\s?-?\s?)?(?:\d{1,5}|" + _PALABRA_NUM_TOK + r"(?:\s+" + _PALABRA_NUM_TOK +
+                       r"){0,6})(?:\s?-?\s?[A-Za-z]\b|[A-Za-z]\b)?)")
+
+
+def _buscar_unidad_preferida(ventana):
+    """Como RE_UNIDAD.search(ventana), pero si hay varios calces en la misma ventana
+    (caso real: "unidad 71 que corresponde al departamento 1201 A") prefiere el
+    marcador específico (departamento/bodega/estacionamiento/box/oficina/local/casa)
+    sobre uno genérico (unidad/vivienda, ver _MARCADORES_UNIDAD_GENERICOS) - el
+    genérico solo se usa cuando es el único presente."""
+    especifico, generico = None, None
+    for cand in RE_UNIDAD.finditer(ventana):
+        if cand.group("tipo").lower().rstrip(".") in _MARCADORES_UNIDAD_GENERICOS:
+            if generico is None:
+                generico = cand
+        elif especifico is None:
+            especifico = cand
+        if especifico is not None:
+            break
+    return especifico if especifico is not None else generico
 # OJO (19-11-2026, caso real "departamento nº 203, edificio o escalera nº j Condominio
 # San Pablo"): cuando un edificio grande repite el mismo número de depto en varias
 # escaleras/torres (ej. "SAN PABLO 1825 ESC M DEPTO 203", "...ESC N DEPTO 203"...), la
@@ -1552,7 +1607,13 @@ RE_ESCALERA = re.compile(r"(?i)\b(?:escalera|torre)\s*(?:n[º°o.]*\s*|n[uú]mer
 _RE_ESC_CATASTRO = re.compile(r"\bESC\.?\s*([A-Z])\b")
 PALABRAS_PROPIEDAD = re.compile(r"(?i)inmueble|propiedad|departamento|depto|casa|sitio|lote|vivienda|"
                                 r"bien ra[ií]z|parcela|local comercial|unidad")
-PALABRAS_TRIBUNAL = re.compile(r"(?i)juzgado|tribunal|secretar[ií]a|domicilio")
+# OJO (20-11-2026, auditoría AMBIGUO, caso real "Notaría de don Álvaro Valdebenito,
+# ubicada en calle Hochstetter Nº 560... el inmueble ubicado en calle Corvalán Nº
+# 1336"): el remate ante juez árbitro partidor a veces se celebra en una NOTARÍA, no en
+# un tribunal - esa dirección tampoco es la de la propiedad, pero "notaría" no estaba
+# en la lista y la dirección de la notaría se tomaba por error como si fuera la del
+# inmueble, dejando la dirección real (más adelante en el mismo texto) sin usar.
+PALABRAS_TRIBUNAL = re.compile(r"(?i)juzgado|tribunal|secretar[ií]a|domicilio|notar[ií]a")
 
 
 # OJO (auditoría 12-11-2026, pedido de Rodrigo: "qué crees tú que debiera ocurrir
@@ -1675,7 +1736,7 @@ def nombres_compatibles(a, b):
 
 def parsear_unidad(txt):
     """'1207-C' / 'C-403' / '101 -A' -> ('1207','C') ; sin letra -> ('803','') ;
-    'dos mil setecientos trece' -> ('2713', '')"""
+    'dos mil setecientos trece' -> ('2713', '') ; 'B ciento doce' -> ('112', 'B')"""
     nums = [x.lstrip("0") for x in re.findall(r"\d+", txt or "")]
     nums = [x for x in nums if x]
     if not nums:
@@ -1683,10 +1744,27 @@ def parsear_unidad(txt):
         # departamento también puede venir ÍNTEGRAMENTE en palabras ("departamento
         # número dos mil setecientos trece"), sin ningún dígito - se intenta convertir
         # la frase completa con el mismo traductor ya usado para el número de calle.
-        v = _numero_desde_palabras(txt or "")
+        t = (txt or "").strip()
+        # OJO (20-11-2026, auditoría "AMBIGUO (edificio: varias unidades)", caso real
+        # "Bodega B ciento doce"): cuando ADEMÁS hay una letra de unidad pegada al número
+        # en palabras (antes o después), _numero_desde_palabras() recibía la letra
+        # mezclada con las palabras del número y fallaba por completo (ninguna palabra
+        # numérica reconocida empieza con "B ciento..." como frase única) - se perdía
+        # la unidad entera por un dato que SÍ estaba, solo que acompañado de su letra.
+        # Se separa la letra (al principio o al final, pegada a un espacio) ANTES de
+        # traducir el resto como número en palabras.
+        letra_prefijo = ""
+        m_letra = re.match(r"(?i)^([A-Za-z])\s+(.*)$", t)
+        if m_letra:
+            letra_prefijo, t = m_letra.group(1).upper(), m_letra.group(2)
+        else:
+            m_letra = re.match(r"(?i)^(.*)\s+([A-Za-z])$", t)
+            if m_letra:
+                t, letra_prefijo = m_letra.group(1), m_letra.group(2).upper()
+        v = _numero_desde_palabras(t)
         if v is None:
             return None
-        return (str(v), "")
+        return (str(v), letra_prefijo)
     letras = "".join(re.findall(r"[A-Za-z]", txt or "")).upper()
     return (nums[0], letras[:2])
 
@@ -1780,10 +1858,10 @@ def extraer_direccion_texto(texto):
             # caso, para no tener que repetir este mismo ajuste con el próximo aviso
             # un poco más largo.
             ventana = texto[m.end():m.end() + 80]
-            u = RE_UNIDAD.search(ventana)
+            u = _buscar_unidad_preferida(ventana)
             if not u:
                 ventana = texto[max(0, m.start() - 350):m.end() + 80]
-                u = RE_UNIDAD.search(ventana)
+                u = _buscar_unidad_preferida(ventana)
             unidad = None
             if u:
                 num_letras = parsear_unidad(u.group("num"))
@@ -2962,7 +3040,18 @@ def candidatos_comuna(texto):
             continue
         agregar(m.group(1), "TEXTO")
     for m in RE_ROL_AVALUO.finditer(tn):
-        mm = re.match(r"[\s,.]*(?:COMUNA DE|DE LA COMUNA DE|DE)\s+(" + _ALT_COMUNAS + r")\b", tn[m.end():m.end() + 60])
+        cola = tn[m.end():m.end() + 60]
+        mm = re.match(r"[\s,.]*(?:COMUNA DE|DE LA COMUNA DE|DE)\s+(" + _ALT_COMUNAS + r")\b", cola)
+        if not mm:
+            # OJO (20-11-2026, caso real "...se rematará inmueble rol 7038-2,
+            # Peñalolén, ubicado en Pasaje El Golfo 6271..." - juicio de partición):
+            # aquí la comuna va suelta, pegada con solo una coma justo después del
+            # rol, sin "comuna de"/"de" y ANTES de la dirección de la propiedad -
+            # antes esto no calzaba con nada (solo se reconocía "rol N-N DE comuna")
+            # y el aviso quedaba "SIN COMUNA CANDIDATA" aun cuando la comuna estaba
+            # dicha con toda claridad en el texto, pegada al propio rol de la
+            # propiedad (nunca al tribunal/notaría, que están lejos de esta posición).
+            mm = re.match(r"[\s,.]*(" + _ALT_COMUNAS + r")\s*,", cola)
         if mm:
             agregar(mm.group(1), "ROL")
     for m in RE_CBR.finditer(tn):
