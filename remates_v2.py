@@ -1642,7 +1642,21 @@ PALABRAS_PROPIEDAD = re.compile(r"(?i)inmueble|propiedad|departamento|depto|casa
 # un tribunal - esa dirección tampoco es la de la propiedad, pero "notaría" no estaba
 # en la lista y la dirección de la notaría se tomaba por error como si fuera la del
 # inmueble, dejando la dirección real (más adelante en el mismo texto) sin usar.
-PALABRAS_TRIBUNAL = re.compile(r"(?i)juzgado|tribunal|secretar[ií]a|domicilio|notar[ií]a")
+# OJO (20-11-2026, auditoría SIN COINCIDENCIA, caso real "...en dependencias del
+# oficio del notario Carlos Cristóbal Aylwin Domingo, Av. Alessandri 1609... se
+# rematará... bien raíz ubicado en la comuna de Rinconada..."): "notaría" (la
+# institución) ya estaba en la lista, pero no "notario" (la persona) - un redactado
+# tan común como el otro para referirse al mismo lugar ("oficio del notario X") y
+# con el mismo problema: la dirección del notario se tomaba por la del inmueble.
+# OJO (20-11-2026, mismo caso real): el MISMO aviso repite la dirección del notario
+# una segunda vez más adelante en el texto ("...quedando el documento en custodia
+# del actuario del proceso, don Carlos Cristóbal Aylwin Domingo, en su oficio de
+# Avenida Alessandri N°1609...") sin la palabra "notario" cerca - esta vez dice
+# "actuario" (otro cargo del tribunal/notaría que también puede tener oficio
+# propio). Como la búsqueda prueba varias formas de regex en orden y la primera
+# que no se descarta gana, esta segunda mención (sin "notario" cerca) se aceptaba
+# igual aunque la primera mención de la misma dirección sí se había descartado.
+PALABRAS_TRIBUNAL = re.compile(r"(?i)juzgado|tribunal|secretar[ií]a|domicilio|notar[ií]a|notario|actuario")
 
 
 # OJO (auditoría 12-11-2026, pedido de Rodrigo: "qué crees tú que debiera ocurrir
