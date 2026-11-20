@@ -1332,7 +1332,15 @@ MARCAS_LOTE = {"LT", "LO", "L", "MZ", "M", "MA", "ST", "SI", "CA", "CS", "SITIO"
 ABREVIATURAS = {"GRAL": "GENERAL", "GRL": "GENERAL", "CDTE": "COMANDANTE", "PDTE": "PRESIDENTE", "CAP": "CAPITAN",
                 "TTE": "TENIENTE", "ALM": "ALMIRANTE", "DR": "DOCTOR", "STA": "SANTA", "STO": "SANTO", "SN": "SAN",
                 "SGTO": "SARGENTO", "MCAL": "MARISCAL", "CARD": "CARDENAL", "OBPO": "OBISPO", "AVDA": "AV",
-                "PJE": "PJE", "PSJE": "PJE", "PASAJE": "PJE", "MED": "MEDIA"}
+                "PJE": "PJE", "PSJE": "PJE", "PASAJE": "PJE", "MED": "MEDIA",
+                # OJO (20-11-2026, auditoría SIN COINCIDENCIA, caso real "Calle 22 1/2
+                # Norte A Nº 3643", Talca): el catastro ya normaliza "MED" -> "MEDIA"
+                # (línea de arriba) para calles como "22 MED NORTE A", pero el aviso
+                # escribe la misma calle con la fracción literal "1/2" en vez de la
+                # palabra "media" - sin este mapeo, "1/2" nunca calzaba contra "MEDIA"
+                # (son tokens distintos) y la calle quedaba SIN COINCIDENCIA aunque es
+                # exactamente la misma calle, solo escrita de otra forma.
+                "1/2": "MEDIA"}
 NUM_PALABRAS = {"UNO": "1", "UN": "1", "DOS": "2", "TRES": "3", "CUATRO": "4", "CINCO": "5", "SEIS": "6", "SIETE": "7",
                 "OCHO": "8", "NUEVE": "9", "DIEZ": "10", "ONCE": "11", "DOCE": "12", "TRECE": "13", "CATORCE": "14",
                 "QUINCE": "15", "PRIMERO": "1", "PRIMER": "1", "SEGUNDO": "2", "TERCERO": "3", "TERCER": "3",
@@ -1350,7 +1358,18 @@ NUM_PALABRAS = {"UNO": "1", "UN": "1", "DOS": "2", "TRES": "3", "CUATRO": "4", "
                 "VEINTICINCO": "25", "VEINTISEIS": "26", "VEINTISIETE": "27", "VEINTIOCHO": "28", "VEINTINUEVE": "29",
                 "TREINTA": "30", "TREINTAYUNO": "31"}
 PALABRAS_COMUNES = {"GENERAL", "DOCTOR", "PRESIDENTE", "SANTA", "SANTO", "SAN", "NORTE", "SUR", "ORIENTE", "PONIENTE",
-                    "LOS", "LAS", "DEL", "DE", "LA", "EL", "AV", "PJE", "CALLE", "CAPITAN", "COMANDANTE", "ALMIRANTE"}
+                    "LOS", "LAS", "DEL", "DE", "LA", "EL", "AV", "PJE", "CALLE", "CAPITAN", "COMANDANTE", "ALMIRANTE",
+                    # OJO (20-11-2026, caso real "Calle 22 1/2 Norte A Nº 3643", Talca):
+                    # "MEDIA" (ya normalizada desde "MED"/"1/2", ver ABREVIATURAS) es un
+                    # calificador de calle tan genérico como NORTE/SUR/ORIENTE/PONIENTE
+                    # (aparece en decenas de calles numeradas de ciudades con trazado en
+                    # cuadrícula) - además, el catastro mismo la escribe de forma
+                    # inconsistente en su texto crudo ("MED" en unas filas, el símbolo
+                    # literal "1/2" en otras), así que nunca es un ancla de búsqueda SQL
+                    # confiable: usarla como ancla (en vez de, por ejemplo, el número de
+                    # la calle contiguo) hacía que la fila real nunca apareciera en el
+                    # LIKE, aunque el nombre ya normalizado calzara perfecto.
+                    "MEDIA"}
 
 # OJO (auditoría 12-11-2026, pedido urgente de Rodrigo): la mayoría de los avisos
 # judiciales redactan el número de la calle EN PALABRAS ("...calle General Mackenna
