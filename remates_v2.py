@@ -1234,8 +1234,14 @@ def valor_uf(fecha):
 # ------------------------------------------------------------------------------
 # 6. DIRECCIÓN  ->  ROL  (búsqueda en el catastro del SII)
 # ------------------------------------------------------------------------------
-TIPOS_VIA = {"CALLE", "CL", "AV", "AVDA", "AVENIDA", "PJE", "PSJE", "PSJ", "PASAJE", "CAMINO", "CAM",
+TIPOS_VIA = {"CALLE", "CL", "AV", "AVDA", "AVENIDA", "PJE", "PSJE", "PSJ", "PASAJE", "CAMINO", "CAM", "CNO",
              "RUTA", "DIAGONAL", "DIAG", "CALLEJON", "CJN", "PASEO", "POBL", "POBLACION", "PARCELA"}
+# OJO (19-11-2026, caso real "CNO. LA PALOMA 145 DPTO 510" (catastro) vs "LA PALOMA 145"
+# (aviso)): "CNO" (abreviatura de "Camino") no estaba en la lista de tipos de vía, así
+# que clave_calle() no lo quitaba del nombre - "CNO LA PALOMA" nunca calzaba contra "LA
+# PALOMA" (nombres_compatibles exige que todas las palabras del lado corto estén en el
+# largo, y "CNO" no aparece en "LA PALOMA"). Se agrega junto a "CAM"/"CAMINO", que ya
+# estaban.
 # OJO (19-11-2026, caso real "SARGENTO ALDEA 321 DEP 531 ED. 5"): el catastro también
 # abrevia "departamento" como "DEP" (sin la O final), que no estaba en la lista - como
 # ningún token calzaba con una marca de unidad conocida, el programa nunca cortaba ahí y
@@ -1791,8 +1797,14 @@ def parsear_dir_catastro(direccion):
     # letra pegada "TA"/"TB" se usa como desambiguador).
     toks_sin_torre = []
     i = 0
+    # OJO (19-11-2026, caso real "SAN ISIDRO 154 EX 164 DP 1719", aviso dice "...
+    # departamento 1719..."): el catastro también usa "EX <número>" (numeración
+    # ANTERIOR/"ex" de la calle, antes de una renumeración municipal) de la misma forma
+    # que "TOR <número>" - un par de tokens suelto ANTES del marcador de unidad que
+    # contamina el número de calle ("SAN ISIDRO 154 EX" + número "164" en vez de "SAN
+    # ISIDRO" + "154"). Se quita igual que "TOR"/"TORRE".
     while i < len(toks):
-        if toks[i] in ("TOR", "TORRE") and i + 1 < len(toks) and toks[i + 1].isdigit():
+        if toks[i] in ("TOR", "TORRE", "EX") and i + 1 < len(toks) and toks[i + 1].isdigit():
             i += 2
             continue
         toks_sin_torre.append(toks[i])
