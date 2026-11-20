@@ -74,6 +74,7 @@ import sqlite3
 import tempfile
 import zipfile
 import unicodedata
+import hashlib
 import traceback
 import datetime as dt
 from pathlib import Path
@@ -4435,7 +4436,31 @@ def calcular(df, hay_catastro, tabla_precio_mercado=None, aplicar_dedup=True):
         if pd.notna(f.get("rol_completo")) and f.get("rol_completo"):
             return f["rol_completo"]
         d = f.get("direccion_final")
-        return d if isinstance(d, str) and d.strip() else None
+        if isinstance(d, str) and d.strip():
+            return d
+        # OJO (20-11-2026, pedido explícito de Rodrigo tras ver, con el Excel real
+        # de esa fecha, que la hoja INCOMPLETO (96 filas) superaba por mucho a la
+        # hoja AVISO (31 filas) pese a que, SIN este filtro histórico, el programa
+        # en realidad resuelve más avisos completos que incompletos): hasta acá, un
+        # aviso sin rol de Tesorería y sin dirección final nunca tenía clave (None),
+        # así que el filtro de "ya visto sin cambios" de más abajo NUNCA lo excluía -
+        # semana tras semana se iba acumulando TODO lo incompleto en la hoja
+        # INCOMPLETO, mientras que la hoja AVISO sí se iba vaciando con cada aviso
+        # que lograba resolverse. Esto solo aplica a avisos de diario (fuente
+        # "AVISO"; la TGR y Macal siempre traen un rol estructurado, nunca llegan
+        # acá sin clave): se usa el propio texto del aviso (texto_aviso) como
+        # identidad - si la MISMA notificación, con el mismo texto exacto, ya se
+        # vio antes sin cambios, se excluye igual que cualquier otro aviso ya
+        # visto; si el texto cambia aunque sea un poco (porque es otra publicación,
+        # o porque este sí trae datos nuevos), se trata como nueva. Mismo criterio
+        # de "mostrar de más antes que esconder por error" que ya rige en el resto
+        # del programa - un hash de un texto distinto NUNCA colisiona con el de
+        # otro por error, así que no hay riesgo de esconder un aviso nuevo.
+        if f.get("fuente") == "AVISO":
+            t = f.get("texto_aviso")
+            if isinstance(t, str) and t.strip():
+                return "texto_aviso|" + hashlib.sha1(t.strip().encode("utf-8")).hexdigest()
+        return None
 
     def _fila_universo(f):
         clave = f["_clave_univ"]
