@@ -14,7 +14,7 @@ Paso 1 de 4: catastro nacional del SII
   Leyendo BRORGA2441AL_NAC_2026_2 (93 MB)...
     11,718,011 líneas de construcción cargadas...    12,218,011 líneas de construcción cargadas...    12,695,895 líneas de construcción cargadas...
   Sumando superficie construida y buscando el año más antiguo por propiedad...
-  Base lista: 9,655,566 predios, 12,695,895 líneas de construcción, en 135 segundos.
+  Base lista: 9,655,566 predios, 12,695,895 líneas de construcción, en 139 segundos.
 
 Paso 2 de 4: barrido en vivo de las fuentes
 
@@ -58,9 +58,9 @@ Paso 2 de 4: barrido en vivo de las fuentes
   [MACAL] OK: 213 propiedades
 
   [AVISOS] leyendo resúmenes .docx...
-  [AVISOS] OK: 809 avisos
-  [IA-AVISOS] resumen real de esta corrida: rescatados con ROL (llamada nueva): 0 | consultados, sin ROL de verdad (llamada nueva): 0 | fallidos (error técnico, se reintenta la próxima vez): 0 | ya en caché con ROL (de otra corrida): 62 | ya en caché sin ROL (de otra corrida): 550 | sin cliente disponible: 0
-  [AVISOS] ningún archivo nuevo esta semana (ya se usaron todos en una corrida anterior) - no se fuerza el top 3 de avisos.
+  [AVISOS] OK: 905 avisos
+  [IA-AVISOS] resumen real de esta corrida: rescatados con ROL (llamada nueva): 15 | consultados, sin ROL de verdad (llamada nueva): 59 | fallidos (error técnico, se reintenta la próxima vez): 0 | ya en caché con ROL (de otra corrida): 61 | ya en caché sin ROL (de otra corrida): 534 | sin cliente disponible: 0
+  [AVISOS] archivo(s) NUEVO(s) esta semana (no en una corrida anterior): INFORME_16-11-2026_AL_17-11-2026.docx
 
   [PRECIO_MERCADO] actualizando base propia de precios de mercado...
   [PRECIO_MERCADO: ChilePropiedades] barriendo...
@@ -77,7 +77,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
     [DIAG]   -> de esos, con comuna reconocida: 32 (= 32 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/talcahuano/0
-    [DIAG]   HTML recibido: 162,754 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 161,998 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 183
     [DIAG]   -> con precio Y m2 detectados: 41
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 41
@@ -95,13 +95,13 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/san-pedro-de-la-paz/0
-    [DIAG]   HTML recibido: 156,001 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 185
+    [DIAG]   HTML recibido: 155,991 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 184
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/chiguayante/0
-    [DIAG]   HTML recibido: 160,325 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 159,891 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 181
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
@@ -119,11 +119,11 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/hualpen/0
-    [DIAG]   HTML recibido: 150,110 caracteres | bloques article/li/div en la página: 302
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 179
-    [DIAG]   -> con precio Y m2 detectados: 36
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
-    [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
+    [DIAG]   HTML recibido: 150,505 caracteres | bloques article/li/div en la página: 302
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 185
+    [DIAG]   -> con precio Y m2 detectados: 40
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
+    [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/coronel/0
     [DIAG]   HTML recibido: 163,292 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 183
@@ -149,7 +149,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/providencia/0
-    [DIAG]   HTML recibido: 153,896 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 153,691 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 191
     [DIAG]   -> con precio Y m2 detectados: 36
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
@@ -179,11 +179,11 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/nunoa/0
-    [DIAG]   HTML recibido: 155,241 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 196
-    [DIAG]   -> con precio Y m2 detectados: 38
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 38
-    [DIAG]   -> de esos, con comuna reconocida: 38 (= 38 avisos aprovechables)
+    [DIAG]   HTML recibido: 156,346 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 195
+    [DIAG]   -> con precio Y m2 detectados: 42
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 42
+    [DIAG]   -> de esos, con comuna reconocida: 42 (= 42 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/maipu/0
     [DIAG]   HTML recibido: 162,543 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 192
@@ -191,7 +191,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/maipu/0
-    [DIAG]   HTML recibido: 149,812 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 149,816 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 189
     [DIAG]   -> con precio Y m2 detectados: 36
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
@@ -209,8 +209,8 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/la-florida/0
-    [DIAG]   HTML recibido: 163,533 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 195
+    [DIAG]   HTML recibido: 163,432 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 194
     [DIAG]   -> con precio Y m2 detectados: 42
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 42
     [DIAG]   -> de esos, con comuna reconocida: 42 (= 42 avisos aprovechables)
@@ -221,8 +221,8 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/vitacura/0
-    [DIAG]   HTML recibido: 162,967 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 184
+    [DIAG]   HTML recibido: 163,017 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 185
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
@@ -251,14 +251,14 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/vina-del-mar/0
-    [DIAG]   HTML recibido: 154,214 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 194
-    [DIAG]   -> con precio Y m2 detectados: 40
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
-    [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
+    [DIAG]   HTML recibido: 153,296 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 193
+    [DIAG]   -> con precio Y m2 detectados: 36
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
+    [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/concon/0
-    [DIAG]   HTML recibido: 160,007 caracteres | bloques article/li/div en la página: 309
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 192
+    [DIAG]   HTML recibido: 161,264 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 190
     [DIAG]   -> con precio Y m2 detectados: 41
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 41
     [DIAG]   -> de esos, con comuna reconocida: 41 (= 41 avisos aprovechables)
@@ -275,11 +275,11 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 43
     [DIAG]   -> de esos, con comuna reconocida: 43 (= 43 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/quilpue/0
-    [DIAG]   HTML recibido: 153,746 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 152,955 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 187
-    [DIAG]   -> con precio Y m2 detectados: 38
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 38
-    [DIAG]   -> de esos, con comuna reconocida: 38 (= 38 avisos aprovechables)
+    [DIAG]   -> con precio Y m2 detectados: 34
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 34
+    [DIAG]   -> de esos, con comuna reconocida: 34 (= 34 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/san-antonio/0
     [DIAG]   HTML recibido: 157,539 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 185
@@ -299,7 +299,7 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/departamento/la-serena/0
-    [DIAG]   HTML recibido: 154,088 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   HTML recibido: 154,141 caracteres | bloques article/li/div en la página: 308
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 183
     [DIAG]   -> con precio Y m2 detectados: 32
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
@@ -329,8 +329,8 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 36
     [DIAG]   -> de esos, con comuna reconocida: 36 (= 36 avisos aprovechables)
     [DIAG] https://chilepropiedades.cl/propiedades/venta/casa/rancagua/0
-    [DIAG]   HTML recibido: 160,587 caracteres | bloques article/li/div en la página: 308
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 187
+    [DIAG]   HTML recibido: 160,385 caracteres | bloques article/li/div en la página: 308
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 185
     [DIAG]   -> con precio Y m2 detectados: 40
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 40
     [DIAG]   -> de esos, con comuna reconocida: 40 (= 40 avisos aprovechables)
@@ -352,21 +352,18 @@ Paso 2 de 4: barrido en vivo de las fuentes
     [DIAG]   -> con precio Y m2 detectados: 32
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 32
     [DIAG]   -> de esos, con comuna reconocida: 32 (= 32 avisos aprovechables)
-  [PRECIO_MERCADO: ChilePropiedades] OK: 0 nuevas, 1803 ya vistas, 0 descartadas
+  [PRECIO_MERCADO: ChilePropiedades] OK: 8 nuevas, 1795 ya vistas, 0 descartadas
   [PRECIO_MERCADO: TopPropiedades] barriendo...
     [DIAG] https://www.toppropiedades.cl/propiedades/venta
-    [DIAG]   HTML recibido: 282,505 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 74
-    [DIAG]   -> con precio Y m2 detectados: 3
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 2
-    [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
-    [DIAG]   EJEMPLOS de texto con tipo reconocido pero SIN comuna detectada:
-    [DIAG]     #1: '$351.181.803 8.490 UF Casa, Venta Teno Hermosa Casa 3D 3B en Parcela de 5000m² en Purísima, Teno'
-    [DIAG]     #2: '$82.314.698 1.990 UF Parcela, Venta Los Niches Parcela Plana de 5000m² a 8 Minutos de Curicó en Los Niches'
-  [PRECIO_MERCADO: TopPropiedades] OK: 0 nuevas, 0 ya vistas, 0 descartadas
+    [DIAG]   HTML recibido: 282,522 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 72
+    [DIAG]   -> con precio Y m2 detectados: 4
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 3
+    [DIAG]   -> de esos, con comuna reconocida: 2 (= 2 avisos aprovechables)
+  [PRECIO_MERCADO: TopPropiedades] OK: 0 nuevas, 2 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Procasa] barriendo...
     [DIAG] https://www.procasa.cl/Todos_los_tipos/Venta/Todas_las_comunas
-    [DIAG]   HTML recibido: 97,640 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 97,595 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 127
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -392,8 +389,8 @@ Call log:
   [PRECIO_MERCADO: Doomos] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Inmoclick] barriendo...
     [DIAG] https://www.inmoclick.cl/casas-en-venta
-    [DIAG]   HTML recibido: 296,620 caracteres | bloques article/li/div en la página: 248
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 37
+    [DIAG]   HTML recibido: 324,672 caracteres | bloques article/li/div en la página: 249
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 33
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
     [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
@@ -402,8 +399,8 @@ Call log:
     [DIAG]     #2: '3 dormitorios Casas en venta con 3 dormitorios'
     [DIAG]     #3: '3 dorm. con cochera Casas en venta con 3 dormitorios con cochera'
     [DIAG] https://www.inmoclick.cl/departamentos-en-venta
-    [DIAG]   HTML recibido: 307,413 caracteres | bloques article/li/div en la página: 250
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 47
+    [DIAG]   HTML recibido: 313,706 caracteres | bloques article/li/div en la página: 250
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 42
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
     [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
@@ -414,7 +411,7 @@ Call log:
   [PRECIO_MERCADO: Inmoclick] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: ProUrbano] barriendo...
     [DIAG] https://www.prourbano.cl/s/casa/venta?id_property_type=1&business_type%5B0%5D=for_sale
-    [DIAG]   HTML recibido: 594,923 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 594,907 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 120
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -424,8 +421,8 @@ Call log:
     [DIAG]     #2: 'escribenos@prourbanogroup.com +56942004000 Select Language \u200b ▼'
     [DIAG]     #3: 'escribenos@prourbanogroup.com +56942004000 Select Language \u200b ▼'
     [DIAG] https://www.prourbano.cl/s/departamento/venta?id_property_type=2&business_type%5B0%5D=for_sale
-    [DIAG]   HTML recibido: 539,042 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 87
+    [DIAG]   HTML recibido: 595,355 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 120
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
     [DIAG]   -> de esos, con comuna reconocida: 0 (= 0 avisos aprovechables)
@@ -456,7 +453,7 @@ Call log:
   [PRECIO_MERCADO: Paz] OK: 0 nuevas, 0 ya vistas, 0 descartadas
   [PRECIO_MERCADO: Siena] barriendo...
     [DIAG] https://www.siena.cl/casas/
-    [DIAG]   HTML recibido: 172,759 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 172,757 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 170
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -466,7 +463,7 @@ Call log:
     [DIAG]     #2: 'Menu PROYECTO ESPACIOS COMUNES CASAS ENTORNO FINANCIAMIENTO Cotiza ahora ➔'
     [DIAG]     #3: 'Menu PROYECTO ESPACIOS COMUNES CASAS ENTORNO FINANCIAMIENTO Cotiza ahora ➔'
     [DIAG] https://www.siena.cl/departamentos/
-    [DIAG]   HTML recibido: 60,985 caracteres | bloques article/li/div en la página: 143
+    [DIAG]   HTML recibido: 60,983 caracteres | bloques article/li/div en la página: 143
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 66
     [DIAG]   -> con precio Y m2 detectados: 0
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 0
@@ -550,51 +547,51 @@ Call log:
   [PRECIO_MERCADO: Dosam] OK: 0 nuevas, 1 ya vistas, 0 descartadas
   [PRECIO_MERCADO: EngelVolkers] barriendo...
     [DIAG] https://www.engelvoelkers.com/cl/en/properties/res/sale/apartment
-    [DIAG]   HTML recibido: 802,450 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 802,972 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 116
     [DIAG]   -> con precio Y m2 detectados: 14
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 14
     [DIAG]   -> de esos, con comuna reconocida: 14 (= 14 avisos aprovechables)
     [DIAG] https://www.engelvoelkers.com/cl/en/properties/res/sale/house
-    [DIAG]   HTML recibido: 858,058 caracteres | bloques article/li/div en la página: 400
-    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 121
-    [DIAG]   -> con precio Y m2 detectados: 13
-    [DIAG]   -> de esos, con tipo de propiedad reconocido: 9
-    [DIAG]   -> de esos, con comuna reconocida: 9 (= 9 avisos aprovechables)
-  [PRECIO_MERCADO: EngelVolkers] OK: 0 nuevas, 23 ya vistas, 0 descartadas
+    [DIAG]   HTML recibido: 857,653 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 123
+    [DIAG]   -> con precio Y m2 detectados: 12
+    [DIAG]   -> de esos, con tipo de propiedad reconocido: 8
+    [DIAG]   -> de esos, con comuna reconocida: 8 (= 8 avisos aprovechables)
+  [PRECIO_MERCADO: EngelVolkers] OK: 7 nuevas, 15 ya vistas, 0 descartadas
   [PRECIO_MERCADO: PropertyPartners] barriendo...
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-metropolitana-de-santiago
-    [DIAG]   HTML recibido: 407,628 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 407,409 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 216
     [DIAG]   -> con precio Y m2 detectados: 144
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 114
     [DIAG]   -> de esos, con comuna reconocida: 114 (= 114 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-metropolitana-de-santiago
-    [DIAG]   HTML recibido: 411,939 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 412,039 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 222
     [DIAG]   -> con precio Y m2 detectados: 144
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 138
     [DIAG]   -> de esos, con comuna reconocida: 138 (= 138 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-de-valparaiso
-    [DIAG]   HTML recibido: 416,388 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 416,169 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 212
     [DIAG]   -> con precio Y m2 detectados: 144
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 126
     [DIAG]   -> de esos, con comuna reconocida: 126 (= 126 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-de-valparaiso
-    [DIAG]   HTML recibido: 408,009 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 407,631 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 213
     [DIAG]   -> con precio Y m2 detectados: 111
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 100
     [DIAG]   -> de esos, con comuna reconocida: 100 (= 100 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/departamento/region-del-bio-bio
-    [DIAG]   HTML recibido: 406,948 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 406,640 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 213
     [DIAG]   -> con precio Y m2 detectados: 142
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 142
     [DIAG]   -> de esos, con comuna reconocida: 142 (= 142 avisos aprovechables)
     [DIAG] https://ppartnersgroup.com/es-cl/search/venta/casa/region-del-bio-bio
-    [DIAG]   HTML recibido: 410,915 caracteres | bloques article/li/div en la página: 400
+    [DIAG]   HTML recibido: 410,935 caracteres | bloques article/li/div en la página: 400
     [DIAG]   de tamaño razonable (20-600 caracteres, sin 'arriendo'): 221
     [DIAG]   -> con precio Y m2 detectados: 144
     [DIAG]   -> de esos, con tipo de propiedad reconocido: 132
@@ -602,31 +599,26 @@ Call log:
   [PRECIO_MERCADO: PropertyPartners] OK: 0 nuevas, 752 ya vistas, 0 descartadas
 
 Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
-  Avisos: 809 leídos | con ROL: 559 (informado: 248, deducido por dirección: 311)
-  Avisos sin ROL (250) - motivo de por qué no se pudo deducir por dirección:
-    121 | SIN COINCIDENCIA
-     73 | NO SE PUDO LEER LA DIRECCION
-     21 | SIN COINCIDENCIA | COMUNA ASUMIDA DEL TRIBUNAL
-     14 | AMBIGUO (edificio: hay varias unidades)
-      7 | AMBIGUO (2 candidatos)
-      4 | AMBIGUO (3 candidatos)
-      3 | NO SE PUDO LEER LA DIRECCION | COMUNA ASUMIDA DEL TRIBUNAL
+  Avisos: 905 leídos | con ROL: 652 (informado: 289, deducido por dirección: 363)
+  Avisos sin ROL (253) - motivo de por qué no se pudo deducir por dirección:
+    120 | SIN COINCIDENCIA
+     84 | NO SE PUDO LEER LA DIRECCION
+     14 | SIN COINCIDENCIA | COMUNA ASUMIDA DEL TRIBUNAL
+     13 | AMBIGUO (2 candidatos)
+      6 | NO SE PUDO LEER LA DIRECCION | COMUNA ASUMIDA DEL TRIBUNAL
+      5 | AMBIGUO (3 candidatos)
+      5 | SIN COMUNA CANDIDATA (no se pudo intentar)
       1 | AMBIGUO (9 candidatos)
+      1 | AMBIGUO (7 candidatos)
       1 | AMBIGUO (12 candidatos)
-      1 | AMBIGUO (11 candidatos)
       1 | AMBIGUO (6 candidatos)
       1 | AMBIGUO (5 candidatos)
-      1 | SIN COMUNA CANDIDATA (no se pudo intentar)
-      1 | AMBIGUO (56 candidatos)
+      1 | AMBIGUO (4 candidatos)
   Muestra de "SIN COINCIDENCIA" (la dirección del aviso contra lo que SÍ hay en el catastro para esa calle, en esa comuna - para ver si la calle existe con otro número, o si no existe del todo):
     aviso: 'ZAPARELI 1174' (comuna SII 02201) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'COQUIMBO 10' (comuna SII 08211) | catastro para esa calle: ['COQUIMBO 518 [excluido: rol matriz/condominio (predio=90046, destino=K)]', 'COQUIMBO 157 CHGTE [número 10 fuera del rango 157-157]', 'COQUIMBO 251 EQUIPAMIENTO CHGTE [número 10 fuera del rango 251-251]', "COQUIMBO ST 18 CHGTE [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']", "COQUIMBO ST 19 [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']", "COQUIMBO ST 20 427 CHGTE [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']", "COQUIMBO ST 30 [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']", "COQUIMBO ST 31 CHGTE [nombre no calza: 'COQUIMBO ST' vs 'COQUIMBO']"]
     aviso: 'COQUIMBO 10' (comuna SII 08201) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'CUETO 1207' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'SAMUEL BANADO MORRI 9491' (comuna SII 02201) | catastro para esa calle: ["SAMUEL ROMAN 03057 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03053 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03049 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03045 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03042 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03067 CS 1 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03067 CS 2 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']", "SAMUEL ROMAN 03067 CS 3 [nombre no calza: 'SAMUEL ROMAN' vs 'SAMUEL BANADO MORRI']"]
-    aviso: 'SAMUEL BANADO MORRI 9491' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'SAMUEL BANADO MORRI 9491' (comuna SII 13134) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'SAMUEL BANADO MORRI 9491' (comuna SII 13135) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'LAS GOLONDRINA PONIENTE 4274' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'LAS GOLONDRINA PONIENTE 4274' (comuna SII 13134) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'LAS GOLONDRINA PONIENTE 4274' (comuna SII 13135) | catastro para esa calle: (la calle no aparece del todo)
@@ -641,15 +633,11 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
     aviso: 'BALMACEDA 29' (comuna SII 13101) | catastro para esa calle: ["BANDERA 960 A 962 BALMACEDA 1108 A 1142 [nombre no calza: 'BANDERA 960 A 962 BALMACEDA 1108 A' vs 'BALMACEDA']", 'BALMACEDA 1264 [número 29 fuera del rango 1264-1264]', 'BALMACEDA 1270 1276 [número 29 fuera del rango 1270-1276]', 'BALMACEDA 1296 [número 29 fuera del rango 1296-1296]', 'AV BALMACEDA 1244 LC 01 [número 29 fuera del rango 1244-1244]', 'AV BALMACEDA 1236 LC 02 [número 29 fuera del rango 1236-1236]', 'AV BALMACEDA 1232 LC 03 [número 29 fuera del rango 1232-1232]', 'AV BALMACEDA 1228 LC 04 [número 29 fuera del rango 1228-1228]']
     aviso: 'BALMACEDA 29' (comuna SII 13134) | catastro para esa calle: ['AV PRESID BALMACEDA 2325 LT 2 [número 29 fuera del rango 2325-2325]', "BALMACEDA 2199 ONGOLLC 181 [nombre no calza: 'BALMACEDA 2199 ONGOLLC' vs 'BALMACEDA']", "BALMACEDA 2199 ONGOLMO 183 [nombre no calza: 'BALMACEDA 2199 ONGOLMO' vs 'BALMACEDA']", "BALMACEDA 2199 ONGOLLC 185 [nombre no calza: 'BALMACEDA 2199 ONGOLLC' vs 'BALMACEDA']", "BALMACEDA 2199 ONGOLLC 187 [nombre no calza: 'BALMACEDA 2199 ONGOLLC' vs 'BALMACEDA']", "BALMACEDA 2199 ONGOLLC 189 [nombre no calza: 'BALMACEDA 2199 ONGOLLC' vs 'BALMACEDA']", "BALMACEDA 2199 ONGOLLC 193 [nombre no calza: 'BALMACEDA 2199 ONGOLLC' vs 'BALMACEDA']", "BALMACEDA 2199 ONGOLLC 195 [nombre no calza: 'BALMACEDA 2199 ONGOLLC' vs 'BALMACEDA']"]
     aviso: 'BALMACEDA 29' (comuna SII 13135) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: '22 1/2 NORTE A 3643' (comuna SII 07201) | catastro para esa calle: ["AVDA PIDUCO NORTE 1620 [nombre no calza: 'PIDUCO NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 1 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 2 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 3 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 4 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 5 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 6 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']", "1 NORTE 1071 BX 7 [nombre no calza: '1 NORTE' vs '22 1/2 NORTE A']"]
     aviso: 'LOCAL 91' (comuna SII 13101) | catastro para esa calle: ["ESTADOS UNIDOS 226 LOCAL COM P 1 [nombre no calza: 'ESTADO UNIDO 226 LOCAL COM P' vs 'LOCAL']", "MONEDA 782 LOCAL 201 [nombre no calza: 'MONEDA 782 LOCAL' vs 'LOCAL']", "ESTADO 33 LOCAL 1 B [nombre no calza: 'ESTADO 33 LOCAL' vs 'LOCAL']", "SAN ANTONIO 50 LOCAL 5 [nombre no calza: 'SAN ANTONIO 50 LOCAL' vs 'LOCAL']", "SAN ANTONIO 54 LOCAL 4 [nombre no calza: 'SAN ANTONIO 54 LOCAL' vs 'LOCAL']", "AHUMADA 83 LOCAL 113 [nombre no calza: 'AHUMADA 83 LOCAL' vs 'LOCAL']", "MONEDA 772 LOCAL 309 B [nombre no calza: 'MONEDA 772 LOCAL' vs 'LOCAL']", "MONEDA 782 LOCAL 0209 A [nombre no calza: 'MONEDA 782 LOCAL' vs 'LOCAL']"]
     aviso: 'LOCAL 91' (comuna SII 13134) | catastro para esa calle: ["ESPERANZA 1384 LOCAL 1 [nombre no calza: 'ESPERANZA 1384 LOCAL' vs 'LOCAL']", "ESPERANZA 1388 LOCAL 2 [nombre no calza: 'ESPERANZA 1388 LOCAL' vs 'LOCAL']", "ESPERANZA 1390 LOCAL 3 [nombre no calza: 'ESPERANZA 1390 LOCAL' vs 'LOCAL']", "ESPERANZA 1394 LOCAL 4 [nombre no calza: 'ESPERANZA 1394 LOCAL' vs 'LOCAL']", "CUETO 1207 LOCAL 1179 [nombre no calza: 'CUETO 1207 LOCAL' vs 'LOCAL']", "CHACABUCO 1163 LOCAL [nombre no calza: 'CHACABUCO' vs 'LOCAL']", "GRAL BAQUEDANO 822 LOCAL 1 [nombre no calza: 'GENERAL BAQUEDANO 822 LOCAL' vs 'LOCAL']", "GRAL BAQUEDANO 826 LOCAL 2 [nombre no calza: 'GENERAL BAQUEDANO 826 LOCAL' vs 'LOCAL']"]
     aviso: 'LOCAL 91' (comuna SII 13135) | catastro para esa calle: ["SAN DIEGO 937 LOCAL 38 [nombre no calza: 'SAN DIEGO 937 LOCAL' vs 'LOCAL']", "ZENTENO 980 LOCAL 5 [nombre no calza: 'ZENTENO 980 LOCAL' vs 'LOCAL']", "ZENTENO 980 LOCAL 6 [nombre no calza: 'ZENTENO 980 LOCAL' vs 'LOCAL']", "ZENTENO 980 LOCAL 7 [nombre no calza: 'ZENTENO 980 LOCAL' vs 'LOCAL']", "ZENTENO 980 LOCAL 8 [nombre no calza: 'ZENTENO 980 LOCAL' vs 'LOCAL']", "ZENTENO 980 LOCAL 35 B [nombre no calza: 'ZENTENO 980 LOCAL' vs 'LOCAL']", "ZENTENO 980 LOCAL 60 [nombre no calza: 'ZENTENO 980 LOCAL' vs 'LOCAL']", "ZENTENO 980 LOCAL 81 A [nombre no calza: 'ZENTENO 980 LOCAL' vs 'LOCAL']"]
     aviso: 'CONCEJAL SIMON YARZA CELI 1085' (comuna SII 06112) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'CONCEJAL SIMON YARZA CELI 1085' (comuna SII 01201) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'LA DEHESA 1201' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'LA DEHESA 1201' (comuna SII 13134) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'LA DEHESA 1201' (comuna SII 13135) | catastro para esa calle: (la calle no aparece del todo)
     aviso: '7 170' (comuna SII 07305) | catastro para esa calle: ["HUENUTIL LT 7 [nombre no calza: 'HUENUTIL LT' vs '7']", "PJ ROBERTO ORTEGA B 477 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 75 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 71 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 57 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 47 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 27 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']", "PJ ROBERTO ORTEGA B 17 [nombre no calza: 'PJ ROBERTO ORTEGA B' vs '7']"]
     aviso: '7 170' (comuna SII 07301) | catastro para esa calle: ["O SUBERCASEAUX 0117 [nombre no calza: 'O SUBERCASEAUX' vs '7']", "O SUBERCASEAUX 0127 [nombre no calza: 'O SUBERCASEAUX' vs '7']", "INTEND FONTANA 127 [nombre no calza: 'INTEND FONTANA' vs '7']", "INTEND FONTANA 157 [nombre no calza: 'INTEND FONTANA' vs '7']", "FCO ANTONIO ENCINA 127 [nombre no calza: 'FCO ANTONIO ENCINA' vs '7']", "PJE TRAPICHE 0087 [nombre no calza: 'TRAPICHE' vs '7']", "PJE TRAPICHE 0117 [nombre no calza: 'TRAPICHE' vs '7']", "PASAJE LIUCURA 107 [nombre no calza: 'LIUCURA' vs '7']"]
     aviso: 'GENERAL JOSE ARTIGA 3121' (comuna SII 13101) | catastro para esa calle: ["GENERAL MACKENNA 1138 DP 202 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 203 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 204 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 205 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 206 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 207 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 208 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']", "GENERAL MACKENNA 1138 DP 209 [nombre no calza: 'GENERAL MACKENNA' vs 'GENERAL JOSE ARTIGA']"]
@@ -660,16 +648,12 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
     aviso: 'FRANCISCO DE RIVERO 4550' (comuna SII 13135) | catastro para esa calle: ["SAN FRANCISCO 728 LOCL 728 [nombre no calza: 'SAN FRANCISCO 728 LOCL' vs 'FRANCISCO DE RIVERO']", "SN FRANCISCO 734 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SAN FRANCISCO 748 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SAN FRANCISCO 758 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SN FRANCISCO 764 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SN FRANCISCO 774 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SN FRANCISCO 780 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']", "SAN FRANCISCO 790 [nombre no calza: 'SAN FRANCISCO' vs 'FRANCISCO DE RIVERO']"]
     aviso: 'EL PERAL 668' (comuna SII 14202) | catastro para esa calle: ["EL PERAL ST 54 [nombre no calza: 'EL PERAL ST' vs 'EL PERAL']", 'EL PERAL 454 [número 668 fuera del rango 454-454]', "EL PERAL ST 79 [nombre no calza: 'EL PERAL ST' vs 'EL PERAL']", "EL PERAL ST 114 VALLE GRANDE [nombre no calza: 'EL PERAL ST' vs 'EL PERAL']", 'PERALILLO SITIO D [no se pudo leer el número de esta dirección del catastro]', "PERALILLO PC 1 [nombre no calza: 'PERALILLO PC' vs 'EL PERAL']", "PARCELA 2 EL PERALILLO [nombre no calza: '' vs 'EL PERAL']", "PC 3 PP PERALILLO [nombre no calza: 'PC' vs 'EL PERAL']"]
     aviso: 'EL PERAL 668' (comuna SII 14201) | catastro para esa calle: ["LOS PERALES 64 [nombre no calza: 'LOS PERALE' vs 'EL PERAL']", "LOS PERALES 058 [nombre no calza: 'LOS PERALE' vs 'EL PERAL']", "LOS PERALES 10 [nombre no calza: 'LOS PERALE' vs 'EL PERAL']", "LOS PERALES 11 [nombre no calza: 'LOS PERALE' vs 'EL PERAL']", "LOS PERALES 057 [nombre no calza: 'LOS PERALE' vs 'EL PERAL']", "LOS PERALES DE CHACABUCO LT 1 [nombre no calza: 'LOS PERALE DE CHACABUCO LT' vs 'EL PERAL']", "LOS PERALES DE CHACABUCO LT 2 [nombre no calza: 'LOS PERALE DE CHACABUCO LT' vs 'EL PERAL']", "LOS PERALES DE CHACABUCO LT 3 [nombre no calza: 'LOS PERALE DE CHACABUCO LT' vs 'EL PERAL']"]
-    aviso: 'EL SAUCE 1206' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'EL SAUCE 1206' (comuna SII 13134) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'EL SAUCE 1206' (comuna SII 13135) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'INGLATERRA 1144' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'INGLATERRA 1144' (comuna SII 13134) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'INGLATERRA 1144' (comuna SII 13135) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'INGLATERRA 1144' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'INGLATERRA 1144' (comuna SII 13134) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'INGLATERRA 1144' (comuna SII 13135) | catastro para esa calle: (la calle no aparece del todo)
-    aviso: 'JAIME GUZMAN ERRAZURIZ 4080' (comuna SII 01201) | catastro para esa calle: ['ERRAZURIZ 25 [número 4080 fuera del rango 25-25]', 'ERRAZURIZ 21 [número 4080 fuera del rango 21-21]', 'ERRAZURIZ 27 [número 4080 fuera del rango 27-27]', 'ERRAZURIZ 31 [número 4080 fuera del rango 31-31]', 'ERRAZURIZ 51 [número 4080 fuera del rango 51-51]', 'ERRAZURIZ 10 [número 4080 fuera del rango 10-10]', 'ERRAZURIZ 20 [número 4080 fuera del rango 20-20]', 'ERRAZURIZ 30 [número 4080 fuera del rango 30-30]']
     aviso: 'PEDRO PRADO 555' (comuna SII 01201) | catastro para esa calle: ['PEDRO PRADO 339 [número 555 fuera del rango 339-339]', 'PEDRO PRADO 359 [número 555 fuera del rango 359-359]', 'PEDRO PRADO 349 [número 555 fuera del rango 349-349]', "AV P PEDRO 475 [nombre no calza: 'P PEDRO' vs 'PEDRO PRADO']", 'AV PEDRO PRADO 475 LTH [número 555 fuera del rango 475-475]', 'AV PEDRO PRADO 450 DP 101 [número 555 fuera del rango 450-450]', 'AV PEDRO PRADO 450 DP 102 [número 555 fuera del rango 450-450]', 'AV PEDRO PRADO 450 DP 103 [número 555 fuera del rango 450-450]']
     aviso: 'INGLATERRA 1144' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'INGLATERRA 1144' (comuna SII 13134) | catastro para esa calle: (la calle no aparece del todo)
@@ -679,38 +663,43 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
     aviso: 'JUAREZ 621' (comuna SII 13134) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'JUAREZ 621' (comuna SII 13135) | catastro para esa calle: (la calle no aparece del todo)
     aviso: 'CHICUREO 14000' (comuna SII 14201) | catastro para esa calle: ['FDO CHICUREO HJ I Y II [no se pudo leer el número de esta dirección del catastro]', "C DEL ALBA CHICUREO PC 45 [nombre no calza: 'C DEL ALBA CHICUREO PC' vs 'CHICUREO']", "SANTA SARA DE CHICUREO HIJ 2 [nombre no calza: 'SANTA SARA DE CHICUREO HIJ' vs 'CHICUREO']", "HIJ 3 STA SARA DE CHICUREO [nombre no calza: 'HIJ' vs 'CHICUREO']", "CHICUREO PC 20 21 52 A 56 [nombre no calza: 'CHICUREO PC 20 21 52 A' vs 'CHICUREO']", "LT 5 FDO CHICUREO RETAZO HJ 1 Y 2 X [nombre no calza: 'LT 5 FDO CHICUREO RETAZO HJ 1 Y' vs 'CHICUREO']", "SANTA LUISA CHICUREO LT 33 [nombre no calza: 'SANTA LUISA CHICUREO LT' vs 'CHICUREO']", "BRISAS DE CHICUREO NORTE LT 3 -C [nombre no calza: 'BRISA DE CHICUREO NORTE LT' vs 'CHICUREO']"]
+    aviso: 'CHICUREO 14000' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'CHICUREO 14000' (comuna SII 13134) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'CHICUREO 14000' (comuna SII 13135) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'CORONEL SOUPER 4058' (comuna SII 14157) | catastro para esa calle: ["CORONEL GODOY 0 157 LC 1 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 LC 2 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 LC 3 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 LC 4 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 LC 5 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 LC 6 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 DP 201 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']", "CORONEL GODOY 0 157 DP 202 [nombre no calza: 'CORONEL GODOY' vs 'CORONEL SOUPER']"]
+    aviso: 'CORONEL SOUPER 4058' (comuna SII 13101) | catastro para esa calle: ["CORONEL BUERAS 124 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 170 BX 1 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 164 BX 12 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 172 DP 1 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 172 CDP 3 C [nombre no calza: 'CORONEL BUERA 172 CDP' vs 'CORONEL SOUPER']", "CORONEL S BUERAS 176 [nombre no calza: 'CORONEL S BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 112 A BODEGA [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']", "CORONEL BUERAS 112 A BD 23 [nombre no calza: 'CORONEL BUERA' vs 'CORONEL SOUPER']"]
+    aviso: 'CORONEL SOUPER 4058' (comuna SII 13134) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'CORONEL SOUPER 4058' (comuna SII 13135) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'TIERRA LINDA 487' (comuna SII 14201) | catastro para esa calle: ['TIERRA NUESTRA SAN VICENTE DE LO ARCAYA [no se pudo leer el número de esta dirección del catastro]', "PC 31 B TIERRA NUESTRA [nombre no calza: 'PC' vs 'TIERRA LINDA']", "TIERRA NUESTRA PC. 29 [nombre no calza: 'TIERRA NUESTRA PC' vs 'TIERRA LINDA']", "TIERRA NUESTRA ST 18 [nombre no calza: 'TIERRA NUESTRA ST' vs 'TIERRA LINDA']", "TIERRA NUESTRA ST 13 [nombre no calza: 'TIERRA NUESTRA ST' vs 'TIERRA LINDA']", "TIERRA NUESTRA PC 18 RESTO [nombre no calza: 'TIERRA NUESTRA PC' vs 'TIERRA LINDA']", "TIERRA NUESTRA PC 16 S 2 [nombre no calza: 'TIERRA NUESTRA PC 16 S' vs 'TIERRA LINDA']", "TIERRA NUESTRA PC 10 ST 1 [nombre no calza: 'TIERRA NUESTRA PC' vs 'TIERRA LINDA']"]
+    aviso: 'TIERRA LINDA 487' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'TIERRA LINDA 487' (comuna SII 13134) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'TIERRA LINDA 487' (comuna SII 13135) | catastro para esa calle: (la calle no aparece del todo)
+    aviso: 'CALETERA AMERICO VESPUCIO 1700' (comuna SII 13101) | catastro para esa calle: (la calle no aparece del todo)
   Muestra de "AMBIGUO" (la calle SÍ está en el catastro, pero hay más de un predio que calza - para ver si el depto/unidad estaba en el aviso y no se leyó):
     aviso: "LA TIRANA 4450 (unidad leída: ('503', '', 'DEPTO'))" (comuna SII 01201) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['AV LA TIRANA 4450 DP 503 (avalúo 63209476)', 'AV. LA TIRANA 4450 DP 503 (avalúo 63983264)']
-    aviso: 'PLAYA BRAVA 2975 (sin unidad leída)' (comuna SII 01201) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['AV PLAYA BRAVA 2975 DP 11 (avalúo 92715497)', 'AV PLAYA BRAVA 2975 DP 12 (avalúo 50774083)', 'AV PLAYA BRAVA 2975 DP 13 (avalúo 89677466)', 'AV PLAYA BRAVA 2975 DP 14 (avalúo 62189932)', 'AV PLAYA BRAVA 2975 DP 21 (avalúo 101415335)', 'AV PLAYA BRAVA 2975 DP 22 (avalúo 86679687)']
-    aviso: 'LA DEHESA 1201 (sin unidad leída)' (comuna SII 15161) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['AV LA DEHESA 1201 BX- 27 (avalúo 8966056)', 'AV LA DEHESA 1201 BX- 28 (avalúo 8966056)', 'AV LA DEHESA 1201 BX- 29 (avalúo 8966056)', 'AV LA DEHESA 1201 BX- 30 (avalúo 9666548)', 'AV LA DEHESA 1201 BX- 31 (avalúo 8966056)', 'AV LA DEHESA 1201 BX- 32 (avalúo 8966056)']
     aviso: "GENERAL JOSE ARTIGA 3121 (unidad leída: ('8', '', 'DEPTO'))" (comuna SII 15105) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['AV G J ARTIGAS 3121 BD 8 (avalúo 1195062)', 'AV G J ARTIGAS 3121 BX 8 (avalúo 7350661)']
-    aviso: 'EL SAUCE 1206 (sin unidad leída)' (comuna SII 14158) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['AV EL SAUCE 1206 - 1 CS 1 (avalúo 139479997)', 'AV EL SAUCE 1206 - 2 CS 2 (avalúo 195220384)', 'AV EL SAUCE 1206 - 3 CS 3 (avalúo 219224375)', 'AV EL SAUCE 1206 - 4 CS 4 (avalúo 195220384)', 'AV EL SAUCE 1206 - 5 CS 5 (avalúo 195220384)', 'AV EL SAUCE 1206 - 6 CS 6 (avalúo 195220384)']
     aviso: "INGLATERRA 1144 (unidad leída: ('2713', '', 'DEPTO'))" (comuna SII 13167) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['INGLATERRA 1144 DP 2713 (avalúo 37947466)', 'INGLATERRA 1144 DP 2713 (avalúo 37529863)']
     aviso: "INGLATERRA 1144 (unidad leída: ('212', '', 'DEPTO'))" (comuna SII 13167) [AMBIGUO (3 candidatos)] | candidatos en catastro: ['INGLATERRA 1144 DP 212 (avalúo 44457601)', 'INGLATERRA 1144 DP 212 (avalúo 38205710)', 'INGLATERRA 1144 DP 212 (avalúo 38417737)']
     aviso: "INGLATERRA 1144 (unidad leída: ('2008', '', 'DEPTO'))" (comuna SII 13167) [AMBIGUO (3 candidatos)] | candidatos en catastro: ['INGLATERRA 1144 DP 2008 (avalúo 46701957)', 'INGLATERRA 1144 DP 2008 (avalúo 51077165)', 'INGLATERRA 1144 DP 2008 (avalúo 51337666)']
     aviso: "CALETERA AMERICO VESPUCIO 1700 (unidad leída: ('503', '', 'DEPTO'))" (comuna SII 14166) [AMBIGUO (9 candidatos)] | candidatos en catastro: ['CALETERA A.VESPUCIO 1700 DP. 503 (avalúo 61113563)', 'CALETERA A.VESPUCIO 1700 DP. 503 (avalúo 61113563)', 'CALETERA A.VESPUCIO 1700 DP. 503 (avalúo 61113563)', 'CALETERA A.VESPUCIO 1700 DP. 503 (avalúo 61113563)', 'CALETERA A.VESPUCIO 1700 DP. 503 (avalúo 61462758)', 'CALETERA A.VESPUCIO 1700 DP. 503 (avalúo 61462758)']
-    aviso: 'LA LAGUNA 18947 (sin unidad leída)' (comuna SII 16401) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['LA LAGUNA 18947 CS 1010 (avalúo 102181485)', 'LA LAGUNA 18947 CS 1012 (avalúo 113349254)', 'LA LAGUNA 18947 CS 1014 (avalúo 95311677)', 'LA LAGUNA 18947 CS 1016 (avalúo 95311677)', 'LA LAGUNA 18947 CS 1018 (avalúo 68516735)', 'LA LAGUNA 18947 CS 1020 (avalúo 95311677)']
-    aviso: 'BLANCO GARCE 154 (sin unidad leída)' (comuna SII 14157) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['BLANCO GARCES 154 DP A 203 (avalúo 44038516)', 'BLANCO GARCES 154 DP A 204 (avalúo 42602538)', 'BLANCO GARCES 154 DP A 205 (avalúo 28375706)', 'BLANCO GARCES 154 DP A 206 (avalúo 31043020)', 'BLANCO GARCES 154 DP A 207 (avalúo 31013784)', 'BLANCO GARCES 154 DP A 208 (avalúo 28375706)']
-    aviso: 'SAN JOSE DE MAIPO 5879 (sin unidad leída)' (comuna SII 16301) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['CAM SN JOSE DE MAIPO 05879 CS 1 (avalúo 109304875)', 'CAM SN JOSE DE MAIPO 05879 CS 2 (avalúo 109304875)', 'CAM SN JOSE DE MAIPO 05879 CS 3 (avalúo 152148828)', 'CAM SN JOSE DE MAIPO 05879 CS 4 (avalúo 125426802)', 'CAM SN JOSE DE MAIPO 05879 CS 5 (avalúo 84534566)', 'CAM SN JOSE DE MAIPO 05879 CS 6 (avalúo 125426802)']
+    aviso: "PADRE HURTADO 621 (unidad leída: ('102', '', 'DEPTO'))" (comuna SII 14109) [AMBIGUO (7 candidatos)] | candidatos en catastro: ['SAN ALBERTO HURTADO 621 DP 102 (avalúo 55009355)', 'SAN ALBERTO HURTADO 621 DP 102 (avalúo 55009355)', 'SAN ALBERTO HURTADO 621 DP 102 (avalúo 47306010)', 'SAN ALBERTO HURTADO 621 DP 102 (avalúo 47306010)', 'SAN ALBERTO HURTADO 621 DP 102 (avalúo 55009355)', 'SAN ALBERTO HURTADO 621 DP 102 (avalúo 47306010)']
+    aviso: "SAN JOSE DE MAIPO 5879 (unidad leída: ('129', 'Y', 'CASA'))" (comuna SII 16301) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['CAM SN JOSE DE MAIPO 05879 CS 129 (avalúo 97246415)', 'CAM SN JOSE DE MAIPO 05879 CS 129 (avalúo 78065064)']
     aviso: "PERU 795 (unidad leída: ('102', '', 'DEPTO'))" (comuna SII 05304) [AMBIGUO (12 candidatos)] | candidatos en catastro: ['PERU 795 DP A 102 (avalúo 37886627)', 'PERU 795 DP B 102 (avalúo 37852291)', 'PERU 795 DP C 102 (avalúo 37886627)', 'PERU 795 DP D 102 (avalúo 37852291)', 'PERU 795 DP E 102 (avalúo 37886627)', 'PERU 795 DP F 102 (avalúo 37852291)']
-    aviso: 'LA LADERA 1121 (sin unidad leída)' (comuna SII 16401) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['LA LADERA 1121 CS 1 (avalúo 56421710)', 'LA LADERA 1121 CS 2 (avalúo 55335338)', 'LA LADERA 1121 CS 3 (avalúo 55335338)', 'LA LADERA 1121 CS 4 (avalúo 56421710)', 'LA LADERA 1121 CS 5 (avalúo 56421710)', 'LA LADERA 1121 CS 6 (avalúo 55335338)']
-    aviso: 'EJERCITO LIBERTADOR 1281 (sin unidad leída)' (comuna SII 16301) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['EJERCITO LIBERTADOR 1281 CS 20 (avalúo 108374958)', 'EJERCITO LIBERTADOR 1281 CS 21 (avalúo 108374958)', 'EJERCITO LIBERTADOR 1281 CS 22 (avalúo 162015757)', 'EJERCITO LIBERTADOR 1281 CS 23 (avalúo 162015757)', 'EJERCITO LIBERTADOR 1281 CS 24 (avalúo 134770221)', 'EJERCITO LIBERTADOR 1281 CS 25 (avalúo 134770221)']
     aviso: 'EL LOTE 24 (sin unidad leída)' (comuna SII 08109) [AMBIGUO (3 candidatos)] | candidatos en catastro: ['LOTE 24 (avalúo 11003987)', 'LOTE 1 200 (avalúo 21660571)', 'LOTE 2 180 (avalúo 7898180)']
-    aviso: 'ALVARE 1822 (sin unidad leída)' (comuna SII 05302) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['ALVARES 1822 DP 201 (avalúo 52227710)', 'ALVARES 1822 DP 202 (avalúo 88305358)', 'ALVARES 1822 DP 203 (avalúo 74051855)', 'ALVARES 1822 DP 204 (avalúo 135641375)', 'ALVARES 1822 DP 205 (avalúo 97546716)', 'ALVARES 1822 DP 206 (avalúo 97817731)']
+    aviso: "ALVARE 1822 (unidad leída: ('2206', 'D', 'DEPTO'))" (comuna SII 05302) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['ALVARES 1822 DP 2206 (avalúo 165743811)', 'ALVARES 1822 DP 2206 (avalúo 166891458)']
     aviso: "JOSE PEDRO ALESSANDRI 927 (unidad leída: ('1', '', 'DEPTO'))" (comuna SII 15105) [AMBIGUO (3 candidatos)] | candidatos en catastro: ['JP ALESSANDRI 927 LC 1 (avalúo 102683575)', 'JP ALESSANDRI 927 BD 1 (avalúo 1522358)', 'JP ALESSANDRI 927 BX 1 (avalúo 4707979)']
     aviso: "ANGOL 47 (unidad leída: ('1', '', 'DEPTO'))" (comuna SII 08201) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['ANGOL 47 BX 1 (avalúo 6430224)', 'ANGOL 47 BX 2 BD 1 (avalúo 9507566)']
-    aviso: 'LO OVALLE 926 (sin unidad leída)' (comuna SII 16110) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['AV LO OVALLE 0926 DP A 101 (avalúo 47218615)', 'AV LO OVALLE 0926 DP A 102 (avalúo 47140756)', 'AV LO OVALLE 0926 DP A 103 (avalúo 45959754)', 'AV LO OVALLE 0926 DP A 104 (avalúo 45959754)', 'AV LO OVALLE 0926 DP A 105 (avalúo 47140756)', 'AV LO OVALLE 0926 DP A 106 (avalúo 47096264)']
+    aviso: "EYZAGUIRRE 771 (unidad leída: ('102', 'E', 'ESTACIONAMIENTO'))" (comuna SII 13101) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['EYZAGUIRRE 771 DP 102 (avalúo 50751735)', 'EYZAGUIRRE 771 BD 102 (avalúo 1301434)']
+    aviso: "SANTIAGO 1320 (unidad leída: ('1', '', 'DEPTO'))" (comuna SII 13135) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['SANTIAGO 1320 BD 1 (avalúo 1801559)', 'SANTIAGO 1320 BD 109 BX 1 (avalúo 10785214)']
     aviso: "VICUNA MACKENNA 7801 (unidad leída: ('1905', '', 'DEPTO'))" (comuna SII 15128) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['V MACKENNA 7801 DP 1905 (avalúo 67406579)', 'V. MACKENNA TORRE 2 7801 1905 (avalúo 60906466)']
     aviso: "VICUNA MACKENNA 4927 (unidad leída: ('2604', '', 'DEPTO'))" (comuna SII 16163) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['VICUNA MACKENNA 4927 DP 2604 (avalúo 72694242)', 'AV VICUNA MACKENNA 4927 -B DP 2604 (avalúo 61480361)']
-    aviso: 'NUEVA 2 (sin unidad leída)' (comuna SII 13134) [AMBIGUO (11 candidatos)] | candidatos en catastro: ['NUEVA 2 725 (avalúo 122968102)', 'NUEVA 2 749 (avalúo 126360184)', 'NUEVA 2 751 (avalúo 126360184)', 'NUEVA 2 781 (avalúo 123113541)', 'NUEVA 1 724 (avalúo 111745259)', 'NUEVA 1 748 (avalúo 126360184)']
     aviso: "PEDRO RIVERO 1583 (unidad leída: ('202', '', 'DEPTO'))" (comuna SII 14114) [AMBIGUO (6 candidatos)] | candidatos en catastro: ['PEDRO RIVEROS 1583 DP 202 (avalúo 39214886)', 'PEDRO RIVEROS 1583 DP 202 (avalúo 39214886)', 'PEDRO RIVEROS 1583 DP 202 (avalúo 39452974)', 'PEDRO RIVEROS 1583 DP 202 (avalúo 38976797)', 'PEDRO RIVEROS 1583 DP 202 (avalúo 38976797)', 'PEDRO RIVEROS 1583 DP 202 (avalúo 39452974)']
+    aviso: "MONSENOR ESCRIVA DE BALAGUER 800 (unidad leída: ('91', '', 'CASA'))" (comuna SII 06102) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['ESCRIVA DE BALAGUER 800 CASA 91 (avalúo 81987783)', 'ESCRIVA DE BALAGUER 800 CASA 91 (avalúo 67950516)']
     aviso: 'RIO CISNE 9479 (sin unidad leída)' (comuna SII 15128) [AMBIGUO (5 candidatos)] | candidatos en catastro: ['RIO CISNES 9479 A (avalúo 36329918)', 'RIO CISNES 9479 B (avalúo 26241979)', 'RIO CISNES 9479 C (avalúo 26241979)', 'RIO CISNES 9479 E (avalúo 26241979)', 'RIO CISNES 9479 F (avalúo 30787778)']
-    aviso: 'VICUNA MACKENNA 1281 (sin unidad leída)' (comuna SII 13135) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['AV.V.MACKENNA 1281 DP 201 B (avalúo 29855294)', 'AV.V.MACKENNA 1281 DP 202 B (avalúo 50405825)', 'AV.V.MACKENNA 1281 DP 203 B (avalúo 51506260)', 'AV.V.MACKENNA 1281 DP 204 B (avalúo 51506260)', 'AV.V.MACKENNA 1281 DP 205 B (avalúo 51506260)', 'AV.V.MACKENNA 1281 DP 206 B (avalúo 49932231)']
+    aviso: "EDUARDO DE LA BARRA 1462 (unidad leída: ('3', 'ES', None))" (comuna SII 15103) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['E DE LA BARRA 1462 BX 3 (avalúo 4605012)', 'E DE LA BARRA 1462 BD 3 (avalúo 2099313)']
     aviso: "PABLO URZUA 1481 (unidad leída: ('601', '', 'DEPTO'))" (comuna SII 13167) [AMBIGUO (2 candidatos)] | candidatos en catastro: ['PABLO URZUA 1481 DP 601 A (avalúo 22521780)', 'PABLO URZUA 1481 DP 601 B (avalúo 21117416)']
-    aviso: 'ALTO DEL VALLE 1325 (sin unidad leída)' (comuna SII 14158) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['ALTOS DEL VALLE 1325 CS 27 (avalúo 200461820)', 'ALTOS DEL VALLE 1325 CS 28 (avalúo 186090320)', 'ALTOS DEL VALLE 1325 CS 29 (avalúo 189683164)', 'ALTOS DEL VALLE 1325 CS 30 (avalúo 189683164)', 'ALTOS DEL VALLE 1325 CS 31 (avalúo 189683164)', 'ALTOS DEL VALLE 1325 CS 32 (avalúo 189683164)']
-    aviso: 'BLANCO GARCE 154 (sin unidad leída)' (comuna SII 14157) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['BLANCO GARCES 154 DP A 203 (avalúo 44038516)', 'BLANCO GARCES 154 DP A 204 (avalúo 42602538)', 'BLANCO GARCES 154 DP A 205 (avalúo 28375706)', 'BLANCO GARCES 154 DP A 206 (avalúo 31043020)', 'BLANCO GARCES 154 DP A 207 (avalúo 31013784)', 'BLANCO GARCES 154 DP A 208 (avalúo 28375706)']
-    aviso: 'LA SIEMBRA 4831 (sin unidad leída)' (comuna SII 14202) [AMBIGUO (edificio: hay varias unidades)] | candidatos en catastro: ['AV LA SIEMBRA 4831 - 1 (avalúo 84883571)', 'AVDA LA SIEMBRA 4831 - 2 (avalúo 75896379)', 'AVDA LA SIEMBRA 4831 - 3 (avalúo 91566313)', 'AVDA LA SIEMBRA 4831 - 4 (avalúo 75896379)', 'AVDA LA SIEMBRA 4831 - 5 (avalúo 75896379)', 'AVDA LA SIEMBRA 4831 - 6 (avalúo 91566313)']
-    aviso: 'SAN LUIS 301 (sin unidad leída)' (comuna SII 14202) [AMBIGUO (56 candidatos)] | candidatos en catastro: ['AVDA SAN LUIS 195 301 (avalúo 64593165)', 'AVDA SAN LUIS 195 302 (avalúo 57875890)', 'AVDA SAN LUIS 195 303 (avalúo 57875890)', 'AVDA SAN LUIS 195 304 (avalúo 64593165)', 'AVDA SAN LUIS 195 401 (avalúo 64593165)', 'AVDA SAN LUIS 195 402 (avalúo 57875890)']
+    aviso: "EDMUNDO PEREZ ZUJOVIC 10890 (unidad leída: ('173', '', 'DEPTO'))" (comuna SII 02201) [AMBIGUO (4 candidatos)] | candidatos en catastro: ['AVDA E PEREZ ZUJOVIC 10890 DP 173 (avalúo 103130964)', 'AVDA E PEREZ ZUJOVIC 10890 DP 173 (avalúo 89506322)', 'E. PEREZ. ZUJOVIC 10890 DP 173 (avalúo 127436074)', 'AVDA E PEREZ ZUJOVIC 10890 DP 173 (avalúo 90144728)']
+    aviso: "HOLANDA 280 (unidad leída: ('41', 'N', None))" (comuna SII 15103) [AMBIGUO (3 candidatos)] | candidatos en catastro: ['HOLANDA 280 DP 41 (avalúo 124831571)', 'HOLANDA 280 BD 41 (avalúo 3320637)', 'HOLANDA 280 BX 41 (avalúo 5397467)']
   Muestra de "NO SE PUDO LEER LA DIRECCION" (fragmento real de cómo el aviso describe el inmueble - para saber cuánto es parcela rural genuina vs. un patrón de redacción que el parser todavía no reconoce):
     'ncia de 24 noviembre 2026, 12:00 horas, inmueble consistente en Lote “C” de la propiedad ubicada en el título Mutupín San Agustín, comuna de San Carlos, lote de una superficie de cero coma noventa y cuatro hectáreas y de'
     'ncia de 19 noviembre 2026, 10:30 horas, inmueble ubicado en la comuna de Chillán, denominado El Retazo, ubicado en el Sector El Saque de dicha comuna, con una superficie de 14 hectáreas más o menos.- El dominio a nombre '
@@ -731,6 +720,7 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
     'Inmueble rural ubicado en Gaviota, Rupanco, comuna de Puerto Octay, provincia de Osorno, individualizado en el plano archivado bajo la letra P número cincuenta y tres en el archivo especial de planos del Conservador de B'
     'de videoconferencia Zoom, como una sola unidad las parcelas Nº 30 y Nº 96 del predio agrícola denominado actualmente La Invernada, El Estero, del lote A del Fundo San Francisco, ubicadas en la Comuna de San Esteban, Prov'
     '409, piso 6º, Santiago, día 23 de noviembre de 2026, a las 15:30 horas, se rematará por videoconferencia a través de la plataforma Zoom, ID de la audiencia: 92538107032, los siguientes inmuebles, por separado, una a cont'
+    '409, piso 6º, Santiago, día 23 de noviembre de 2026, a las 15:30 horas, se rematará por videoconferencia a través de la plataforma Zoom, ID de la audiencia: 92538107032, los siguientes inmuebles, por separado, una a cont'
     '30º Juzgado Civil Santiago, Huérfanos 1409, 19º piso, rematará 25 noviembre 2026, a las 12:30 horas, por videoconferencia plataforma Zoom inmueble consistente en lote Nº 5, que formaba parte del Fundo La Meseta, ubicado '
     'rematará en dependencia del Tribunal, inmueble de demandado LUIS ALBERTO MARTINEZ SEPULVEDA: LOTE 4-A, que forma parte del inmueble denominado Casa y sitio cuatro del predio Casas y Rinconada de Peralillo, hoy Sagrado Co'
     'com, se rematará presencialmente el 24 de noviembre de 2026, a las 16:30 horas, en Miraflores Nº 249, oficina 51A, Santiago, el inmueble ubicado en Pasaje Rocas de Tabulanque sin número, Manzana B, Sitio 1, El Quisco, ro'
@@ -744,50 +734,71 @@ Paso 3 de 4: ROL, avalúo SII, mínimos, oportunidad y selección
     'Juzgado de Letras y Garantía de La Unión, en causa rol V-67-2026, se rematará el 27 de noviembre de 2026 a las 10:00 horas en dependencias del tribunal ubicado en calle Phillippi 720, La Unión, acciones y derechos que re'
     'e de acceso: C-366-2024, se rematará el inmueble consistente en sitio y casa correspondiente al lote número uno, de una extensión de 625 metros cuadrados, ubicado en la ciudad de Lautaro, según plano de subdivisión archi'
     '”, 24/11/2026 12:00 horas, se rematarán parcelas N°363 y N°364, de la subdivisión de parte del resto de un predio denominado "La Ensenada" ubicado en la Comuna de Puerto Varas, Provincia de Llanquihue, Región de Los Lago'
-    'SEGUNDO JUZGADO CIVIL RANCAGUA, Lastarria 410, 6º piso, Rancagua, rol C-2921-2026 “BANCO DEL ESTADO DE CHILE con CORREA GONZALEZ”, día 26 octubre 2026, 10:00 horas, rematará, por videoconferencia plataforma Zoom, siguien'
-    'acto de remate, conjuntamente como una unidad económica: A) Lote A-4 de la subdivisión del predio agrícola denominado Viña Santa Valentina, ubicado en la comuna de Chimbarongo. Este lote según plano archivado en el Conse'
-    'rematará por videoconferencia mediante plataforma Zoom, inmueble de demandado SIMON ESTEBAN CAMPOS RIVERA: Lote Nº 25, Sector B, subdivisión de la Hijuela Cuarta de la antigua Hijuela Séptima de Machalí, comuna de Machal'
-    'En causa Rol C-2145-2017 caratulados “BANCO DE CHILE/EMPRESA DE SERVICIOS GENERALES PARA LA MINERÍA Y AGRICULTURA TRANSPORTES LIMITADA” seguida ante el 3º Juzgado de Letras en lo civil de La Serena ubicado en Rengifo Nº '
-    'de 2026, a las 13:15 horas, se rematará propiedad consistente en el resto o parte no expropiado de la Parcela Nº 31 del Fundo Hijuela Larga o San Juan de Viluco, de la Comuna de Buin, Región Metropolitana, inscrita a foj'
-    'Se rematarán los derechos hereditarios que corresponden a don CÉSAR ANTONIO TORO REYES, correspondientes a un 6,5% de la herencia quedada al fallecimiento de su abuela doña Mercedes del Carmen Painemal Toro, lo que const'
-    'El lote número 17 de la primera etapa del condominio La Foresta o Los Notros de la Foresta, superficie total de terreno de 529,67 metros cuadrados, y una vivienda de 140 metros cuadrados de superficie total construida de'
-    'el Inmueble consistente en Parcela Nº 110 del proyecto de subdivisión de la hijuela C del Fundo Santa Rosa, Comuna de Lampa, Región Metropolitana. Inscrito a fojas 41096 número 62602, del Registro de Propiedad del año 20'
-  [IA-DIRECCION] resumen real de esta corrida: rescatadas con dirección (llamada nueva): 0 | consultadas, sin dirección de verdad (llamada nueva): 0 | fallidas (error técnico, se reintenta la próxima vez): 0 | ya en caché con dirección: 8 | ya en caché sin dirección: 74 | sin cliente disponible: 0
+    'QUÉ SE REMATA: El Inmueble ubicado en San Fernando, que corresponde a Lote Nº 21, de la subdivisión de la Parcela Nº 15 del Proyecto de Parcelación Por La Razón o La Fuerza de la comuna de San Fernando de una superficie '
+    'rencia, a través de la plataforma zoom, lote nº 14 de la subdivisión del inmueble denominado lote b, de la división del lote Puntilla Calera la ce uno, de aproximadamente 7,5 hectáreas, resultante de la subdivisión de un'
+    'Las propiedades a subastar corresponden a: UNO) La Parcela Diecinueve, del Loteo Los Pinos ubicado de la Comuna de Puerto Varas, Provincia de Llanquihue, Región de Los Lagos, parcela que tiene una superficie de aproximad'
+    'us/j/9154506 9304?pwd=MGpQNENaSVk4QXZoaStXcUZEOXdEUT09 ID de reunión: 915 4506 9304 Código de acceso: 619644, se subastará un inmueble de propiedad de doña MARLENE MERCEDES TAPIA QUINTANA, ubicado en la comuna de Puerto '
+    'us/j/93129898381 inmueble consistente en la Hijuela número uno del plano de subdivisión que se encuentra protocolizado bajo el número diez al final del protocolo correspondiente al cuarto bimestre, con una superficie apr'
+    'A/RICHASSE” Rol C-1459-2024, se rematará en forma presencial en las dependencias del tribunal, el día 09 de diciembre de 2026, a las 09:00 horas, el inmueble consistente en la Lote número Cinco, del Loteo San Damián, de '
+    'NOVIEMBRE DE 2026 A LAS 12:30 HORAS, EL INMUEBLE UBICADO EN COMUNIDAD AGRÍCOLA AGUA FRÍA ALTA, COMUNA DE CANELA, PROVINCIA DE CHOAPA, REGIÓN DE COQUIMBO. DESLINDES: NORTE, TERRENOS DE LA COMUNIDAD AGRÍCOLA AGUA FRÍA ALTA'
+  [IA-DIRECCION] resumen real de esta corrida: rescatadas con dirección (llamada nueva): 4 | consultadas, sin dirección de verdad (llamada nueva): 17 | fallidas (error técnico, se reintenta la próxima vez): 0 | ya en caché con dirección: 7 | ya en caché sin dirección: 60 | sin cliente disponible: 0
   ROL deducido por dirección: 0 únicos | 0 ambiguos (no se asignan) | 0 sin coincidencia/lectura
-  Filas recibidas: 1,022 | propiedades únicas (misma propiedad y fecha): 1,017
-  [HISTORICO] 909 propiedades ya vistas antes sin cambios se excluyen de este informe (quedan 108 nuevas o con cambios).
-/home/runner/work/remates-chile-dashboard/remates-chile-dashboard/remates_v2.py:4124: Pandas4Warning: 'ndarray' is not supported as a fill value for float64 dtype. In a future version, calling fillna with an incompatible value will raise. Explicitly cast to a common dtype before filling.
+  Filas recibidas: 1,118 | propiedades únicas (misma propiedad y fecha): 1,113
+  [HISTORICO] 780 propiedades ya vistas antes sin cambios se excluyen de este informe (quedan 333 nuevas o con cambios).
+/home/runner/work/remates-chile-dashboard/remates-chile-dashboard/remates_v2.py:4458: Pandas4Warning: 'ndarray' is not supported as a fill value for float64 dtype. In a future version, calling fillna with an incompatible value will raise. Explicitly cast to a common dtype before filling.
   valor_mercado_final = df["valor_mercado_pesos"].fillna(df["valor_mercado_estimado_m2_pesos"])
-    Cruce SII - SIN ROL (no informado ni deducible): 78
-    Cruce SII - OK: 29
-    Cruce SII - COMUNA NO RECONOCIDA: 1
+    Cruce SII - OK: 200
+    Cruce SII - SIN ROL (no informado ni deducible): 118
+    Cruce SII - COMUNA NO RECONOCIDA: 13
+    Cruce SII - ROL NO ENCONTRADO EN CATASTRO: 2
 
   [PODER_JUDICIAL] consultando el estado de la causa de cada propiedad del TOP...
-  [PODER_JUDICIAL] 2 causas del TOP con link + instrucción para buscar a mano (ya no se intenta entrar de forma automática - el sitio bloquea las consultas que vienen desde la nube).
+  [PODER_JUDICIAL] 14 causas del TOP con link + instrucción para buscar a mano (ya no se intenta entrar de forma automática - el sitio bloquea las consultas que vienen desde la nube).
 
 Paso 4 de 4: guardando archivos
+  [PDF-MAPA] sin mapa para 'LOS MAGNOLIOS PNTE 1255 BARRIO GRANDE' (PUDAHUEL): Nominatim no encontró resultados (consulta usada: 'LOS MAGNOLIOS PNTE 1255 BARRIO GRANDE, PUDAHUEL, Chile')
+  [PDF-MAPA] sin mapa para 'ST 6 CAM CONCEPCION BULNES' (QUILLON): Nominatim no encontró resultados (consulta usada: 'ST 6 CAM CONCEPCION BULNES, QUILLON, Chile')
+  [PDF-MAPA] sin mapa para 'GRAL ERNESTO MEDINA 0760' (PUNTA ARENAS): Nominatim no encontró resultados (consulta usada: 'GRAL ERNESTO MEDINA 0760, PUNTA ARENAS, Chile')
+  [PDF-MAPA] sin mapa para 'PJE A. BLEST GANA 1956' (CORONEL): Nominatim no encontró resultados (consulta usada: 'PJE A. BLEST GANA 1956, CORONEL, Chile')
+  [PDF-MAPA] sin mapa para 'LAS PALOMAS 158' (PANGUIPULLI): Nominatim no encontró resultados (consulta usada: 'LAS PALOMAS 158, PANGUIPULLI, Chile')
+  [PDF-MAPA] sin mapa para 'PJE ISLA QUEULIN 2167' (SAN BERNARDO): Nominatim no encontró resultados (consulta usada: 'PJE ISLA QUEULIN 2167, SAN BERNARDO, Chile')
+  [PDF-MAPA] sin mapa para 'PJE 18 NORTE A 869' (TALCA): Nominatim no encontró resultados (consulta usada: 'PJE 18 NORTE, TALCA, Chile')
+  [PDF-MAPA] sin mapa para 'PASAJE COLORADO 5558' (SAN MIGUEL): Nominatim no encontró resultados (consulta usada: 'PASAJE COLORADO 5558, SAN MIGUEL, Chile')
+  [PDF-MAPA] sin mapa para 'PJE LA ESPERANZA 9644' (ANTOFAGASTA): Nominatim no encontró resultados (consulta usada: 'PJE LA ESPERANZA 9644, ANTOFAGASTA, Chile')
+  [PDF-MAPA] sin mapa para 'JUAN JULIAN ACOSTA 960' (ANTOFAGASTA): Nominatim no encontró resultados (consulta usada: 'JUAN JULIAN ACOSTA 960, ANTOFAGASTA, Chile')
+  [PDF-MAPA] sin mapa para 'AV J J PRIETO VIAL 9718 B- 405' (EL BOSQUE): Nominatim no encontró resultados (consulta usada: 'AV J J PRIETO VIAL 9718, EL BOSQUE, Chile')
+  [PDF-MAPA] sin mapa para 'J DE MATURANA 1428' (SAN FERNANDO): Nominatim no encontró resultados (consulta usada: 'J DE MATURANA 1428, SAN FERNANDO, Chile')
+  [PDF-MAPA] sin mapa para 'PJ LOS PONCHOS 245' (COLINA): Nominatim no encontró resultados (consulta usada: 'PJ LOS PONCHOS 245, COLINA, Chile')
+  [PDF-MAPA] sin mapa para 'PSJE CERRO HURON 1860' (PUERTO MONTT): Nominatim no encontró resultados (consulta usada: 'PSJE CERRO HURON 1860, PUERTO MONTT, Chile')
+  [PDF-MAPA] sin mapa para 'NUEVO TREINTAYCINCO 1562' (COQUIMBO): Nominatim no encontró resultados (consulta usada: 'NUEVO TREINTAYCINCO 1562, COQUIMBO, Chile')
+  [PDF-MAPA] sin mapa para 'PRESIDENTE A. PINTO 1270 DP 911' (INDEPENDENCIA): Nominatim no encontró resultados (consulta usada: 'PRESIDENTE A. PINTO 1270, INDEPENDENCIA, Chile')
+  [PDF-MAPA] sin mapa para 'CAMPUS DEL MAR LT 137 4' (QUINTERO): Nominatim no encontró resultados (consulta usada: 'CAMPUS DEL MAR LT 137 4, QUINTERO, Chile')
+  [PDF-MAPA] sin mapa para 'FUNDO LAS MERCEDES LT A 1' (PUDAHUEL): Nominatim no encontró resultados (consulta usada: 'FUNDO LAS MERCEDES LT A 1, PUDAHUEL, Chile')
+  [PDF-MAPA] sin mapa para 'PJE ARAUCANO 3045' (LA SERENA): Nominatim no encontró resultados (consulta usada: 'PJE ARAUCANO 3045, LA SERENA, Chile')
+  [PDF-MAPA] sin mapa para 'PRESIDENTE A. PINTO 1270 DP 1011' (INDEPENDENCIA): Nominatim no encontró resultados (consulta usada: 'PRESIDENTE A. PINTO 1270, INDEPENDENCIA, Chile')
+  [PDF-MAPA] sin mapa para 'ANHIDRITA 31 CASA 17' (ANTOFAGASTA): Nominatim no encontró resultados (consulta usada: 'ANHIDRITA 31 CASA 17, ANTOFAGASTA, Chile')
+  [PDF-MAPA] sin mapa para 'PJE EL ULMO 0984' (SAN BERNARDO): Nominatim no encontró resultados (consulta usada: 'PJE EL ULMO 0984, SAN BERNARDO, Chile')
+  [PDF-MAPA] sin mapa para 'PJE ISLA DESOLACION 1321' (CHILLAN): Nominatim no encontró resultados (consulta usada: 'PJE ISLA DESOLACION 1321, CHILLAN, Chile')
+  [PDF-MAPA] sin mapa para 'CAM.VCA.FREIRE LT. 37' (VILLARRICA): Nominatim no encontró resultados (consulta usada: 'CAM.VCA.FREIRE LT. 37, VILLARRICA, Chile')
+  [PDF-MAPA] sin mapa para 'CAM. HUINCACARA PC 2' (VILLARRICA): Nominatim no encontró resultados (consulta usada: 'CAM. HUINCACARA PC 2, VILLARRICA, Chile')
+  [PDF-MAPA] sin mapa para 'GRAL CRUZ 138' (CONCEPCION): Nominatim no encontró resultados (consulta usada: 'GRAL CRUZ 138, CONCEPCION, Chile')
+  [PDF-MAPA] sin mapa para 'EXPLORADORES 14011 CASA 83' (ANTOFAGASTA): Nominatim no encontró resultados (consulta usada: 'EXPLORADORES 14011 CASA 83, ANTOFAGASTA, Chile')
+  [PDF-MAPA] sin mapa para 'CALLE EL VENADO ALTO 250 MZ 3 B 13' (SAN PEDRO DE LA PAZ): Nominatim no encontró resultados (consulta usada: 'CALLE EL VENADO ALTO 250, SAN PEDRO DE LA PAZ, Chile')
+  [PDF-MAPA] sin mapa para 'COLIHUE 01410 CASA 29' (ANTOFAGASTA): Nominatim no encontró resultados (consulta usada: 'COLIHUE 01410 CASA 29, ANTOFAGASTA, Chile')
 
-LISTO. En el consolidado final (máx. 50): 6 propiedades | elegibles fiscal: 6 | elegibles mercado: 4 de 108 analizadas
+LISTO. En el consolidado final (máx. 50): 50 propiedades | elegibles fiscal: 78 | elegibles mercado: 44 de 333 analizadas
   AVISO: OPORTUNIDAD VS. MERCADO - Provincia de Concepción: solo 0 de 2 cupos
-  AVISO: OPORTUNIDAD VS. MERCADO - Región Metropolitana: solo 1 de 2 cupos
   AVISO: OPORTUNIDAD VS. MERCADO - Región de Valparaíso: solo 1 de 2 cupos
-  AVISO: OPORTUNIDAD VS. MERCADO: solo 4 de 20 elegibles en total
-  AVISO: El Ranking de mercado solo llenó 4 de 20 cupos; los 16 que faltaron se le prestaron al Ranking de avalúo fiscal.
-  AVISO: OPORTUNIDAD VS. AVALUO FISCAL - Provincia de Concepción: solo 0 de 2 cupos
-  AVISO: OPORTUNIDAD VS. AVALUO FISCAL - Región Metropolitana: solo 0 de 2 cupos
-  AVISO: OPORTUNIDAD VS. AVALUO FISCAL - Región de Valparaíso: solo 1 de 2 cupos
-  AVISO: OPORTUNIDAD VS. AVALUO FISCAL: solo 2 de 36 elegibles en total
-  AVISO: Comodín: solo 0 de 10 cupos (no quedan más elegibles)
   AVISO: Cuota mínima de la TGR: solo se alcanzaron 0 de 10 (no hay más propiedades elegibles de la TGR esta semana).
   AVISO: Cuota de carpetas judiciales de la TGR: solo se alcanzaron 0 de 5 (no hay más propiedades de la TGR con tribunal + rol de causa esta semana).
   Fuente TGR: FALLÓ tras 3 intentos: No pude leer los remates en vivo de la TGR.
   - requests: Expecting value: line 1 column 1 (char 0)
   - curl_cffi: Expecting value: line 1 column 1 (char 0)
 (Por regla del programa NO se usan datos antiguos de respaldo.)
-  Fuente MACAL: OK (213 fichas leídas, 0 con error, 00:54)
-  Fuente AVISOS: OK (809 avisos de 4 archivo(s): INFORME_02-11-2026_AL_03-11-2026.docx, INFORME_06-11-2026_AL_08-11-2026.docx, INFORME_09-11-2026_AL_10-11-2026.docx, RESUMEN_26-10-2026_AL_30-10-2026.docx)
-  Fuente PRECIO_MERCADO:ChilePropiedades: OK (0 nuevas, 1803 ya vistas, 0 descartadas)
-  Fuente PRECIO_MERCADO:TopPropiedades: OK (0 nuevas, 0 ya vistas, 0 descartadas)
+  Fuente MACAL: OK (213 fichas leídas, 0 con error, 11:21)
+  Fuente AVISOS: OK (905 avisos de 5 archivo(s): INFORME_02-11-2026_AL_03-11-2026.docx, INFORME_06-11-2026_AL_08-11-2026.docx, INFORME_09-11-2026_AL_10-11-2026.docx, INFORME_16-11-2026_AL_17-11-2026.docx, RESUMEN_26-10-2026_AL_30-10-2026.docx)
+  Fuente PRECIO_MERCADO:ChilePropiedades: OK (8 nuevas, 1795 ya vistas, 0 descartadas)
+  Fuente PRECIO_MERCADO:TopPropiedades: OK (0 nuevas, 2 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Procasa: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Doomos: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Inmoclick: OK (0 nuevas, 0 ya vistas, 0 descartadas)
@@ -800,7 +811,7 @@ LISTO. En el consolidado final (máx. 50): 6 propiedades | elegibles fiscal: 6 |
   Fuente PRECIO_MERCADO:GrupoPremium: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:COPROCH: OK (0 nuevas, 0 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:Dosam: OK (0 nuevas, 1 ya vistas, 0 descartadas)
-  Fuente PRECIO_MERCADO:EngelVolkers: OK (0 nuevas, 23 ya vistas, 0 descartadas)
+  Fuente PRECIO_MERCADO:EngelVolkers: OK (7 nuevas, 15 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO:PropertyPartners: OK (0 nuevas, 752 ya vistas, 0 descartadas)
   Fuente PRECIO_MERCADO: OK (511 combinaciones comuna/tipo con datos)
   Fuente PODER_JUDICIAL: OK
