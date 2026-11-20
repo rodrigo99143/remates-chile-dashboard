@@ -5140,13 +5140,14 @@ def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
         # pero hacer dos métricas distintas, con y sin" - excluye del denominador los
         # avisos que no son del tipo resoluble por dirección (parcelas/lotes rurales sin
         # calle+número, y edificios/condominios AMBIGUOS donde el aviso nunca informó el
-        # número de unidad). Ver hoja REVISAR_SIN_DATO_SUFICIENTE para el detalle de
-        # CADA caso excluido - Álvaro debe revisarlos uno por uno antes de decidir si
-        # esta exclusión se adopta como la métrica oficial.
+        # número de unidad). Ver hoja INCOMPLETO para el detalle de CADA caso excluido
+        # (y de cualquier otro aviso sin rol o sin dirección, no solo estos dos motivos)
+        # - Álvaro debe revisarlos uno por uno antes de decidir si esta exclusión se
+        # adopta como la métrica oficial.
         if "total_estricto" in cra:
             cre = cra["total_estricto"] or 1
             filas.append(("COBERTURA ESTRICTA (excluye avisos donde el aviso mismo nunca dio el dato "
-                           "necesario - ver hoja REVISAR_SIN_DATO_SUFICIENTE)",
+                           "necesario - ver hoja INCOMPLETO)",
                            f"{cra['total_estricto']} avisos de {cra['total']} ({cra['n_excluidos']} excluidos) | "
                            f"con ROL: {cra['con_rol_estricto']} ({cra['con_rol_estricto']/cre*100:.1f}%) | "
                            f"con dirección: {cra['con_direccion_estricto']} ({cra['con_direccion_estricto']/cre*100:.1f}%) | "
@@ -5306,21 +5307,37 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     # aviso"), porque las filas se construyen leyendo el aviso de principio a fin. ----
     todas_tgr = df[df["fuente"] == "TGR"]
     todas_macal = df[df["fuente"] == "MACAL"]
-    todas_aviso = df[df["fuente"] == "AVISO"]
+    todas_aviso_sin_filtrar = df[df["fuente"] == "AVISO"]
 
-    # OJO (12-11-2026, pedido explícito de Rodrigo: "hay que ver bien qué pasa en cada
-    # uno de ellos y llevárselos a Álvaro"): lista aparte, con el detalle de CADA aviso
-    # que quedó excluido de la métrica "estricta" (ver resumen_texto/_COBERTURA_REAL_
-    # AVISOS) - parcelas/lotes rurales sin calle+número, y edificios/condominios
-    # AMBIGUOS donde el aviso nunca informó el número de unidad. No sigue el formato
-    # de columnas de Álvaro (es una hoja de trabajo interna, no una de las que él
-    # revisa semana a semana) - trae justo lo necesario para que él juzgue caso por
-    # caso si esta exclusión tiene sentido.
+    # OJO (20-11-2026, pedido explícito de Rodrigo: "me gustaría que se mostrase tan
+    # solo las [propiedades] que se pesquisaron bien... y que hubiera una hoja que
+    # dijera incompleto... donde se mostrasen las propiedades que o bien no tienen el
+    # rol o bien no tienen la dirección... que no estuvieran duplicadas, que la
+    # propiedad apareciera en una hoja pero no en las dos"): antes la pestaña AVISO
+    # traía TODOS los avisos de la fuente, bien resueltos o no, y por separado había
+    # una segunda hoja (REVISAR_SIN_DATO_SUFICIENTE) con un subconjunto MÁS CHICO de
+    # esos mismos avisos incompletos (solo los dos casos de "motivo_exclusion_
+    # denominador": sin calle+número, o AMBIGUO sin número de unidad) - lo que dejaba
+    # TRES problemas: (a) AVISO se veía "sucia" mezclando buenos y malos (la misma
+    # queja de Rodrigo del 12-11-2026 sobre que esta pestaña se ve "cada vez más
+    # vacía" de resultados buenos - ver OJO más abajo en resumen_texto), (b) muchos
+    # avisos incompletos NO entraban a esa segunda hoja (SIN COINCIDENCIA, AMBIGUO con
+    # unidad leída pero el catastro igual ambiguo, SIN COMUNA CANDIDATA - cualquiera
+    # de esos tiene dirección O rol pero no los DOS, que es justo lo que Rodrigo
+    # quiere ver en una sola hoja de alerta), y (c) los que SÍ entraban quedaban
+    # duplicados (aparecían en AVISO Y en REVISAR_SIN_DATO_SUFICIENTE a la vez). Se
+    # separa aquí mismo, antes de armar las hojas, en dos conjuntos que NUNCA se
+    # pisan: "completo" (tiene rol Y dirección - va a la hoja AVISO) e "incompleto"
+    # (le falta el rol O la dirección, por el motivo que sea - va a la hoja
+    # INCOMPLETO, que reemplaza a REVISAR_SIN_DATO_SUFICIENTE con un alcance más
+    # amplio). Cada aviso cae en una sola de las dos, nunca en ambas.
+    _tiene_rol = todas_aviso_sin_filtrar["manzana"].notna()
+    _tiene_dir = todas_aviso_sin_filtrar["direccion_tgr"].notna()
+    todas_aviso = todas_aviso_sin_filtrar[_tiene_rol & _tiene_dir]
     cols_revision = [c for c in ("id_fuente", "comuna_propiedad", "direccion_tgr", "ubicacion_texto_crudo",
                                   "estado_busqueda_direccion", "motivo_exclusion_denominador", "rol_candidatos",
-                                  "fecha_remate") if c in todas_aviso.columns]
-    revisar_sin_dato = todas_aviso[todas_aviso["motivo_exclusion_denominador"].notna()][cols_revision] \
-        if "motivo_exclusion_denominador" in todas_aviso.columns else pd.DataFrame(columns=cols_revision)
+                                  "fecha_remate") if c in todas_aviso_sin_filtrar.columns]
+    incompleto_aviso = todas_aviso_sin_filtrar[~(_tiene_rol & _tiene_dir)][cols_revision]
 
     ruta = SALIDAS / "OPORTUNIDADES.xlsx"
     with pd.ExcelWriter(ruta, engine="openpyxl") as w:
@@ -5341,7 +5358,7 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
                  ("TGR", renombrar_para_mostrar(ordenar_columnas_alvaro(todas_tgr))),
                  ("MACAL", renombrar_para_mostrar(ordenar_columnas_alvaro(todas_macal))),
                  ("AVISO", renombrar_para_mostrar(ordenar_columnas_alvaro(todas_aviso))),
-                 ("REVISAR_SIN_DATO_SUFICIENTE", revisar_sin_dato),
+                 ("INCOMPLETO", incompleto_aviso),
                  ("RESUMEN", resumen)]
         for nombre, d in hojas:
             d.to_excel(w, sheet_name=nombre, index=False)
@@ -5973,11 +5990,14 @@ def prueba():
             # Pedido de Álvaro (llamada 09-11-2026): "TODAS" se reemplaza por 3 hojas
             # independientes por fuente (TGR/MACAL/AVISO) y el set de columnas pasa al
             # formato reducido de su planilla ("ordenar_columnas_alvaro").
+            # OJO (20-11-2026, pedido de Rodrigo): REVISAR_SIN_DATO_SUFICIENTE se
+            # reemplaza por INCOMPLETO (mismo lugar en la lista) - ver OJO en exportar()
+            # junto a "incompleto_aviso" para el porqué completo del cambio.
             comprobar("Excel con las 11 hojas esperadas (TODAS segmentada en TGR/MACAL/AVISO, + "
-                      "REVISAR_SIN_DATO_SUFICIENTE para Álvaro)",
+                      "INCOMPLETO para Álvaro)",
                       hojas == ["TOP_CONSOLIDADO", "TOP_NUEVO", "CANDIDATAS", "SEGUNDOS_AVISOS",
                                 "TERCEROS_AVISOS", "REVISAR", "TGR", "MACAL", "AVISO",
-                                "REVISAR_SIN_DATO_SUFICIENTE", "RESUMEN"])
+                                "INCOMPLETO", "RESUMEN"])
             wb_chequeo = openpyxl.load_workbook(ruta)
             encabezados_top = [c.value for c in wb_chequeo["TOP_CONSOLIDADO"][1]]
             # El fixture sintético de esta prueba (solo MACAL, sin catastro real cargado) no
