@@ -685,10 +685,39 @@ def pesos(n):
 # ------------------------------------------------------------------------------
 # 1. DESCARGA EN VIVO DE LA TGR
 # ------------------------------------------------------------------------------
+def _headers_tgr():
+    # OJO (20-11-2026, hallazgo de Rodrigo con las Herramientas de desarrollador tras la
+    # falla del 20-11-2026): la TGR migró su sitio de remates a una aplicación nueva que
+    # exige, además de los encabezados normales de navegador, un encabezado propio
+    # "X-Api-Key" - sin él, el servidor NO devuelve un error claro, sino la misma página
+    # del sitio (por eso antes parecía "Expecting value: line 1 column 1", un JSON vacío/
+    # HTML en vez de los datos). Se guarda como secreto (TGR_API_KEY, igual que la
+    # contraseña del correo) y NO se escribe en el código en texto plano: aunque la propia
+    # TGR se la manda a cualquier visitante de su página pública, mantenerla como secreto
+    # evita tener que tocar el código de nuevo si la rotan, y es la misma disciplina que ya
+    # se usa para el correo.
+    api_key = os.environ.get("TGR_API_KEY", "").strip()
+    if not api_key:
+        raise RuntimeError(
+            "Falta la variable de entorno TGR_API_KEY (encabezado 'X-Api-Key' que la TGR exige "
+            "desde su migración del 20-11-2026). Sin ella, la TGR responde 200 pero con la "
+            "página en vez de los datos. Configúrala como secreto del repositorio (ver workflow)."
+        )
+    h = dict(HEADERS)
+    h["X-Api-Key"] = api_key
+    h["Referer"] = "https://remates.tgr.cl/remates/inicio"
+    return h
+
+
 def descargar_tgr():
     errores = []
     try:
-        r = requests.get(URL_TGR, headers=HEADERS, timeout=60)
+        headers_tgr = _headers_tgr()
+    except RuntimeError as e:
+        raise RuntimeError(f"No pude leer los remates en vivo de la TGR.\n  - {e}")
+
+    try:
+        r = requests.get(URL_TGR, headers=headers_tgr, timeout=60)
         if r.status_code == 200:
             return r.json()
         errores.append(f"requests: la TGR respondió código {r.status_code}")
@@ -704,7 +733,7 @@ def descargar_tgr():
             instalar("curl_cffi")
             importlib.invalidate_caches()
             from curl_cffi import requests as cr
-        r = cr.get(URL_TGR, headers=HEADERS, impersonate="chrome", timeout=60)
+        r = cr.get(URL_TGR, headers=headers_tgr, impersonate="chrome", timeout=60)
         if r.status_code == 200:
             return r.json()
         errores.append(f"curl_cffi: la TGR respondió código {r.status_code}")

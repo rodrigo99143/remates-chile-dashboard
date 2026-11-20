@@ -288,6 +288,14 @@ jobs:
           # ejemplo, en un fork), queda vacío y el programa sigue igual que
           # siempre, sin rescate con IA.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # OJO (20-11-2026): la TGR migró su sitio de remates y ahora exige un
+          # encabezado "X-Api-Key" además de los encabezados normales (antes de
+          # esto, la TGR fallaba en TODAS las corridas desde el 20-11-2026 en la
+          # madrugada - ver descargar_tgr() / _headers_tgr() en remates_v2.py).
+          # Rodrigo la encontró con las Herramientas de desarrollador del
+          # navegador; se guarda como secreto, no en el código, por si la TGR la
+          # rota más adelante.
+          TGR_API_KEY: ${{ secrets.TGR_API_KEY }}
 
       - name: Armar y mandar el reporte acumulado (solo si se pidió una fecha)
         # Ver reporte_acumulado.py para el detalle. Reutiliza el Excel y la
