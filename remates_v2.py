@@ -1778,6 +1778,26 @@ def parsear_dir_catastro(direccion):
     # reemplaza el guión por espacio ANTES de tokenizar (igual que ya se hace con "." y
     # ","), para que "LT-" se lea como el token suelto "LT" y el corte funcione.
     toks = normalizar(direccion).replace(".", " ").replace(",", " ").replace("-", " ").split()
+    # OJO (19-11-2026, caso real "FLEMING 7665 TOR 3 DP 36", aviso dice "...depto
+    # 36, Torre 3..."): a veces el catastro escribe el número de TORRE como palabra
+    # completa ("TOR"/"TORRE" + número suelto), no como letra pegada ("TA"/"TB", ya
+    # contemplado arriba) - y ese número de torre puede caer ANTES del marcador de
+    # unidad (contaminando el NÚMERO DE CALLE: "FLEMING 7665 TOR 3" se leía como
+    # calle "FLEMING 7665 TOR" número "3", perdiendo el 7665 real) o DESPUÉS
+    # (contaminando el conjunto de números de la unidad, ej. "BD 0043 TORRE 3" sumaba
+    # un "3" falso a los números de bodega posibles). Se quita ese par de tokens
+    # ("TOR"/"TORRE" + número) de la dirección completa ANTES de cualquier otro
+    # procesamiento, porque hoy no se usa el número de torre para nada (solo la
+    # letra pegada "TA"/"TB" se usa como desambiguador).
+    toks_sin_torre = []
+    i = 0
+    while i < len(toks):
+        if toks[i] in ("TOR", "TORRE") and i + 1 < len(toks) and toks[i + 1].isdigit():
+            i += 2
+            continue
+        toks_sin_torre.append(toks[i])
+        i += 1
+    toks = toks_sin_torre
     unidad = None
     corte = len(toks)
     for i, t in enumerate(toks):
