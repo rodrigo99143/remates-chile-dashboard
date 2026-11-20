@@ -3195,36 +3195,130 @@ def extraer_demandado(texto):
 # perdían en silencio. Instrucción textual de Rodrigo: "Sí, deberían separarse
 # porque, claro, es un mismo aviso, pero son tres remates. Si son tres
 # remates, entonces son tres publicaciones distintas."
+_TIPO_INMUEBLE_RX = (r"(?:Departamento|Depto\.?|Casa|Sitio|Lote|Parcela|Local(?:es)?|"
+                     r"Oficinas?|Bodegas?|Inmuebles?|Vivienda|Terreno|Derechos?|"
+                     r"Estacionamientos?|Resto\s+de|Bien\s+Ra[íi]z)")
+# OJO (19-11-2026, pedido explícito de Rodrigo: "mide cuántos tienen ese patrón y
+# después estima el costo... y esboza una solución"): el lookahead no exige que la
+# palabra de tipo de inmueble venga INMEDIATAMENTE después del marcador - se permite
+# hasta 20 caracteres de distancia (caso real "2) 33,33% casa Santa Elena...", donde
+# el porcentaje se intercala entre el número y la palabra "casa").
+_TIPO_INMUEBLE_LOOKAHEAD = r"(?=.{0,20}?" + _TIPO_INMUEBLE_RX + r"\b)"
+
 RE_ITEM_MULTI_INMUEBLE = re.compile(
-    r"\b([1-9])\s*\.\s*-\s*(?=(?:Departamento|Casa|Sitio|Lote|Parcela|Local(?:es)?|"
-    r"Oficinas?|Bodegas?|Inmuebles?|Vivienda|Terreno|Derechos?|Estacionamientos?)\b)",
-    re.IGNORECASE)
+    r"\b([1-9])\s*\.\s*-\s*" + _TIPO_INMUEBLE_LOOKAHEAD, re.IGNORECASE)
+# OJO (19-11-2026, caso real "1) Casa José Tomás Ramos..., 2) 33,33% casa Santa
+# Elena..." - juicio de partición con 11 inmuebles, Valparaíso): mismo patrón que el de
+# arriba pero numerado con paréntesis en vez de punto-guión - formato usado por otro
+# juez/notaría.
+RE_ITEM_MULTI_INMUEBLE_PARENTESIS = re.compile(
+    r"\b([1-9])\s*\)\s*" + _TIPO_INMUEBLE_LOOKAHEAD, re.IGNORECASE)
+# OJO (19-11-2026, caso real "separada... los siguientes bienes a) Resto de la
+# propiedad ubicada en calle Manuel Rodríguez... b) Derechos en sitio número 12...",
+# remate ante juez partidor, Talagante): formato con letras en vez de números -
+# también muy usado en particiones judiciales. A diferencia de los otros marcadores,
+# aquí la letra se exige en MINÚSCULA (sin IGNORECASE para ese grupo, aunque la palabra
+# de tipo de inmueble que sigue sí es insensible a mayúsculas vía el "(?i:...)" interno
+# de _TIPO_INMUEBLE_LOOKAHEAD_MIN): en los casos reales encontrados, los marcadores en
+# MAYÚSCULA "A.-"/"A)" resultaron ser casi siempre un solo inmueble con componentes
+# unidos (terreno + derechos de agua, depto + bodega), nunca remates realmente
+# separados - la minúscula fue, en la práctica, la señal que sí distinguía bien.
+_TIPO_INMUEBLE_LOOKAHEAD_MIN = r"(?=.{0,20}?(?i:" + _TIPO_INMUEBLE_RX + r")\b)"
+RE_ITEM_MULTI_INMUEBLE_LETRA = re.compile(
+    r"\b([a-h])\s*\)\s*" + _TIPO_INMUEBLE_LOOKAHEAD_MIN)
+# OJO (19-11-2026, caso real "LOTE A — OFICINAS HUECHURABA • Oficina Nº 601... •
+# Oficina Nº 602...", liquidación con varios lotes agrupados): formato con viñetas.
+RE_ITEM_MULTI_INMUEBLE_VINETA = re.compile(
+    r"([•●▪·])\s*" + _TIPO_INMUEBLE_LOOKAHEAD, re.IGNORECASE)
+# OJO (19-11-2026, intento de agregar un 5º formato con guiones de lista "- Tipo...",
+# descartado tras la prueba contra los 809 avisos completos): las cifras en pesos en
+# estos avisos casi siempre se escriben con la notación chilena "$116.569.235.-" (punto
+# más guión = "exactos"), así que CUALQUIER punto seguido de guión en el texto - que
+# aparece decenas de veces por aviso, en cualquier monto - terminaba disparando
+# separaciones falsas en avisos de un solo inmueble. Se deja research_del_caso real
+# documentado (ver auditoría 19-11-2026) para una futura vuelta más cuidadosa (exigiendo
+# además la frase "siguientes inmuebles" cerca), pero no se incluye en esta versión.
+
+# OJO (19-11-2026, caso real "Lote A... y Lote B..." con "en un mismo acto de remate,
+# conjuntamente como una unidad económica" / "resultante de la fusión de los siguientes
+# inmuebles" / "se rematarán como un todo"): estas frases SEÑALAN explícitamente que,
+# aunque el texto liste 2+ ítems con su propio rol, es (o fue) UN SOLO inmueble/venta -
+# nunca remates separados. Si cualquiera de estas frases aparece ANTES del primer
+# marcador encontrado, no se separa nada (se antepone a los 5 esquemas de arriba).
+RE_VENTA_UNICA_PESE_A_LISTA = re.compile(
+    r"(?i)\bcomo un (?:solo )?todo\b|unidad\s+econ[oó]mica|resultante\s+de\s+la\s+fusi[oó]n|"
+    r"fusi[oó]n\s+de\s+los\s+siguientes")
+
+
+def _dividir_por_marcadores(texto, matches):
+    """Dada una lista de re.Match ya validada (cada uno con su grupo 1 en el
+    punto exacto donde debe empezar ese ítem), corta el texto en piezas: el
+    preámbulo común (todo lo anterior al primer marcador) más, para cada
+    ítem, SOLO el tramo de texto entre su marcador y el del siguiente ítem
+    (o el final del texto, para el último). Si el preámbulo (todo lo
+    anterior al primer marcador) contiene alguna de las frases de
+    RE_VENTA_UNICA_PESE_A_LISTA ("como un todo", "unidad económica",
+    "resultante de la fusión"...), no separa nada - es, por diseño del
+    propio aviso, un solo inmueble/venta aunque se liste en varios ítems."""
+    primer_corte = matches[0].start(1)
+    if RE_VENTA_UNICA_PESE_A_LISTA.search(texto[:primer_corte]):
+        return [texto]
+    cortes = [m.start(1) for m in matches]
+    preambulo = texto[:cortes[0]]
+    piezas = []
+    for i, c in enumerate(cortes):
+        fin = cortes[i + 1] if i + 1 < len(cortes) else len(texto)
+        piezas.append(preambulo + texto[c:fin])
+    return piezas
 
 
 def dividir_aviso_multi_inmueble(texto):
-    """Si el aviso remata varios inmuebles numerados (1.- Departamento..., 2.-
-    Casa..., 3.- Sitio...), lo separa en una lista de textos - uno por
-    inmueble, cada uno con el preámbulo común (incluyendo todo lo anterior a
-    "Detalle:", que ya filtra correctamente la dirección del liquidador) más
-    SOLO la descripción de ese ítem. Si el aviso no trae ese patrón (el caso
-    normal, un solo inmueble), devuelve [texto] sin modificarlo.
+    """Si el aviso remata varios inmuebles distintos enumerados en un solo
+    texto, lo separa en una lista de textos - uno por inmueble, cada uno con
+    el preámbulo común (incluyendo todo lo anterior a "Detalle:", que ya
+    filtra correctamente la dirección del liquidador) más SOLO la
+    descripción de ese ítem. Si el aviso no trae ninguno de los patrones de
+    lista reconocidos (el caso normal, un solo inmueble), o si trae alguna
+    de las frases de RE_VENTA_UNICA_PESE_A_LISTA que señalan que en
+    realidad es un solo inmueble/venta, devuelve [texto] sin modificarlo.
 
-    Se exige que los números encontrados sean exactamente la secuencia
-    ascendente y consecutiva 1, 2, 3... (mínimo 2) antes de separar algo - así
-    un aviso que solo menciona "1.- " una vez de pasada (ej. "conforme al
-    artículo 1.- Las partes acuerdan...") nunca se corta por error: para eso
-    necesitaría además un "2.-" y así siguiendo, cada uno seguido de una
-    palabra de tipo de inmueble."""
+    Se probaron, en orden, los 4 formatos de lista vistos en los datos
+    reales que resultaron confiables (ver OJOs de cada regex arriba):
+    numerado con punto-guión "1.- Tipo...", numerado con paréntesis
+    "1) Tipo...", con letras minúsculas "a) Tipo..." y con viñetas
+    "• Tipo...". Nunca se mezclan dos formatos dentro del mismo aviso: se
+    usa el PRIMER formato que encuentre un patrón válido y se detiene ahí.
+
+    Para los dos formatos con secuencia (números o letras) se exige que
+    sean exactamente la secuencia ascendente y consecutiva 1, 2, 3... o a,
+    b, c... (mínimo 2) antes de separar algo - así un aviso que solo
+    menciona "1.- " una vez de pasada (ej. "conforme al artículo 1.- Las
+    partes acuerdan...") nunca se corta por error: para eso necesitaría
+    además un "2.-" (o "b)") y así siguiendo, cada uno seguido (a no más de
+    20 caracteres) de una palabra de tipo de inmueble. Para viñetas, al no
+    tener una "secuencia" que validar, se exige un mínimo de 2
+    coincidencias, cada una ya anclada a su propia palabra de tipo de
+    inmueble cercana - igual de específico en la práctica."""
     matches = list(RE_ITEM_MULTI_INMUEBLE.finditer(texto))
     numeros = [int(m.group(1)) for m in matches]
-    if len(matches) < 2 or numeros != list(range(1, len(matches) + 1)):
-        return [texto]
-    preambulo = texto[:matches[0].start()]
-    piezas = []
-    for i, m in enumerate(matches):
-        fin = matches[i + 1].start() if i + 1 < len(matches) else len(texto)
-        piezas.append(preambulo + texto[m.start():fin])
-    return piezas
+    if len(matches) >= 2 and numeros == list(range(1, len(matches) + 1)):
+        return _dividir_por_marcadores(texto, matches)
+
+    matches = list(RE_ITEM_MULTI_INMUEBLE_PARENTESIS.finditer(texto))
+    numeros = [int(m.group(1)) for m in matches]
+    if len(matches) >= 2 and numeros == list(range(1, len(matches) + 1)):
+        return _dividir_por_marcadores(texto, matches)
+
+    matches = list(RE_ITEM_MULTI_INMUEBLE_LETRA.finditer(texto))
+    letras = [m.group(1).lower() for m in matches]
+    if len(matches) >= 2 and letras == [chr(ord("a") + i) for i in range(len(letras))]:
+        return _dividir_por_marcadores(texto, matches)
+
+    matches = list(RE_ITEM_MULTI_INMUEBLE_VINETA.finditer(texto))
+    if len(matches) >= 2:
+        return _dividir_por_marcadores(texto, matches)
+
+    return [texto]
 
 
 def parsear_aviso(texto, cab=None):
@@ -5429,6 +5523,90 @@ def prueba():
                                             "se rematará el inmueble ubicado en Calle Falsa 123.") ==
               ["Conforme al artículo 1.- Las partes acuerdan lo siguiente, se rematará el inmueble "
                "ubicado en Calle Falsa 123."])
+
+    # OJO (19-11-2026, pedido de Rodrigo: extensión a otros 4 formatos de lista vistos
+    # en los datos reales, ver OJOs junto a cada regex arriba). Pruebas con textos
+    # basados directamente en los avisos reales encontrados en la auditoría.
+    AVISO_LETRA_PRUEBA = (
+        "1º Juzgado de Letras de Linares, Rol Nº C-369-2023, rematará presencialmente, "
+        "el día 28 de octubre de 2026, separadamente, los siguientes inmuebles: "
+        "a) Lote 10-C, resultante de la subdivisión del Lote 10, comuna de Linares. "
+        "Rol de avalúo Nº 563-829, comuna de Linares. Mínimo para la subasta: $14.032.528; "
+        "b) Lote 10-K, de los en que se subdividió el resto del Lote 10, comuna de Linares. "
+        "Rol de avalúo Nº 8013-8, comuna de Linares. Mínimo para la subasta: $20.314.075."
+    )
+    piezas_letra = dividir_aviso_multi_inmueble(AVISO_LETRA_PRUEBA)
+    comprobar("Aviso con 2 inmuebles en formato 'a) ... b) ...' se separa en 2 textos",
+              len(piezas_letra) == 2)
+    comprobar("Inmueble a (Lote 10-C) recupera solo su propio rol",
+              extraer_roles(normalizar(piezas_letra[0])) == [(563, 829)])
+    comprobar("Inmueble b (Lote 10-K) recupera solo su propio rol, sin mezclar con el a)",
+              extraer_roles(normalizar(piezas_letra[1])) == [(8013, 8)])
+
+    AVISO_PARENTESIS_PRUEBA = (
+        "Juez árbitro partidor, Rol Nº C-4079-2023, rematará presencialmente el 27 de "
+        "octubre de 2026, inmuebles: 1) Casa José Tomás Ramos Nº 254, Valparaíso, rol "
+        "2158-3, mínimo 5.937,07 UF; 2) 33,33% casa Santa Elena Nº 332, Valparaíso, rol "
+        "5073-4, mínimo 2.183,21 UF; 3) Casa Yerbas Buenas Nº 580, Valparaíso, rol "
+        "4019-43, mínimo 1.946,60 UF."
+    )
+    piezas_parentesis = dividir_aviso_multi_inmueble(AVISO_PARENTESIS_PRUEBA)
+    comprobar("Aviso con 3 inmuebles en formato '1) ... 2) ... 3) ...' se separa en 3 textos",
+              len(piezas_parentesis) == 3)
+    comprobar("Inmueble 2) (33,33% casa Santa Elena, con texto intercalado antes de 'casa') "
+              "recupera solo su propio rol",
+              extraer_roles(normalizar(piezas_parentesis[1])) == [(5073, 4)])
+    comprobar("Inmueble 3) recupera solo su propio rol, sin mezclar con los otros 2",
+              extraer_roles(normalizar(piezas_parentesis[2])) == [(4019, 43)])
+
+    AVISO_VINETA_PRUEBA = (
+        "Liquidación forzosa. Rol Causa: C-22181-2024. Detalle: Los inmuebles se rematarán "
+        "agrupados: LOTE A — OFICINAS HUECHURABA • Oficina Nº 601 del sexto piso, Huechuraba, "
+        "inscrita a fojas 77440. Rol de avalúo Nº 6058-48. • Oficina Nº 602 del sexto piso, "
+        "inscrita a fojas 77441. Rol de avalúo Nº 6058-49."
+    )
+    piezas_vineta = dividir_aviso_multi_inmueble(AVISO_VINETA_PRUEBA)
+    comprobar("Aviso con 2 inmuebles en formato con viñetas '•' se separa en 2 textos",
+              len(piezas_vineta) == 2)
+    comprobar("Oficina 601 recupera solo su propio rol",
+              extraer_roles(normalizar(piezas_vineta[0])) == [(6058, 48)])
+    comprobar("Oficina 602 recupera solo su propio rol, sin mezclar con la 601",
+              extraer_roles(normalizar(piezas_vineta[1])) == [(6058, 49)])
+
+    comprobar("Letras 'a)'/'b)' usadas en un contexto legal genérico, sin palabra de tipo de "
+              "inmueble cerca, no gatillan una separación falsa",
+              dividir_aviso_multi_inmueble(
+                  "Según lo dispuesto en los incisos a) y b) del artículo 491, se procederá "
+                  "conforme a derecho, rematándose el inmueble ubicado en Calle Falsa 123.") ==
+              ["Según lo dispuesto en los incisos a) y b) del artículo 491, se procederá "
+               "conforme a derecho, rematándose el inmueble ubicado en Calle Falsa 123."])
+    comprobar("Letras en MAYÚSCULA 'A.-'/'B.-' (caso real: depto + bodega 'conjuntamente', "
+              "mismo remate) no gatillan una separación falsa - solo cuentan las minúsculas",
+              dividir_aviso_multi_inmueble(
+                  "Remátese el 3 de diciembre 2026, mediante video conferencia, conjuntamente: "
+                  "A.- Departamento 210 del piso 2, inscrito a fojas 84129. B.- Bodega 113 del "
+                  "primer subterráneo, inscrito a fojas 84129, Nº 122842, Mínimo posturas: 2.655 UF.") ==
+              ["Remátese el 3 de diciembre 2026, mediante video conferencia, conjuntamente: "
+               "A.- Departamento 210 del piso 2, inscrito a fojas 84129. B.- Bodega 113 del "
+               "primer subterráneo, inscrito a fojas 84129, Nº 122842, Mínimo posturas: 2.655 UF."])
+    comprobar("Un inmueble 'resultante de la fusión' de 2 títulos antiguos listados con "
+              "'a)'/'b)' no se separa - es un solo lote hoy, no dos remates",
+              dividir_aviso_multi_inmueble(
+                  "Remate del inmueble ubicado en Avenida El Sauce Nº 2063, que es resultante "
+                  "de la fusión de los siguientes inmuebles: a) inmueble rural, ubicado en "
+                  "Avenida El Sauce Nº 2063; y b) inmueble denominado Pasaje Los Pinos Nº 1540, "
+                  "Rol de Avalúo Nº 918-687 de Coquimbo.") ==
+              ["Remate del inmueble ubicado en Avenida El Sauce Nº 2063, que es resultante "
+               "de la fusión de los siguientes inmuebles: a) inmueble rural, ubicado en "
+               "Avenida El Sauce Nº 2063; y b) inmueble denominado Pasaje Los Pinos Nº 1540, "
+               "Rol de Avalúo Nº 918-687 de Coquimbo."])
+    comprobar("'Se rematarán como un todo' con lista numerada '1.-'/'2.-' no se separa - son "
+              "varios lotes vendidos como una sola unidad, no remates distintos",
+              dividir_aviso_multi_inmueble(
+                  "Se rematarán los siguientes inmuebles como un todo: 1.- Lote M-1, rol de "
+                  "avalúo 100-1. 2.- Lote F-1, rol de avalúo 100-2.") ==
+              ["Se rematarán los siguientes inmuebles como un todo: 1.- Lote M-1, rol de "
+               "avalúo 100-1. 2.- Lote F-1, rol de avalúo 100-2."])
 
     comprobar("Cabecera de fecha", cabecera_fecha("14 DE SEPTIEMBRE") == (14, 9))
 
