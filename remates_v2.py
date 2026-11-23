@@ -5149,7 +5149,7 @@ def ordenar_columnas_alvaro(df, extra=()):
     return df[base + extra]
 
 
-def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
+def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes, n_incompleto=0):
     top = df[df["EN_TOP"]]
     n_de_mercado = int(top["razon_seleccion"].str.startswith("OPORTUNIDAD VS. MERCADO", na=False).sum())
     n_de_fiscal = int(top["razon_seleccion"].str.startswith("OPORTUNIDAD VS. AVALUO FISCAL", na=False).sum())
@@ -5175,6 +5175,13 @@ def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
         filas.append((f"Fuente {f}", e))
     for fu, n in df["fuente"].value_counts().items():
         filas.append((f"Filas de {fu}", int(n)))
+    # OJO (23-11-2026, pedido de Rodrigo y de Álvaro): desde que INCOMPLETO pasó a
+    # cubrir las 3 fuentes y a excluirse de TGR/MACAL/AVISO/CANDIDATAS/TOP/REVISAR,
+    # se deja esta línea para que quede a la vista cuántas propiedades quedaron
+    # fuera de todo lo anterior por falta de rol o de dirección.
+    if n_incompleto:
+        filas.append(("Filas de INCOMPLETO (excluidas de TGR/MACAL/AVISO/CANDIDATAS/TOP/REVISAR "
+                       "por falta de rol o de dirección)", int(n_incompleto)))
     # OJO (Rodrigo 12-11-2026, 21:21, viendo la pestaña AVISO cada vez más vacía de
     # resultados buenos día a día: "esto es un total y completo desastre"): la pestaña
     # AVISO NO es representativa de la cobertura real, porque el filtro histórico "ya
@@ -5257,6 +5264,32 @@ def resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes):
 
 def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     SALIDAS.mkdir(exist_ok=True)
+
+    # OJO (23-11-2026, pedido explícito de Rodrigo y de Álvaro: "necesito que sean
+    # excluyentes porque contaminan la información"): hasta acá, una propiedad sin
+    # rol de avalúo o sin dirección confirmada podía aparecer en más de un lado a
+    # la vez - en su hoja de fuente (TGR/MACAL/AVISO) Y en REVISAR, o de plano sin
+    # ningún filtro en TGR y MACAL, que nunca tuvieron la separación que sí tenía
+    # AVISO desde el 20-11-2026 (esa separación quedaba limitada a AVISO, usando
+    # columnas de esa fuente nomás - "manzana"/"direccion_tgr" - en vez del rol y
+    # la dirección YA RESUELTOS que valen para las 3 fuentes por igual). Ahora se
+    # separa ACÁ, antes de armar cualquier hoja, de forma pareja para TGR, MACAL y
+    # AVISO: toda propiedad sin rol_completo O sin direccion_final (los dos datos
+    # ya 100% resueltos, cruzados contra el catastro) queda en
+    # "df_incompleto_todas_fuentes" y SALE del resto del Excel entero (TGR, MACAL,
+    # AVISO, CANDIDATAS, TOP_CONSOLIDADO, TOP_NUEVO, REVISAR y los conteos del
+    # RESUMEN) - cada propiedad cae en UNA sola hoja, nunca en dos. Con esto,
+    # REVISAR queda reservado solo para propiedades YA completas que no resultan
+    # ser una buena oportunidad económica (su sentido original); lo incompleto por
+    # falta de dato se concentra entero en la hoja INCOMPLETO.
+    # "df_todas" conserva el universo completo (completos + incompletos) solo para
+    # el respaldo técnico interno (todas_las_propiedades.csv), que Álvaro no ve.
+    df_todas = df
+    _tiene_rol_exportar = df["rol_completo"].notna() & (df["rol_completo"].astype(str).str.strip() != "")
+    _tiene_dir_exportar = df["direccion_final"].notna() & (df["direccion_final"].astype(str).str.strip() != "")
+    df_incompleto_todas_fuentes = df[~(_tiene_rol_exportar & _tiene_dir_exportar)].copy()
+    df = df[_tiene_rol_exportar & _tiene_dir_exportar].copy()
+
     # Importante: las filas se filtran ANTES de recortar columnas (ordenar_columnas
     # saca columnas internas como EN_TOP/ELEGIBLE_FISCAL/ELEGIBLE_MERCADO que se
     # necesitan aquí mismo para separar las hojas).
@@ -5268,7 +5301,8 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     cand = df[df["ELEGIBLE_FISCAL"] | df["ELEGIBLE_MERCADO"]].sort_values(["oportunidad_pct"], ascending=False)
     rev = df[~df["ELEGIBLE"] & df["motivo_no_elegible"].ne("")].copy()
     rev = rev[~rev["motivo_no_elegible"].str.contains("vencido", na=False)]
-    resumen = resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes)
+    resumen = resumen_texto(df, db_path, hay_catastro, estado_fuentes, faltantes,
+                             n_incompleto=len(df_incompleto_todas_fuentes))
 
     # ---- Marcar qué es NUEVO respecto a reportes anteriores (pedido de Rodrigo,
     # 2026-10-09; rediseñado el 2026-10-20 a pedido de Rodrigo y Álvaro):
@@ -5349,7 +5383,8 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
 
     # El CSV "todas_las_propiedades.csv" se deja con TODAS las columnas (incluida
     # la auditoría interna) - es el respaldo técnico completo, no lo ve Álvaro.
-    df.drop(columns=["EN_TOP"]).to_csv(SALIDAS / "todas_las_propiedades.csv", index=False, encoding="utf-8-sig")
+    # Respaldo técnico completo (completos + incompletos) - Álvaro no ve este CSV.
+    df_todas.drop(columns=["EN_TOP"]).to_csv(SALIDAS / "todas_las_propiedades.csv", index=False, encoding="utf-8-sig")
     renombrar_para_mostrar(ordenar_columnas(top)).to_csv(
         SALIDAS / "TOP_OPORTUNIDADES.csv", index=False, encoding="utf-8-sig")
     # ---- "TODAS" se reemplaza por 3 hojas independientes por fuente (pedido de
@@ -5359,47 +5394,26 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     # que para AVISO es el orden real de aparición en el aviso (pedido también en
     # esa llamada: "que el orden que entrega la planilla sea el mismo orden del
     # aviso"), porque las filas se construyen leyendo el aviso de principio a fin. ----
+    # "df" ya quedó filtrado arriba a solo propiedades completas (rol Y dirección
+    # resueltos), así que estas 3 hojas por fuente quedan limpias automáticamente -
+    # ya no hace falta volver a filtrar por completitud acá (antes solo AVISO lo
+    # hacía; ahora TGR y MACAL quedan igual de limpias, sin cambiar nada más de su
+    # lógica).
     todas_tgr = df[df["fuente"] == "TGR"]
     todas_macal = df[df["fuente"] == "MACAL"]
-    todas_aviso_sin_filtrar = df[df["fuente"] == "AVISO"]
+    todas_aviso = df[df["fuente"] == "AVISO"]
 
-    # OJO (20-11-2026, pedido explícito de Rodrigo: "me gustaría que se mostrase tan
-    # solo las [propiedades] que se pesquisaron bien... y que hubiera una hoja que
-    # dijera incompleto... donde se mostrasen las propiedades que o bien no tienen el
-    # rol o bien no tienen la dirección... que no estuvieran duplicadas, que la
-    # propiedad apareciera en una hoja pero no en las dos"): antes la pestaña AVISO
-    # traía TODOS los avisos de la fuente, bien resueltos o no, y por separado había
-    # una segunda hoja (REVISAR_SIN_DATO_SUFICIENTE) con un subconjunto MÁS CHICO de
-    # esos mismos avisos incompletos (solo los dos casos de "motivo_exclusion_
-    # denominador": sin calle+número, o AMBIGUO sin número de unidad) - lo que dejaba
-    # TRES problemas: (a) AVISO se veía "sucia" mezclando buenos y malos (la misma
-    # queja de Rodrigo del 12-11-2026 sobre que esta pestaña se ve "cada vez más
-    # vacía" de resultados buenos - ver OJO más abajo en resumen_texto), (b) muchos
-    # avisos incompletos NO entraban a esa segunda hoja (SIN COINCIDENCIA, AMBIGUO con
-    # unidad leída pero el catastro igual ambiguo, SIN COMUNA CANDIDATA - cualquiera
-    # de esos tiene dirección O rol pero no los DOS, que es justo lo que Rodrigo
-    # quiere ver en una sola hoja de alerta), y (c) los que SÍ entraban quedaban
-    # duplicados (aparecían en AVISO Y en REVISAR_SIN_DATO_SUFICIENTE a la vez). Se
-    # separa aquí mismo, antes de armar las hojas, en dos conjuntos que NUNCA se
-    # pisan: "completo" (tiene rol Y dirección - va a la hoja AVISO) e "incompleto"
-    # (le falta el rol O la dirección, por el motivo que sea - va a la hoja
-    # INCOMPLETO, que reemplaza a REVISAR_SIN_DATO_SUFICIENTE con un alcance más
-    # amplio). Cada aviso cae en una sola de las dos, nunca en ambas.
-    _tiene_rol = todas_aviso_sin_filtrar["manzana"].notna()
-    _tiene_dir = todas_aviso_sin_filtrar["direccion_tgr"].notna()
-    todas_aviso = todas_aviso_sin_filtrar[_tiene_rol & _tiene_dir]
-    # OJO (23-11-2026, pedido explícito de Rodrigo): el rol de la CAUSA judicial
-    # (ej. "C-9187-2024") y el tribunal donde se tramita ya se leían del aviso
-    # (quedan en "rol_causa"/"tribunal" igual que en la hoja AVISO), pero se
-    # quedaban fuera de esta hoja - un aviso incompleto (sin rol de avalúo ni
-    # dirección de la PROPIEDAD) igual puede traer el rol del JUICIO, que es un
-    # dato totalmente distinto y sirve para rastrear el expediente aunque la
-    # propiedad en sí no se haya podido resolver.
-    cols_revision = [c for c in ("id_fuente", "tribunal", "rol_causa", "comuna_propiedad", "direccion_tgr",
-                                  "ubicacion_texto_crudo", "estado_busqueda_direccion",
+    # OJO (20-11-2026, ampliado el 23-11-2026 a pedido explícito de Rodrigo y de
+    # Álvaro - "necesito que sean excluyentes porque contaminan la información"):
+    # esta hoja reúne TODAS las propiedades incompletas, de las 3 fuentes por
+    # igual (antes solo cubría AVISO) - el rol de la CAUSA judicial ("rol_causa") y
+    # el tribunal, cuando el aviso los trae, se muestran igual aunque la propiedad
+    # en sí no se haya podido resolver.
+    cols_revision = [c for c in ("fuente", "id_fuente", "tribunal", "rol_causa", "comuna_propiedad",
+                                  "direccion_tgr", "ubicacion_texto_crudo", "estado_busqueda_direccion",
                                   "motivo_exclusion_denominador", "rol_candidatos",
-                                  "fecha_remate") if c in todas_aviso_sin_filtrar.columns]
-    incompleto_aviso = todas_aviso_sin_filtrar[~(_tiene_rol & _tiene_dir)][cols_revision]
+                                  "fecha_remate") if c in df_incompleto_todas_fuentes.columns]
+    incompleto_aviso = df_incompleto_todas_fuentes[cols_revision]
 
     ruta = SALIDAS / "OPORTUNIDADES.xlsx"
     with pd.ExcelWriter(ruta, engine="openpyxl") as w:
