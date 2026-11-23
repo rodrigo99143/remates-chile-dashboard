@@ -126,6 +126,21 @@ def main():
         print(f"  [INFORME_FIJO] *** OJO: no coinciden ({n_leidos} leídos vs {n_en_informe} en el Excel) - "
               f"revisar, esto no debería pasar con aplicar_dedup=False. ***")
 
+    # OJO (23-11-2026, pedido explícito de Rodrigo: "era la pestaña incompleto, eso
+    # quise decir"): este reporte especial mostraba TODOS los avisos mezclados en
+    # una sola hoja a propósito (ver comentario más arriba, pedido original del
+    # 11-11-2026). Ahora, además, se separa con el MISMO criterio que ya usa la
+    # corrida normal (remates_v2.exportar): rol_completo Y direccion_final
+    # resueltos -> hoja limpia; falta cualquiera de los dos -> hoja INCOMPLETO. Las
+    # dos hojas siguen sumando el total leído (nada se pierde ni se duplica), pero
+    # ahora también se puede ver de un vistazo cuál es cuál, igual que en el Excel
+    # de todos los días.
+    _tiene_rol_fijo = df_avisos["rol_completo"].notna() & (df_avisos["rol_completo"].astype(str).str.strip() != "")
+    _tiene_dir_fijo = df_avisos["direccion_final"].notna() & (df_avisos["direccion_final"].astype(str).str.strip() != "")
+    df_avisos_completo = df_avisos[_tiene_rol_fijo & _tiene_dir_fijo]
+    df_avisos_incompleto = df_avisos[~(_tiene_rol_fijo & _tiene_dir_fijo)]
+    con_ambos = len(df_avisos_completo)
+
     ruta_excel = SALIDAS / "REPORTE_INFORME_FIJO.xlsx"
     with pd.ExcelWriter(ruta_excel, engine="openpyxl") as w:
         # ---- Resumen de control (pedido de Rodrigo, 11-11-2026): para que se
@@ -138,19 +153,26 @@ def main():
                 "Avisos en este Excel (deben ser el mismo número de arriba)",
                 "  - con ROL de avalúo utilizable (regex o IA)",
                 "  - con dirección final resuelta",
-                "  - sin ROL ni dirección (quedan igual, con el texto original a la vista en el aviso)",
+                "  - con AMBOS (rol y dirección) - hoja limpia",
+                "  - sin rol o sin dirección - hoja INCOMPLETO",
             ],
-            "Cantidad": [n_leidos, n_en_informe, con_rol, con_direccion, n_en_informe - max(con_rol, con_direccion)],
+            "Cantidad": [n_leidos, n_en_informe, con_rol, con_direccion, con_ambos, n_en_informe - con_ambos],
         })
         resumen_control.to_excel(w, sheet_name="RESUMEN_DE_CONTROL", index=False)
         remates_v2.dar_formato(w.sheets["RESUMEN_DE_CONTROL"])
 
         hoja = remates_v2.renombrar_para_mostrar(
-            remates_v2.ordenar_columnas_alvaro(df_avisos, extra=["oportunidad_pct", "alertas", "motivo_no_elegible"])
+            remates_v2.ordenar_columnas_alvaro(df_avisos_completo, extra=["oportunidad_pct", "alertas", "motivo_no_elegible"])
         )
         nombre_hoja = ("AVISOS" if len(rutas_docx) > 1 else rutas_docx[0].stem)[:31] or "AVISOS"
         hoja.to_excel(w, sheet_name=nombre_hoja, index=False)
         remates_v2.dar_formato(w.sheets[nombre_hoja])
+
+        hoja_incompleto = remates_v2.renombrar_para_mostrar(
+            remates_v2.ordenar_columnas_alvaro(df_avisos_incompleto, extra=["oportunidad_pct", "alertas", "motivo_no_elegible"])
+        )
+        hoja_incompleto.to_excel(w, sheet_name="INCOMPLETO", index=False)
+        remates_v2.dar_formato(w.sheets["INCOMPLETO"])
 
         # ---- 2) TGR y MACAL genuinamente nuevas desde la fecha pedida ----
         # OJO (20-11-2026, pedido "excepcional" de Rodrigo: auditar también MACAL, no
@@ -194,8 +216,9 @@ def main():
     msg["To"] = CORREO_PARA
     msg.set_content(
         f"Reporte especial de una sola vez.\n\n"
-        f"Hoja '{nombre_hoja[:31]}': los {len(df_avisos)} avisos de {nombres_archivos}, completos o no "
-        f"({con_rol} con ROL de avalúo utilizable).\n"
+        f"De los {len(df_avisos)} avisos de {nombres_archivos}:\n"
+        f"Hoja '{nombre_hoja[:31]}': {con_ambos} avisos con rol Y dirección confirmados (limpios).\n"
+        f"Hoja 'INCOMPLETO': {len(df_avisos_incompleto)} avisos a los que les falta el rol o la dirección.\n"
         f"Hoja 'TGR_NUEVO': {n_tgr_nuevo} propiedades de TGR nuevas desde el {fecha_tgr_desde}.\n"
         f"Hoja 'MACAL_NUEVO': {n_macal_nuevo} propiedades de MACAL nuevas desde el {fecha_tgr_desde}.\n"
     )
