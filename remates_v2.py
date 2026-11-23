@@ -5388,8 +5388,16 @@ def exportar(df, db_path, hay_catastro, estado_fuentes, faltantes):
     _tiene_rol = todas_aviso_sin_filtrar["manzana"].notna()
     _tiene_dir = todas_aviso_sin_filtrar["direccion_tgr"].notna()
     todas_aviso = todas_aviso_sin_filtrar[_tiene_rol & _tiene_dir]
-    cols_revision = [c for c in ("id_fuente", "comuna_propiedad", "direccion_tgr", "ubicacion_texto_crudo",
-                                  "estado_busqueda_direccion", "motivo_exclusion_denominador", "rol_candidatos",
+    # OJO (23-11-2026, pedido explícito de Rodrigo): el rol de la CAUSA judicial
+    # (ej. "C-9187-2024") y el tribunal donde se tramita ya se leían del aviso
+    # (quedan en "rol_causa"/"tribunal" igual que en la hoja AVISO), pero se
+    # quedaban fuera de esta hoja - un aviso incompleto (sin rol de avalúo ni
+    # dirección de la PROPIEDAD) igual puede traer el rol del JUICIO, que es un
+    # dato totalmente distinto y sirve para rastrear el expediente aunque la
+    # propiedad en sí no se haya podido resolver.
+    cols_revision = [c for c in ("id_fuente", "tribunal", "rol_causa", "comuna_propiedad", "direccion_tgr",
+                                  "ubicacion_texto_crudo", "estado_busqueda_direccion",
+                                  "motivo_exclusion_denominador", "rol_candidatos",
                                   "fecha_remate") if c in todas_aviso_sin_filtrar.columns]
     incompleto_aviso = todas_aviso_sin_filtrar[~(_tiene_rol & _tiene_dir)][cols_revision]
 
